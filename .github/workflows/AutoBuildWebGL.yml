@@ -32,32 +32,28 @@ jobs:
         with:
           unityVersion: 2019.4.7f1
           targetPlatform: WebGL
-          buildsPath: docs
           buildName: .
 
-      # copy fild to correct release path
-      - name: copy file
-        uses: canastro/copy-file-action@master
+      # Copy to destination
+      - name: Copy to destination
+        uses: andstor/copycat-action@v3
         with:
-          source: "docs/WebGL"
-          target: "docs"
+          personal_token: ${{ secrets.PERSONAL_TOKEN }}
+          src_path: /build/WebGL
+          dst_path: /docs
+          dst_owner: tianlang0704
+          dst_repo_name: Choice
 
-      # remove old folder
-      - name: Remove File
-        uses: JesseTG/rm@v1.0.2
-        with:
-          path: docs/WebGL
+      # # Add change
+      # - name: Commit output
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git add docs
+      #     git commit -m "AutoBuildWebGL"
 
-      # Add change
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add docs
-          git commit -m "AutoBuildWebGL"
-
-      # Push
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: $\{{ secrets.GITHUB_TOKEN }}
+      # # Push
+      # - name: GitHub Push
+      #   uses: ad-m/github-push-action@v0.6.0
+      #   with:
+      #     github_token: $\{{ secrets.GITHUB_TOKEN }}
