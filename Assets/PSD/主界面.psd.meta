@@ -88,7 +88,7 @@ ScriptedImporter:
     uvTransform: {x: 0, y: 0}
   mosaicSpriteImportData: []
   rigSpriteImportData:
-  - name: "\u4ECE\u9009\u533A"
+  - name: "\u4EBA\u7269\u5F62\u8C61"
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -275,8 +275,8 @@ ScriptedImporter:
     spriteID: 00000000000000000000000000000000
     layerID: 11
     mosaicPosition: {x: 0, y: 0}
-  - name: "\u4ECE\u9009\u533A"
-    spriteName: "\u4ECE\u9009\u533A"
+  - name: "\u4EBA\u7269\u5F62\u8C61"
+    spriteName: "\u4EBA\u7269\u5F62\u8C61"
     isGroup: 0
     parentIndex: 1
     spriteID: 19a9a717f22e99e4eb76f4e29b335aa1

@@ -20,12 +20,15 @@ public class SpriteRendererToUIImage : MonoBehaviour
         if (spriteRenderer != null) {
             var img = go.AddComponent<Image>();
             img.sprite = spriteRenderer.sprite;
+            img.SetNativeSize();
             GameObject.DestroyImmediate(spriteRenderer);
         }
         var rectT = go.GetComponent<RectTransform>();
         if (rectT == null) {
-            rectT.localScale = Vector3.one;
+            go.transform.localScale = Vector3.one;
+            EditorUtility.SetDirty(go.transform);
             rectT = go.AddComponent<RectTransform>();
+            // rectT.localScale = Vector3.one;
         }
         // 回溯转换子项
         foreach (var transform in go.transform) {
