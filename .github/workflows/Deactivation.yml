@@ -6,6 +6,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Return license
-        on: workflow_dispatch
         uses: webbertakken/unity-return-license@v1
         if: always()
