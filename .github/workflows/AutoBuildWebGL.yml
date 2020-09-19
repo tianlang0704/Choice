@@ -38,8 +38,8 @@ jobs:
       # Add change
       - name: Commit files
         run: |
-          sudo mv -f docs/WebGL/* docs/
-          sudo rmdir docs/WebGL
+          sudo rsync -a docs/WebGL/ docs/
+          sudo rm -r docs/WebGL
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add docs
