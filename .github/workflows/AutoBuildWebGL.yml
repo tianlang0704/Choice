@@ -34,26 +34,26 @@ jobs:
           targetPlatform: WebGL
           buildName: .
 
+      # Add change
+      - name: Commit output
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add build
+          git commit -m "AutoBuildWebGL"
+
+      # Push
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: $\{{ secrets.GITHUB_TOKEN }}
+
       # Copy to destination
       - name: Copy to destination
         uses: andstor/copycat-action@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          src_path: /build/WebGL
-          dst_path: /docs
+          src_path: build/WebGL
+          dst_path: docs
           dst_owner: tianlang0704
           dst_repo_name: Choice
-
-      # # Add change
-      # - name: Commit output
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     git add docs
-      #     git commit -m "AutoBuildWebGL"
-
-      # # Push
-      # - name: GitHub Push
-      #   uses: ad-m/github-push-action@v0.6.0
-      #   with:
-      #     github_token: $\{{ secrets.GITHUB_TOKEN }}
