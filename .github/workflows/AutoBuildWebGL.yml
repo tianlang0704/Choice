@@ -18,7 +18,7 @@ jobs:
           lfs: true
 
       # Cache
-      - uses: actions/cache@v1.1.0
+      - uses: actions/cache@v2.1.1
         with:
           path: Library
           key: Library
@@ -36,7 +36,8 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m "AutoBuildWebGL" -a
+          git add docs
+          git commit -m "AutoBuildWebGL"
 
       # Push
       - name: GitHub Push
