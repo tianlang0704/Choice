@@ -2,6 +2,7 @@ name: AutoBuildWebGL 😎
 
 on:
   workflow_dispatch
+  create
 
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
