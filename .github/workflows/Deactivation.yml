@@ -1,4 +1,4 @@
-name: Return activation file
+name: Return license
 on: workflow_dispatch
 jobs:
   deactivate:
