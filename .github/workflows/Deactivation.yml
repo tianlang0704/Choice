@@ -1,0 +1,3 @@
+- name: Return license
+  uses: webbertakken/unity-return-license@v1
+  if: always()
