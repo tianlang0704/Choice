@@ -29,9 +29,17 @@ jobs:
         with:
           unityVersion: 2019.4.7f1
           targetPlatform: WebGL
+          buildsPath: docs
 
-      # Output
-      - uses: actions/upload-artifact@v1
+      # Add change
+      - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "AutoBuildWebGL" -a
+
+      # Push
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.6.0
         with:
-          name: Build
-          path: docs
+          github_token: $\{{ secrets.GITHUB_TOKEN }}
