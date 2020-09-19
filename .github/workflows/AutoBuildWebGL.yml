@@ -35,12 +35,22 @@ jobs:
           buildsPath: docs
           buildName: .
 
+      # copy fild to correct release path
+      - name: copy file
+        uses: canastro/copy-file-action@master
+        with:
+          source: "docs/WebGL"
+          target: "docs"
+
+      # remove old folder
+      - name: Remove File
+        uses: JesseTG/rm@v1.0.2
+        with:
+          path: docs/WebGL
 
       # Add change
       - name: Commit files
         run: |
-          mv docs/WebGL/* docs/
-          rmdir docs/WebGL
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add docs
