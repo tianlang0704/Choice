@@ -1,4 +1,11 @@
-name: Return license
+name: Return activation file
 on: workflow_dispatch
-uses: webbertakken/unity-return-license@v1
-if: always()
+jobs:
+  deactivate:
+    name: Return license
+    runs-on: ubuntu-latest
+    steps:
+      - name: Return license
+        on: workflow_dispatch
+        uses: webbertakken/unity-return-license@v1
+        if: always()
