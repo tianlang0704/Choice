@@ -32,14 +32,17 @@ jobs:
         with:
           unityVersion: 2019.4.7f1
           targetPlatform: WebGL
+          buildsPath: docs
           buildName: .
 
       # Add change
-      - name: Commit output
+      - name: Commit files
         run: |
+          sudo mv -f docs/WebGL/* docs/
+          sudo rmdir docs/WebGL
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add build
+          git add docs
           git commit -m "AutoBuildWebGL"
 
       # Push
@@ -47,13 +50,3 @@ jobs:
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: $\{{ secrets.GITHUB_TOKEN }}
-
-      # Copy to destination
-      - name: Copy to destination
-        uses: andstor/copycat-action@v3
-        with:
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          src_path: build/WebGL
-          dst_path: docs
-          dst_owner: tianlang0704
-          dst_repo_name: Choice
