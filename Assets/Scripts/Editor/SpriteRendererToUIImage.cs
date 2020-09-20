@@ -14,7 +14,14 @@ public class SpriteRendererToUIImage : MonoBehaviour
     }
 
     static void RecursiveSpriteToUIImage(GameObject go) {
-        // 转换自己
+        // 转换transform
+        var rectT = go.GetComponent<RectTransform>();
+        if (rectT == null) {
+            rectT = go.AddComponent<RectTransform>();
+            rectT.localScale = Vector3.one;
+            rectT.anchoredPosition = Vector2.zero;
+        }
+        // 转换图片
         if (go == null) return;
         var spriteRenderer = go.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null) {
@@ -22,13 +29,6 @@ public class SpriteRendererToUIImage : MonoBehaviour
             img.sprite = spriteRenderer.sprite;
             img.SetNativeSize();
             GameObject.DestroyImmediate(spriteRenderer);
-        }
-        var rectT = go.GetComponent<RectTransform>();
-        if (rectT == null) {
-            go.transform.localScale = Vector3.one;
-            EditorUtility.SetDirty(go.transform);
-            rectT = go.AddComponent<RectTransform>();
-            // rectT.localScale = Vector3.one;
         }
         // 回溯转换子项
         foreach (var transform in go.transform) {
