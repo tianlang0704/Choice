@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb5ec96b6a991c643917884be07d7868, type: 3}
+  m_Name: ProfileChoiceContent
+  m_EditorClassIdentifier: 
+  SheetName: Assets/Resources/Excels/Test.xlsx
+  WorksheetName: ProfileChoiceContent
+  dataArray:
+  - id: 1
+    content: "\u6C34+1-1"
+    yes_change: 00000000010000000000000000000000
+    no_change: 00000000ffffffff0000000000000000
+  - id: 2
+    content: hp-1+1
+    yes_change: 0000000000000000ffffffff00000000
+    no_change: 00000000000000000100000000000000
