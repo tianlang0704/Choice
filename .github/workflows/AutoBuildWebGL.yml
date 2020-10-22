@@ -25,7 +25,6 @@ jobs:
         with:
           path: |
             Library
-            Temp
           key: Library
 
       # Build
