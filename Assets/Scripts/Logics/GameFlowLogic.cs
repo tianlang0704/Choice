@@ -18,18 +18,18 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         
     }
 
-    void ShowRandomDialog() {
+    public void ShowRandomDialog() {
         var card = CardPoolLogic.Instance.GetRandomCard();
-        UILogic.Instance.ShowDialog(card.content, (isOK) => {
+        GameUILogic.Instance.ShowDialog(card.content, (isOK) => {
             // 获取答案
             Answer answer = isOK ? card.answers[0] : card.answers[1];
             // 改变数值
             AttributesLogic.Instance.ApplyChangeToData(answer.influenceList);
-            UILogic.Instance.UpdateView();
+            GameUILogic.Instance.UpdateView();
             // 显示新提问
             StartCoroutine(CoroutineUtils.DelaySeconds(() => {
                 ShowRandomDialog();
-            }, 1));
+            }, 0.2f));
         });
     }
 }
