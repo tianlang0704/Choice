@@ -6,11 +6,9 @@ using UnityEngine.Events;
 using TMPro;
 using System;
 
-public class TownUILogic : SingletonBehaviour<TownUILogic>
+public class TownUILogic : UILogicBase<TownUILogic>
 {
     const string resStrFormat = "<sprite name=\"{0}\">";
-
-    public UIBase uiRoot;
 
     // Start is called before the first frame update
     void Start()

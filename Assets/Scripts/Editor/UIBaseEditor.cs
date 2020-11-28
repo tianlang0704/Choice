@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(UIBase))]
+[CustomEditor(typeof(UIViewBase))]
 public class LuaInjectInspector : Editor
 {
 
-    protected UIBase comp;
+    protected UIViewBase comp;
     void OnEnable() {
-        comp = target as UIBase;
+        comp = target as UIViewBase;
     }
 
     public override void OnInspectorGUI()
@@ -21,7 +21,7 @@ public class LuaInjectInspector : Editor
         for(int i = 0; i < comp.inj.Count; i++)
         {
             // 注入变量名
-            UIBase.KVP entry = comp.inj[i];
+            UIViewBase.KVP entry = comp.inj[i];
             GUILayout.BeginHorizontal();
             entry.name = GUILayout.TextField(entry.name, GUILayout.Width(100));
 
@@ -58,7 +58,7 @@ public class LuaInjectInspector : Editor
         GUILayout.Space(10);
         if (GUILayout.Button("添加"))
         {
-            comp.inj.Add(new UIBase.KVP());
+            comp.inj.Add(new UIViewBase.KVP());
         }
         GUI.color = Color.white;
 

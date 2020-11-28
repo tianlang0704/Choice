@@ -2,28 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SingletonBehaviour<T> : MonoBehaviour where T: SingletonBehaviour<T>
+public class SingletonBehaviour<T> : MonoBehaviour where T: MonoBehaviour
 {
-    private static T instance = null;
-    public static T Instance { 
-        get {
-            return instance == null ? (instance = (new GameObject("单例宿主")).AddComponent<T>()) : instance;
-        } 
-        protected set {
-            instance = value;
-        } 
+    // Check to see if we're about to be destroyed.
+    private static object m_Lock = new object();
+    private static T m_Instance;
+ 
+    /// <summary>
+    /// Access singleton instance through this propriety.
+    /// </summary>
+    public static T Instance
+    {
+        get
+        {
+            lock (m_Lock)
+            {
+                if (m_Instance == null)
+                {
+                    // Search for existing instance.
+                    m_Instance = (T)FindObjectOfType(typeof(T));
+ 
+                    // Create new instance if one doesn't already exist.
+                    if (m_Instance == null)
+                    {
+                        // Need to create a new GameObject to attach the singleton to.
+                        var singletonObject = new GameObject();
+                        m_Instance = singletonObject.AddComponent<T>();
+                        singletonObject.name = typeof(T).ToString() + " (Singleton)";
+ 
+                        // Make instance persistent.
+                        if (IsPersistent()) {
+                            DontDestroyOnLoad(singletonObject);
+                        }
+                    }
+                }
+ 
+                return m_Instance;
+            }
+        }
+    }
+
+    static private bool IsPersistent()
+    {
+        return true;
     }
  
-    protected virtual void Awake()
+    private void OnDestroy()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(this);
-            throw new System.Exception("单例已存在, 请勿添加多个.");
-        }
-        else
-        {
-            instance = (T)this;
-        }
+        if (m_Instance == this) m_Instance = null;
     }
 }

@@ -6,11 +6,9 @@ using UnityEngine.Events;
 using TMPro;
 using System;
 
-public class DiaryUILogic : SingletonBehaviour<DiaryUILogic>
+public class DiaryUILogic : UILogicBase<DiaryUILogic>
 {
     const string resStrFormat = "<sprite name=\"{0}\">";
-
-    public UIBase uiRoot;
 
     // Start is called before the first frame update
     void Start()

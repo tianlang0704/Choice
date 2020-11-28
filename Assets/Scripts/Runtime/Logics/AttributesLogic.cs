@@ -6,9 +6,8 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
     public List<int> dataList = new List<int>();
     public List<int> dataChange = new List<int>();
-    override protected void Awake()
+    protected void Awake()
     {
-        base.Awake();
         InitData();
     }
 
@@ -24,12 +23,14 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         
     }
 
-    void InitData() {
+    public void InitData() {
+        dataList.Clear();
+        dataChange.Clear();
         // 初始化全部数据为100
         var dataTypes = System.Enum.GetValues(typeof(AttributeType));
         foreach (int type in dataTypes) {
             dataList.Add(0);
-            dataList[type] = 100;
+            dataList[type] = 5;
         }
         // 初始化改变数据为0
         foreach (int type in dataTypes) {
@@ -47,5 +48,14 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
             dataList[typeInt] = curValue + (int)changeAmount;
             dataChange[typeInt] = (int)changeAmount;
         }
+    }
+
+    public bool IsDead()
+    {
+        var dataTypes = System.Enum.GetValues(typeof(AttributeType));
+        foreach (int type in dataTypes) {
+            if (dataList[type] <= 0) return true;
+        }
+        return false;
     }
 }

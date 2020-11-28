@@ -6,25 +6,22 @@ using UnityEngine.Events;
 using TMPro;
 using System;
 
-public class GameUILogic : SingletonBehaviour<GameUILogic>
+public class GameUILogic : UILogicBase<GameUILogic>
 {
     const string resStrFormat = "<sprite name=\"{0}\">";
-
-    public UIBase uiRoot;
 
     // Start is called before the first frame update
     void Start()
     {
-        uiRoot.i("Ex_弹窗").SetActive(false);
         uiRoot.i<Button>("Ex_导游").onClick.AddListener(()=>{
-            ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (isYes) => {
+            CommonFlowLogic.Instance.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (isYes) => {
                 if (isYes) {
                     GameFlowLogic.Instance.ShowRandomDialog();
                 }
             });
         });
         uiRoot.i<Button>("Ex_小僧").onClick.AddListener(()=>{
-            ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (isYes) => {
+            CommonFlowLogic.Instance.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (isYes) => {
                 if (isYes) {
                     CommonFlowLogic.Instance.Town();
                 }
@@ -37,32 +34,6 @@ public class GameUILogic : SingletonBehaviour<GameUILogic>
     // Update is called once per frame
     void Update()
     {
-    }
-
-    public void ShowDialog(string content, Action<bool> cb = null) {
-        UnityAction unityOkAction = new UnityAction(()=>{
-            uiRoot.i("Ex_弹窗").SetActive(false);
-            if (cb == null) return;
-            cb(true);
-        });
-        UnityAction unityCancelAction = new UnityAction(()=>{
-            uiRoot.i("Ex_弹窗").SetActive(false);
-            if (cb == null) return;
-            cb(false);
-        });
-        var pop = uiRoot.i("Ex_弹窗");
-        var yesBtn = pop.i<Button>("Ex_YES");
-        var noBtn = pop.i<Button>("Ex_No");
-        yesBtn.onClick.RemoveAllListeners();
-        noBtn.onClick.RemoveAllListeners();
-        pop.SetActive(true);
-        pop.i<TextMeshProUGUI>("Ex_弹窗内容").text = content;
-        yesBtn.onClick.AddListener(unityOkAction);
-        noBtn.onClick.AddListener(unityCancelAction);
-        pop.lc(UIBase.LifeCycle.OnDisable, () => {
-            yesBtn.onClick.RemoveListener(unityOkAction);
-            noBtn.onClick.RemoveListener(unityCancelAction);
-        });
     }
 
     public void UpdateView() {
