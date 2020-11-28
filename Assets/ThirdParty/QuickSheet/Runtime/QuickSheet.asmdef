@@ -1,0 +1,24 @@
+{
+    "name": "QuickSheet",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Google.GData.AccessControl.DLL",
+        "Google.GData.Client.dll",
+        "Google.GData.Documents.dll",
+        "Google.GData.Extensions.dll",
+        "Google.GData.Spreadsheets.dll",
+        "Newtonsoft.Json.dll",
+        "NPOI.dll",
+        "NPOI.OOXML.dll",
+        "NPOI.OpenXml4Net.dll",
+        "NPOI.OpenXmlFormats.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
