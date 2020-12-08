@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class SceneData {
+    // public string id;
+    public string name;
+    public List<AttrInfluence> influence;
+}
+
 public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 {
-    public class SceneData {
-        // public string id;
-        public string name;
-        public List<Influence> influence;
-    }
     private SceneData current;
     GameScenesLogic()
     {
@@ -30,11 +31,10 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
     {
         current = new SceneData(){
             name = "路",
-            influence = new List<Influence>(){
-                new Influence(){
-                    abstraction = Abstraction.Card,
-                    influenceType = InfluenceType.Possibility,
-                    amount = 2
+            influence = new List<AttrInfluence>(){
+                new AttrInfluence(){
+                    attributeType = AttributeType.Luck,
+                    attr = new Attr() {floatValue = 2f}
                 }
             }
         };

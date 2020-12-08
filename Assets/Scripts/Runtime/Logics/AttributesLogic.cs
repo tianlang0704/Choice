@@ -1,14 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
-    public List<int> dataList = new List<int>();
-    public List<int> dataChange = new List<int>();
+    public List<AttributeType> DisplayAttrTypes = new List<AttributeType>() {
+        AttributeType.Hp,
+        AttributeType.Oil,
+        AttributeType.Water,
+        AttributeType.Knowledge,
+    };
+
+    public List<AttributeType> DeadlyAttrTypes = new List<AttributeType>() {
+        AttributeType.Hp,
+        AttributeType.Oil,
+        AttributeType.Water,
+        AttributeType.Knowledge,
+    };
+
+    public List<float> DisplayAttrData {
+        get { 
+            return AttributeDataSystem.Instance.DataList
+                .Where((attr, idx) => DisplayAttrTypes.Contains((AttributeType)idx))
+                .Select((attr) => attr.floatValue)
+                .ToList(); 
+        }
+    }
+
+    public List<float> DisplayAttrDataChange {
+        get { 
+            return AttributeDataSystem.Instance.DataChange
+                .Where((attr, idx) => DisplayAttrTypes.Contains((AttributeType)idx))
+                .Select((attr) => attr.floatValue)
+                .ToList(); 
+        }
+    }
+
     protected void Awake()
     {
-        InitData();
+        
     }
 
     // Start is called before the first frame update
@@ -23,38 +54,18 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         
     }
 
-    public void InitData() {
-        dataList.Clear();
-        dataChange.Clear();
-        // 初始化全部数据为100
-        var dataTypes = System.Enum.GetValues(typeof(AttributeType));
-        foreach (int type in dataTypes) {
-            dataList.Add(0);
-            dataList[type] = 5;
-        }
-        // 初始化改变数据为0
-        foreach (int type in dataTypes) {
-            dataChange.Add(0);
-            dataChange[type] = 0;
-        }
-    }
-
-    public void ApplyChangeToData(List<Influence> influenceList) {
-        foreach (var influence in influenceList)
-        {
-            var typeInt = (int)influence.attributeType;
-            var changeAmount = influence.amount;
-            var curValue = dataList[typeInt];
-            dataList[typeInt] = curValue + (int)changeAmount;
-            dataChange[typeInt] = (int)changeAmount;
-        }
+    public bool IsAttrTypeDeadly(AttributeType type)
+    {
+        if (DeadlyAttrTypes.Contains(type)) return true;
+        return false;
     }
 
     public bool IsDead()
     {
-        var dataTypes = System.Enum.GetValues(typeof(AttributeType));
-        foreach (int type in dataTypes) {
-            if (dataList[type] <= 0) return true;
+        var attrTypes = System.Enum.GetValues(typeof(AttributeType));
+        foreach (int type in attrTypes) {
+            var attrData = AttributeDataSystem.Instance.GetAttrDataByType(type);
+            if (IsAttrTypeDeadly((AttributeType)type) && attrData.floatValue <= 0) return true;
         }
         return false;
     }

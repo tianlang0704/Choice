@@ -23,40 +23,44 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         
     }
 
+    private List<AttrInfluence> ChangeToInfluence(int[] change)
+    {
+        return change.Select((num, idx) => {
+            AttributeType aType = (AttributeType)idx;
+            return new AttrInfluence() {
+                attributeType = aType,
+                attr = new Attr() {floatValue = num}
+            };
+        }).ToList();
+    }
+
     public Card GetRandomCard()
     {
-        var profiles = ProfilesManager.Instance.profilesChoiceContent;
+        var profiles = ProfilesManager.Instance.GetProfile<ProfileChoiceContent>();
         var profilesCount = profiles.dataArray.Length;
         var randIndex = Random.Range(0, profilesCount);
         var profileEntry = profiles.dataArray[randIndex];
-        var yesInfluenceList = profileEntry.Yes_Change.Select((num, idx) => {
-            AttributeType aType = (AttributeType)idx;
-            return new Influence() {
-                abstraction = Abstraction.Attribute,
-                attributeType = aType,
-                amount = num,
-            };
-        }).ToList();
-        var noInfluenceList = profileEntry.No_Change.Select((num, idx) => {
-            AttributeType aType = (AttributeType)idx;
-            return new Influence() {
-                abstraction = Abstraction.Attribute,
-                attributeType = aType,
-                amount = num,
-            };
-        }).ToList();
+        var answers = new List<Answer>(){
+            new Answer() {
+                content = profileEntry.Answer1_Content,
+                influenceList = AttributeInfluenceSystem.Instance.GetInfluencesFromID(profileEntry.Answer1_Influence),
+            },
+            new Answer() {
+                content = profileEntry.Answer2_Content,
+                influenceList = AttributeInfluenceSystem.Instance.GetInfluencesFromID(profileEntry.Answer2_Influence),
+            },
+            new Answer() {
+                content = profileEntry.Answer3_Content,
+                influenceList = AttributeInfluenceSystem.Instance.GetInfluencesFromID(profileEntry.Answer3_Influence),
+            },
+            new Answer() {
+                content = profileEntry.Answer4_Content,
+                influenceList = AttributeInfluenceSystem.Instance.GetInfluencesFromID(profileEntry.Answer4_Influence),
+            },
+        };
         return new Card() {
             content = profileEntry.Content,
-            answers = new List<Answer>() {
-                new Answer() {
-                    content = "测试卡回答Yes",
-                    influenceList = yesInfluenceList,
-                },
-                new Answer() {
-                    content = "测试卡回答No",
-                    influenceList = noInfluenceList,
-                }
-            }
+            answers = answers,
         };
     }
 }

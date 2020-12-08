@@ -41,7 +41,7 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
             // 获取答案
             Answer answer = isOK ? card.answers[0] : card.answers[1];
             // 改变数值
-            AttributesLogic.Instance.ApplyChangeToData(answer.influenceList);
+            AttributeDataSystem.Instance.ApplyChangeToData(answer.influenceList);
             // 更新界面
             GameUILogic.Instance.UpdateView();
             // 显示新提问

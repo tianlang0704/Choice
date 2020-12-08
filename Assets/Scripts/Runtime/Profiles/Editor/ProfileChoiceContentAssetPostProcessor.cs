@@ -9,7 +9,7 @@ using UnityQuickSheet;
 ///
 public class ProfileChoiceContentAssetPostprocessor : AssetPostprocessor 
 {
-    private static readonly string filePath = "Assets/Resources/Excels/Test.xlsx";
+    private static readonly string filePath = "Assets/Resources/Excels/1CardProfiles.xls";
     private static readonly string assetFilePath = "Assets/Resources/Excels/ProfileChoiceContent.asset";
     private static readonly string sheetName = "ProfileChoiceContent";
     

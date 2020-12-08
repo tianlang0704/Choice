@@ -38,14 +38,16 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
     public void UpdateView() {
         // 更新现在值
-        var curDataArr = AttributesLogic.Instance.dataList;
+        var curDataArr = AttributesLogic.Instance.DisplayAttrData;
         foreach (int type in System.Enum.GetValues(typeof(AttributeType))) {
+            if (type >= curDataArr.Count) break;
             var curValue = curDataArr[type];
             UpdateResource((AttributeType)type, curValue);
         }
         // 更新改变值
-        var changeDataArr = AttributesLogic.Instance.dataChange;
+        var changeDataArr = AttributesLogic.Instance.DisplayAttrDataChange;
         foreach (int type in System.Enum.GetValues(typeof(AttributeType))) {
+            if (type >= curDataArr.Count) break;
             var changeValue = changeDataArr[type];
             UpdateChangeResource((AttributeType)type, changeValue);
         }
@@ -54,7 +56,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
         uiRoot.i<TextMeshProUGUI>("Ex_场景").text = "场景:" + sceneName;
     }
 
-    public void UpdateChangeResource(AttributeType type, int amount) 
+    public void UpdateChangeResource(AttributeType type, float amount) 
     {
         // 获取UI
         TextMeshProUGUI text = null;
@@ -62,7 +64,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
             text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_增减");
         }else if (type == AttributeType.Water) {
             text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_增减");
-        }else if (type == AttributeType.HP) {
+        }else if (type == AttributeType.Hp) {
             text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_增减");
         }else if (type == AttributeType.Knowledge) {
             text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_增减");
@@ -82,20 +84,20 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
         // 数量
         var amountText = amount.ToString();
-        foreach (var c in amountText) {
+        foreach (char c in amountText) {
             outText += string.Format(resStrFormat, c);
         }
         text.text = outText;
     }
 
-    public void UpdateResource(AttributeType type, int amount) {
+    public void UpdateResource(AttributeType type, float amount) {
         // 获取UI
         TextMeshProUGUI text = null;
         if (type == AttributeType.Oil) {
             text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_现在");
         }else if (type == AttributeType.Water) {
             text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_现在");
-        }else if (type == AttributeType.HP) {
+        }else if (type == AttributeType.Hp) {
             text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_现在");
         }else if (type == AttributeType.Knowledge) {
             text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_现在");

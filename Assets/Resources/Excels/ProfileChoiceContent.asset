@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb5ec96b6a991c643917884be07d7868, type: 3}
   m_Name: ProfileChoiceContent
   m_EditorClassIdentifier: 
-  SheetName: Assets/Resources/Excels/Test.xlsx
+  SheetName: Assets/Resources/Excels/CardProfiles.xlsx
   WorksheetName: ProfileChoiceContent
   dataArray:
-  - id: 1
-    content: "\u6C34+1-1"
-    yes_change: 00000000010000000000000000000000
-    no_change: 00000000ffffffff0000000000000000
-  - id: 2
-    content: hp-1+1
-    yes_change: 0000000000000000ffffffff00000000
-    no_change: 00000000000000000100000000000000
+  - id: 0
+    content: "\u662F"
+    answer1_content: 2000001
+    answer1_influence: 0
+    answer2_content: 2000002
+    answer2_influence: 0
+    answer3_content: 2000003
+    answer3_influence: 0
+    answer4_content: 2000001
+    answer4_influence: 0

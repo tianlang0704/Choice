@@ -10,7 +10,7 @@ using System.Collections.Generic;
 /// can be serialized onto an asset data file.
 /// 
 [System.Serializable]
-public class $ClassName : ScriptableObject 
+public class $ClassName : ScriptableObject, IIDAbleProfileContent
 {	
     [HideInInspector] [SerializeField] 
     public string SheetName = "";
@@ -20,6 +20,13 @@ public class $ClassName : ScriptableObject
     
     // Note: initialize in OnEnable() not here.
     public $DataClassName[] dataArray;
+
+    public IIDAble[] DataArray { get { return dataArray; } }
+
+    static public Type dataType = typeof($DataClassName);
+
+    public Type DataType { get { return dataType; } }
+
     
     void OnEnable()
     {		

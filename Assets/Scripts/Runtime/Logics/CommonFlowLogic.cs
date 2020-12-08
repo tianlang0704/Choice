@@ -23,7 +23,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 
     public void StartGame()
     {
-        AttributesLogic.Instance.InitData();
+        AttributeDataSystem.Instance.InitData();
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
     }
 
