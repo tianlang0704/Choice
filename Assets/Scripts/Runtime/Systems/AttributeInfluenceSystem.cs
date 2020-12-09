@@ -34,6 +34,15 @@ public class AttributeInfluenceSystem : SingletonBehaviour<AttributeInfluenceSys
         return Random.Range(min, max);
     }
 
+    public List<AttrInfluence> GetInfluencesFromID(int [] idArr)
+    {
+        if (idArr.Length == 0) return null;
+        var rand = Random.Range(0f,1f);
+        var step = (1 / (float)idArr.Length);
+        int idx = Mathf.FloorToInt(rand / step);
+        return GetInfluencesFromID(idArr[idx]);
+    }
+
     public List<AttrInfluence> GetInfluencesFromID(int id)
     {
         var infProfile = ProfilesManager.Instance.GetProfileByID<ProfileInfluenceData>(id);

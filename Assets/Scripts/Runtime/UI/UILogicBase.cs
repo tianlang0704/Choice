@@ -6,7 +6,7 @@ public class UILogicBase<T> : SingletonBehaviour<T> where T:UILogicBase<T>
 {
     public UIViewBase uiRoot = null;
 
-    void Awake()
+    virtual protected void Awake()
     {
         if (uiRoot == null) {
             uiRoot = GetComponent<UIViewBase>();

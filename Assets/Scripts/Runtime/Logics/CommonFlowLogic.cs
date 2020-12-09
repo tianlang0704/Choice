@@ -43,7 +43,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     }
 
     private Dialog dialog = null;
-    public void ShowDialog(string content, Action<bool> cb = null) {
+    public void ShowDialog(string content, Action<int> cb = null, params string[] list) {
         if (dialog == null) {
             dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
         }
@@ -55,5 +55,10 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             if (cb == null) return;
             cb(b);
         });
+        dialog.ResetAllAnsws();
+        for (int i = 0; i < list.Length; i++) {
+            var arg = list[i];
+            dialog.ShowAnsw(i, arg);
+        }
     }
 }

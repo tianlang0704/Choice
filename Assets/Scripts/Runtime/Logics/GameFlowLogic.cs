@@ -22,11 +22,11 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
     {
         var isDead = AttributesLogic.Instance.IsDead();
         if (isDead) {
-            CommonFlowLogic.Instance.ShowDialog("哦豁! 死求了啊. 完了撒. <color=#FF0000FF>回城</color>!!!", (isOK) => {
-                if (isOK) {
+            CommonFlowLogic.Instance.ShowDialog("哦豁! 死求了啊. 完了撒. <color=#FF0000FF>回城</color>!!!", (answIdx) => {
+                if (answIdx == 0) {
                     CommonFlowLogic.Instance.Town();
                 }
-            });
+            }, "YES", "NO");
         }
         return isDead;
     }
@@ -37,9 +37,9 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         if (isDead) return;
         // 抽卡
         var card = CardPoolLogic.Instance.GetRandomCard();
-        CommonFlowLogic.Instance.ShowDialog(card.content, (isOK) => {
+        CommonFlowLogic.Instance.ShowDialog(card.content, (ansNum) => {
             // 获取答案
-            Answer answer = isOK ? card.answers[0] : card.answers[1];
+            Answer answer = card.answers[ansNum];
             // 改变数值
             AttributeDataSystem.Instance.ApplyChangeToData(answer.influenceList);
             // 更新界面
@@ -48,6 +48,6 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
             StartCoroutine(CoroutineUtils.DelaySeconds(() => {
                 ShowRandomDialog(); 
             }, 0.1f));
-        });
+        }, card.answers[0].content, card.answers[1].content, card.answers[2].content, card.answers[3].content);
     }
 }

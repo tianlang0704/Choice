@@ -22,31 +22,31 @@ public class ProfileChoiceContentData : IIDAble
   public string Answer1_Content { get {return answer1_content; } set { this.answer1_content = value;} }
   
   [SerializeField]
-  int answer1_influence;
-  public int Answer1_Influence { get {return answer1_influence; } set { this.answer1_influence = value;} }
+  int[] answer1_influence = new int[0];
+  public int[] Answer1_Influence { get {return answer1_influence; } set { this.answer1_influence = value;} }
   
   [SerializeField]
   string answer2_content;
   public string Answer2_Content { get {return answer2_content; } set { this.answer2_content = value;} }
   
   [SerializeField]
-  int answer2_influence;
-  public int Answer2_Influence { get {return answer2_influence; } set { this.answer2_influence = value;} }
+  int[] answer2_influence = new int[0];
+  public int[] Answer2_Influence { get {return answer2_influence; } set { this.answer2_influence = value;} }
   
   [SerializeField]
   string answer3_content;
   public string Answer3_Content { get {return answer3_content; } set { this.answer3_content = value;} }
   
   [SerializeField]
-  int answer3_influence;
-  public int Answer3_Influence { get {return answer3_influence; } set { this.answer3_influence = value;} }
+  int[] answer3_influence = new int[0];
+  public int[] Answer3_Influence { get {return answer3_influence; } set { this.answer3_influence = value;} }
   
   [SerializeField]
   string answer4_content;
   public string Answer4_Content { get {return answer4_content; } set { this.answer4_content = value;} }
   
   [SerializeField]
-  int answer4_influence;
-  public int Answer4_Influence { get {return answer4_influence; } set { this.answer4_influence = value;} }
+  int[] answer4_influence = new int[0];
+  public int[] Answer4_Influence { get {return answer4_influence; } set { this.answer4_influence = value;} }
   
 }

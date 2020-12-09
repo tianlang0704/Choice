@@ -60,6 +60,7 @@ public class UIViewBase : MonoBehaviour
     }
     public T i<T>(string key) where T : class {
         var go = GetObj(key);
+        if (go == null) return null;
         var comp = go.GetComponent<T>();
         return comp;
     }

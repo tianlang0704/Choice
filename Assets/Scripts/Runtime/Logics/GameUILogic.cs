@@ -14,19 +14,18 @@ public class GameUILogic : UILogicBase<GameUILogic>
     void Start()
     {
         uiRoot.i<Button>("Ex_导游").onClick.AddListener(()=>{
-            CommonFlowLogic.Instance.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (isYes) => {
-                if (isYes) {
+            CommonFlowLogic.Instance.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (ans) => {
+                if (ans == 0) {
                     GameFlowLogic.Instance.ShowRandomDialog();
                 }
-            });
+            }, "YES", "NO");
         });
         uiRoot.i<Button>("Ex_小僧").onClick.AddListener(()=>{
-            CommonFlowLogic.Instance.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (isYes) => {
-                if (isYes) {
+            CommonFlowLogic.Instance.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (ans) => {
+                if (ans == 0) {
                     CommonFlowLogic.Instance.Town();
                 }
-            });
-            
+            }, "YES", "NO");
         });
         UpdateView(); 
     }

@@ -8,24 +8,26 @@ using System;
 
 public class Dialog : UILogicBase<Dialog>
 {
-    Action<bool> cb = null;
+    List<Button> answButtons = new List<Button>();
+    Action<int> cb = null;
     // Start is called before the first frame update
+    override protected void Awake()
+    {
+        base.Awake();
+        answButtons.Add(uiRoot.i<Button>("Ex_A1"));
+        answButtons.Add(uiRoot.i<Button>("Ex_A2"));
+        answButtons.Add(uiRoot.i<Button>("Ex_A3"));
+        answButtons.Add(uiRoot.i<Button>("Ex_A4"));
+        for (int i = 0; i < answButtons.Count; i++)
+        {
+            var button = answButtons[i];
+            var index = i; //i不能被闭包捕获
+            button.onClick.AddListener(() => {OnCallback(index);});
+        }
+    }
     void Start()
     {
-        UnityAction unityOkAction = new UnityAction(()=>{
-            uiRoot.gameObject.SetActive(false);
-            if (cb == null) return;
-            cb(true);
-        });
-        UnityAction unityCancelAction = new UnityAction(()=>{
-            uiRoot.gameObject.SetActive(false);
-            if (cb == null) return;
-            cb(false);
-        });
-        var yesBtn = uiRoot.i<Button>("Ex_YES");
-        var noBtn = uiRoot.i<Button>("Ex_No");
-        yesBtn.onClick.AddListener(unityOkAction);
-        noBtn.onClick.AddListener(unityCancelAction);
+
     }
 
     // Update is called once per frame
@@ -33,8 +35,15 @@ public class Dialog : UILogicBase<Dialog>
     {
         
     }
+
+    public void OnCallback(int ansNum)
+    {
+        uiRoot.gameObject.SetActive(false);
+        if (cb == null) return;
+        cb(ansNum);
+    }
     
-    public void SetCB(Action<bool> a)
+    public void SetCB(Action<int> a)
     {
         cb = a;
     }
@@ -42,5 +51,25 @@ public class Dialog : UILogicBase<Dialog>
     public void SetContent(string content)
     {
         uiRoot.i<TextMeshProUGUI>("Ex_弹窗内容").text = content;
+    }
+
+    public void ResetAllAnsws()
+    {
+        foreach (var button in answButtons)
+        {
+            // button.onClick.RemoveAllListeners();
+            button.gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowAnsw(int i, string content)
+    {
+        if (i >= answButtons.Count || string.IsNullOrEmpty(content)) return;
+        var button = answButtons[i];
+        button.gameObject.SetActive(true);
+        if (i < 2 || i >= answButtons.Count) return; // 0 和 1 默认是Yes 和 NO
+        var text = button.i<TextMeshProUGUI>("Ex_Text");
+        if (text == null) return;
+        text.text = content;
     }
 }
