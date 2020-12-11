@@ -17,31 +17,31 @@ MonoBehaviour:
   dataArray:
   - id: 2000001
     comment: "\u6D4B\u8BD51"
-    oil: 
-    water: 
-    hp: 
-    knowledge: 
-    luck: 
-    bag: 
-    distance: 
-    day: 
+    oil: 00000000
+    water: 00000000
+    hp: 01000000
+    knowledge: 00000000
+    luck: 00000000
+    bag: 00000000
+    distance: 00000000
+    day: 00000000
   - id: 2000002
     comment: "\u6D4B\u8BD52"
-    oil: 
-    water: 
+    oil: 00000000
+    water: 00000000
     hp: ffffffff
-    knowledge: 
-    luck: 
-    bag: 
-    distance: 
-    day: 
+    knowledge: 00000000
+    luck: 00000000
+    bag: 00000000
+    distance: 00000000
+    day: 00000000
   - id: 2000003
     comment: "\u6D4B\u8BD53"
-    oil: 
-    water: 
-    hp: 
-    knowledge: 
-    luck: 
-    bag: 
-    distance: 
-    day: 
+    oil: 00000000
+    water: 01000000
+    hp: 00000000
+    knowledge: 00000000
+    luck: 00000000
+    bag: 00000000
+    distance: 00000000
+    day: 00000000
