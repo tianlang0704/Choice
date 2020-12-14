@@ -16,7 +16,10 @@ public class GameUILogic : UILogicBase<GameUILogic>
         uiRoot.i<Button>("Ex_导游").onClick.AddListener(()=>{
             CommonFlowLogic.I.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (ans) => {
                 if (ans == 0) {
-                    TurnFLowLogic.I.ShowTurnDialog();
+                    var isDead = CommonFlowLogic.I.CheckAndNotifyDead();
+                    if(!isDead) {
+                        TurnFLowLogic.I.ShowTurnDialog();
+                    }
                 }
             }, "YES", "NO");
         });
