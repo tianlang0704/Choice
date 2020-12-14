@@ -6,40 +6,41 @@ using System.Linq;
 public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
     public List<AttributeType> DisplayAttrTypes = new List<AttributeType>() {
-        AttributeType.Hp,
-        AttributeType.Oil,
-        AttributeType.Water,
-        AttributeType.Knowledge,
+        AttributeType.Mood,
+        AttributeType.HP,
+        AttributeType.Stamina,
+        AttributeType.Gold,
     };
 
     public List<AttributeType> DeadlyAttrTypes = new List<AttributeType>() {
-        AttributeType.Hp,
-        AttributeType.Oil,
-        AttributeType.Water,
-        AttributeType.Knowledge,
+        AttributeType.Mood,
+        AttributeType.HP,
+        AttributeType.Stamina,
+        AttributeType.Gold,
     };
+
 
     public List<float> DisplayAttrData {
         get { 
-            return AttributeDataSystem.Instance.DataList
-                .Where((attr, idx) => DisplayAttrTypes.Contains((AttributeType)idx))
-                .Select((attr) => attr.floatValue)
+            return DataSystem.Instance.DataDic
+                .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
+                .Select((attrKvp) => (float)attrKvp.Value)
                 .ToList(); 
         }
     }
 
     public List<float> DisplayAttrDataChange {
         get { 
-            return AttributeDataSystem.Instance.DataChange
-                .Where((attr, idx) => DisplayAttrTypes.Contains((AttributeType)idx))
-                .Select((attr) => attr.floatValue)
+            return DataSystem.Instance.DataChange
+                .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
+                .Select((attrKvp) => (float)attrKvp.Value)
                 .ToList(); 
         }
     }
 
     protected void Awake()
     {
-        
+
     }
 
     // Start is called before the first frame update
@@ -64,9 +65,22 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     {
         var attrTypes = System.Enum.GetValues(typeof(AttributeType));
         foreach (int type in attrTypes) {
-            var attrData = AttributeDataSystem.Instance.GetAttrDataByType(type);
-            if (IsAttrTypeDeadly((AttributeType)type) && attrData.floatValue <= 0) return true;
+            var attrData = DataSystem.Instance.GetAttrDataByType(type);
+            if (IsAttrTypeDeadly((AttributeType)type) && attrData <= 0) return true;
         }
         return false;
+    }
+
+    public void Init()
+    {
+        // 初始化显示属性
+        foreach (var type in DisplayAttrTypes) {
+            DataSystem.I.SetAttrDataByType(type, 10);
+        }
+        // 初始化其他属性
+        DataSystem.I.SetAttrDataByType(AttributeType.Bag, 5);
+        DataSystem.I.SetAttrDataByType(AttributeType.Luck, 0);
+        DataSystem.I.SetAttrDataByType(AttributeType.Distance, 0);
+        DataSystem.I.SetAttrDataByType(AttributeType.Day, 0);
     }
 }

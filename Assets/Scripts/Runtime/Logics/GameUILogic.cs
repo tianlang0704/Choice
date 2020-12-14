@@ -14,16 +14,16 @@ public class GameUILogic : UILogicBase<GameUILogic>
     void Start()
     {
         uiRoot.i<Button>("Ex_导游").onClick.AddListener(()=>{
-            CommonFlowLogic.Instance.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (ans) => {
+            CommonFlowLogic.I.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (ans) => {
                 if (ans == 0) {
-                    GameFlowLogic.Instance.ShowRandomDialog();
+                    TurnFLowLogic.I.ShowTurnDialog();
                 }
             }, "YES", "NO");
         });
         uiRoot.i<Button>("Ex_小僧").onClick.AddListener(()=>{
-            CommonFlowLogic.Instance.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (ans) => {
+            CommonFlowLogic.I.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (ans) => {
                 if (ans == 0) {
-                    CommonFlowLogic.Instance.Town();
+                    CommonFlowLogic.I.Town();
                 }
             }, "YES", "NO");
         });
@@ -37,21 +37,21 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
     public void UpdateView() {
         // 更新现在值
-        var curDataArr = AttributesLogic.Instance.DisplayAttrData;
+        var curDataArr = AttributesLogic.I.DisplayAttrData;
         foreach (int type in System.Enum.GetValues(typeof(AttributeType))) {
             if (type >= curDataArr.Count) break;
             var curValue = curDataArr[type];
             UpdateResource((AttributeType)type, curValue);
         }
         // 更新改变值
-        var changeDataArr = AttributesLogic.Instance.DisplayAttrDataChange;
+        var changeDataArr = AttributesLogic.I.DisplayAttrDataChange;
         foreach (int type in System.Enum.GetValues(typeof(AttributeType))) {
             if (type >= curDataArr.Count) break;
             var changeValue = changeDataArr[type];
             UpdateChangeResource((AttributeType)type, changeValue);
         }
         // 更新场景
-        var sceneName = GameScenesLogic.Instance.GetCurrentSceneName();
+        var sceneName = GameScenesLogic.I.GetCurrentSceneName();
         uiRoot.i<TextMeshProUGUI>("Ex_场景").text = "场景:" + sceneName;
     }
 
@@ -59,13 +59,13 @@ public class GameUILogic : UILogicBase<GameUILogic>
     {
         // 获取UI
         TextMeshProUGUI text = null;
-        if (type == AttributeType.Oil) {
+        if (type == AttributeType.HP) {
             text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_增减");
-        }else if (type == AttributeType.Water) {
+        }else if (type == AttributeType.Stamina) {
             text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_增减");
-        }else if (type == AttributeType.Hp) {
+        }else if (type == AttributeType.Mood) {
             text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_增减");
-        }else if (type == AttributeType.Knowledge) {
+        }else if (type == AttributeType.Gold) {
             text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_增减");
         }
 
@@ -92,13 +92,13 @@ public class GameUILogic : UILogicBase<GameUILogic>
     public void UpdateResource(AttributeType type, float amount) {
         // 获取UI
         TextMeshProUGUI text = null;
-        if (type == AttributeType.Oil) {
+        if (type == AttributeType.HP) {
             text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_现在");
-        }else if (type == AttributeType.Water) {
+        }else if (type == AttributeType.Stamina) {
             text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_现在");
-        }else if (type == AttributeType.Hp) {
+        }else if (type == AttributeType.Mood) {
             text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_现在");
-        }else if (type == AttributeType.Knowledge) {
+        }else if (type == AttributeType.Gold) {
             text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_现在");
         }
 

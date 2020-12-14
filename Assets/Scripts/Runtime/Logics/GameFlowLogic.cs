@@ -1,53 +1,49 @@
 ﻿// using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
 {
     // Start is called before the first frame update
-    IEnumerator Start()
+    void Start()
     {
-        ShowRandomDialog();
-        yield break;
+        StartGameLoop();
+    }
+
+    // 每次游戏开始
+    void StartGameLoop()
+    {
+        StartCoroutine(GameLoop());
+    }
+
+    void StopGameLoop()
+    {
+        StopCoroutine(GameLoop());
+    }
+
+    IEnumerator GameLoop()
+    {
+        // 初始化
+        DataSystem.I.Init();        // 初始化数据
+        AttributesLogic.I.Init();   // 初始化属性
+        GameScenesLogic.I.Init();   // 初始化场景
+        DayFlowLogic.I.Init();      // 初始化日循环
+        while(!AttributesLogic.I.IsDead())
+        {
+            // 开始一天
+            yield return DayFlowLogic.I.DayLoop();
+            // 刷新一天
+            DurFreSystem.I.UpdateDay();
+        }
+        // 检查和提示死亡
+        CommonFlowLogic.I.CheckAndNotifyDead();
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-
-    private bool CheckDead()
-    {
-        var isDead = AttributesLogic.Instance.IsDead();
-        if (isDead) {
-            CommonFlowLogic.Instance.ShowDialog("哦豁! 死求了啊. 完了撒. <color=#FF0000FF>回城</color>!!!", (answIdx) => {
-                if (answIdx == 0) {
-                    CommonFlowLogic.Instance.Town();
-                }
-            }, "YES", "NO");
-        }
-        return isDead;
-    }
-
-    public void ShowRandomDialog() {
-         // 检查死亡
-        var isDead = CheckDead();
-        if (isDead) return;
-        // 抽卡
-        var card = CardPoolLogic.Instance.GetRandomCard();
-        CommonFlowLogic.Instance.ShowDialog(card.content, (ansNum) => {
-            // 获取答案
-            Answer answer = card.answers[ansNum];
-            // 改变数值
-            AttributeDataSystem.Instance.ApplyChangeToData(answer.influenceList);
-            // 更新界面
-            GameUILogic.Instance.UpdateView();
-            // 显示新提问
-            StartCoroutine(CoroutineUtils.DelaySeconds(() => {
-                ShowRandomDialog(); 
-            }, 0.1f));
-        }, card.answers[0].content, card.answers[1].content, card.answers[2].content, card.answers[3].content);
     }
 }

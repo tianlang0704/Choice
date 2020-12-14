@@ -23,7 +23,6 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 
     public void StartGame()
     {
-        AttributeDataSystem.Instance.InitData();
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
     }
 
@@ -60,5 +59,19 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             var arg = list[i];
             dialog.ShowAnsw(i, arg);
         }
+    }
+
+    public bool CheckAndNotifyDead()
+    {
+        // 如果死亡, 显示死亡提示
+        var isDead = AttributesLogic.Instance.IsDead();
+        if (isDead) {
+            CommonFlowLogic.Instance.ShowDialog("哦豁! 死求了啊. 完了撒. <color=#FF0000FF>回城</color>!!!", (answIdx) => {
+                if (answIdx == 0) {
+                    CommonFlowLogic.Instance.Town();
+                }
+            }, "YES", "NO");
+        }
+        return isDead;
     }
 }

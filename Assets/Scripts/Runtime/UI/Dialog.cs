@@ -67,7 +67,7 @@ public class Dialog : UILogicBase<Dialog>
         if (i >= answButtons.Count || string.IsNullOrEmpty(content)) return;
         var button = answButtons[i];
         button.gameObject.SetActive(true);
-        if (i < 2 || i >= answButtons.Count) return; // 0 和 1 默认是Yes 和 NO
+        if (i >= answButtons.Count) return;
         var text = button.i<TextMeshProUGUI>("Ex_Text");
         if (text == null) return;
         text.text = content;

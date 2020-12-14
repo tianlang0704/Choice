@@ -7,6 +7,11 @@ public class SingletonBehaviour<T> : MonoBehaviour where T: MonoBehaviour
     // Check to see if we're about to be destroyed.
     private static object m_Lock = new object();
     private static T m_Instance;
+
+    public static T I
+    {
+        get { return Instance; }
+    }
  
     /// <summary>
     /// Access singleton instance through this propriety.

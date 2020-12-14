@@ -10,10 +10,19 @@ public class SceneData {
 
 public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 {
+    Dictionary<int, SceneData> allScenes;
     private SceneData current;
-    GameScenesLogic()
+    void Awake()
     {
-        Init();
+        allScenes = new Dictionary<int, SceneData>() {
+            {
+                20001,
+                new SceneData(){
+                    name = "路",
+                    influence = DataInfluenceSystem.I.GetAttrInfluences(0, 2),
+                }
+            },
+        };
     }
     // Start is called before the first frame update
     void Start()
@@ -27,17 +36,22 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
         
     }
 
+    private void SyncData()
+    {
+        var sceneID = DataSystem.I.GetAttrDataByType<int>(AttributeType.Scene);
+        current = allScenes[sceneID];
+    }
     public void Init() 
     {
-        current = new SceneData(){
-            name = "路",
-            influence = new List<AttrInfluence>(){
-                new AttrInfluence(){
-                    attributeType = AttributeType.Luck,
-                    attr = new Attr() {floatValue = 2f}
-                }
-            }
-        };
+        DataSystem.I.SetAttrDataByType(AttributeType.Scene, 20001);
+        SyncData();
+    }
+
+    public void InitIfNot()
+    {
+        if (current == null) {
+            current = allScenes[20001];
+        }
     }
 
     public string GetCurrentSceneName() 
