@@ -30,11 +30,13 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         AttributesLogic.I.Init();   // 初始化属性
         GameScenesLogic.I.Init();   // 初始化场景
         DayFlowLogic.I.Init();      // 初始化日循环
+        DataSystem.I.SetAttrDataByType(AttributeType.Day, 1);
         while(!AttributesLogic.I.IsDead())
         {
             // 开始一天
             yield return DayFlowLogic.I.DayLoop();
             // 刷新一天
+            DayFlowLogic.I.IncreaseDay();
             DurFreSystem.I.UpdateDay();
         }
         // 检查和提示死亡

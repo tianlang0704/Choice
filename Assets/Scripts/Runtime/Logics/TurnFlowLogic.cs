@@ -39,6 +39,12 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         nextTurn = true;
     }
 
+    public void IncreaseTurn()
+    {
+        var curTurn = DataSystem.I.GetAttrDataByType(AttributeType.CurrentTurn);
+        DataSystem.I.SetAttrDataByType(AttributeType.CurrentTurn, curTurn + 1);
+    }
+
     public void ShowTurnDialog() {
         // 抽卡
         var card = CardPoolLogic.Instance.GetCardForTurn();

@@ -53,9 +53,20 @@ public class GameUILogic : UILogicBase<GameUILogic>
             var changeValue = changeDataArr[type];
             UpdateChangeResource((AttributeType)type, changeValue);
         }
+        // 更新日程
+        var curTurn = DataSystem.I.GetAttrDataByType<int>(AttributeType.CurrentTurn);
+        var maxTurn = DataSystem.I.GetAttrDataByType<int>(AttributeType.MaxTurn);
+        uiRoot.i<Slider>("Ex_进度条").value = (float)curTurn / (float)maxTurn;
         // 更新场景
+        string outStr = "";
         var sceneName = GameScenesLogic.I.GetCurrentSceneName();
-        uiRoot.i<TextMeshProUGUI>("Ex_场景").text = "场景:" + sceneName;
+        outStr += "场景:" + sceneName;
+        // 更新天数
+        outStr += "\n天: " + DataSystem.I.GetAttrDataByType<int>(AttributeType.Day);
+        // 更新路程
+        outStr += "\n路程: " + DataSystem.I.GetAttrDataByType<int>(AttributeType.Distance);
+        // 输出信息
+        uiRoot.i<TextMeshProUGUI>("Ex_场景").text = outStr;
     }
 
     public void UpdateChangeResource(AttributeType type, float amount) 

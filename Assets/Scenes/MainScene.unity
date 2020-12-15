@@ -1730,6 +1730,8 @@ MonoBehaviour:
     value: {fileID: 1467554821}
   - name: "Ex_\u573A\u666F"
     value: {fileID: 896096835}
+  - name: "Ex_\u8FDB\u5EA6\u6761"
+    value: {fileID: 1530345416}
 --- !u!114 &1120240324
 MonoBehaviour:
   m_ObjectHideFlags: 0

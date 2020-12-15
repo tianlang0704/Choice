@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
 {
-    private bool nextTurn = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,13 +38,21 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
             yield return TurnFLowLogic.I.TurnLoop();
             if (AttributesLogic.Instance.IsDead()) yield break;
             // 刷新回合记录
-            curTurn += 1;
-            DataSystem.I.SetAttrDataByType(AttributeType.CurrentTurn, curTurn);
+            TurnFLowLogic.I.IncreaseTurn();
+            curTurn = DataSystem.I.GetAttrDataByType<int>(AttributeType.CurrentTurn);
             maxTurn = DataSystem.I.GetAttrDataByType<int>(AttributeType.MaxTurn);
             DurFreSystem.I.UpdateTurn();
+            // 更新界面
+            GameUILogic.Instance.UpdateView();
             // 稍微等下下再进入下一回合
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    public void IncreaseDay()
+    {
+        var curDay = DataSystem.I.GetAttrDataByType(AttributeType.Day);
+        DataSystem.I.SetAttrDataByType(AttributeType.Day, curDay + 1);
     }
 
     private bool ShowDayEndDialog()
