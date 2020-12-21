@@ -37,7 +37,18 @@ public class Attr
     }
     public T GetValue<T>()
     {
-        return (T)_value;
+        object value = null;
+        if (!(_value is T)){
+            if (typeof(T) == typeof(int) && _value is float) {
+                value = Convert.ToInt32(_value);
+            } else if (typeof(T) == typeof(float) && _value is int) {
+                value = Convert.ToSingle(_value);
+            }
+        } else {
+            value = _value;
+        }
+        if (value == null) return default;
+        return (T)value;
     }
     public void SetCustomValue<T>(T value) where T:class
     {

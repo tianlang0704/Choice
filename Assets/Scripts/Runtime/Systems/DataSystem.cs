@@ -16,9 +16,12 @@ public enum AttributeType {
     Weather,            // 天气
     CurrentTurn,        // 现在回合数
     MaxTurn,            // 总回合数
-    DayCards,           // 一天卡池
     _ValueTypeMax = 999, // 数值类型属性
     CardWeight,         // 卡片附加几率
+    DayCards,           // 一天卡池ID
+    Goods,              // 道具ID
+    Equips,             // 装备ID
+    Relics,             // 遗物ID
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>
@@ -65,29 +68,48 @@ public class DataSystem : SingletonBehaviour<DataSystem>
             dataChange[(AttributeType)type] = new Attr();
         }
     }
-
+    // 属性是否有值
     public bool IsAttrExist(AttributeType type)
     {
         if (!dataDic.ContainsKey(type)) return false;
         return true;
     }
-
+    // 获取原属性
     public Attr GetAttrDataByType(int type)
     {
         return GetAttrDataByType((AttributeType)type);
     }
-
+    // 获取原属性
     public Attr GetAttrDataByType(AttributeType type)
     {
         if (!(IsAttrExist(type))) return null;
         return dataDic[(AttributeType)type];
     }
-
+    // 获取原值
+    public T GetAttrDataByType<T>(int type)
+    {
+        return GetAttrDataByType<T>((AttributeType)(type));
+    }
+    // 获取原值
+    public T GetAttrDataByType<T>(AttributeType type)
+    {
+        var attr = GetAttrDataByType(type);
+        return attr.GetValue<T>();
+    }
+    // 获取包含所有影响的值
+    public T CopyAttrDataWithInfluenceByType<T>(AttributeType type)
+    {
+        var attr = new Attr();
+        DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
+        DataInfluenceSystem.I.ApplyInfluence(attr, GetInfluenceFromType(type));
+        return attr.GetValue<T>();
+    }
+    // 把数值转换成影响
     public AttrInfluence GetInfluenceFromType(int type)
     {
         return GetInfluenceFromType((AttributeType)type);
     }
-
+    // 把数值转换成影响
     public AttrInfluence GetInfluenceFromType(AttributeType type)
     {
         var attr = GetAttrDataByType(type);
@@ -96,31 +118,17 @@ public class DataSystem : SingletonBehaviour<DataSystem>
             attr = attr,
         };
     }
-
-    public T GetAttrDataByType<T>(AttributeType type)
-    {
-        var attr = GetAttrDataByType(type);
-        return attr.GetValue<T>();
-    }
-
-    public T CopyAttrDataWithInfluenceByType<T>(AttributeType type)
-    {
-        var attr = new Attr();
-        DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
-        DataInfluenceSystem.I.ApplyInfluence(attr, GetInfluenceFromType(type));
-        return attr.GetValue<T>();
-    }
-
+    // 设置值
     public void SetAttrDataByType<T>(int type, T value)
     {
         SetAttrDataByType((AttributeType)type, value);
     }
-
+    // 设置值
     public void SetAttrDataByType<T>(AttributeType type, T value)
     {
         dataDic[type].SetValue<T>(value);
     }
-
+    // 直接应用影响
     public void ApplyInfluenceList(List<AttrInfluence> list)
     {
         foreach (var influence in list)

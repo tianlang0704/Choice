@@ -12,6 +12,7 @@ public enum Logic {
 public class LogicExecution {
     public Logic logic;
     public List<object> paramList;
+    public ConditionGroup conditionGroup;
 }
 
 public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
@@ -31,11 +32,15 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     public List<LogicExecution> GetLogicList(params object[] paramList)
     {
         var list = new List<LogicExecution>();
-        for (int i = 0; i < paramList.Length; i+=2)
+        for (int i = 0; i < paramList.Length; i+=3)
         {
             Logic logic = (Logic)paramList[i];
             List<object> param = new List<object>() {paramList[i+1]};
-            list.Add(new LogicExecution(){logic = logic, paramList = param});
+            ConditionGroup cg = paramList[i+2] as ConditionGroup;
+            list.Add(new LogicExecution(){
+                logic = logic, 
+                paramList = param,
+                conditionGroup = cg});
         }
         return list;
     }
@@ -50,6 +55,9 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
 
     public void ExecuteCommonLogic(LogicExecution le)
     {
+        if (le.conditionGroup != null) {
+            if (!ConditionSystem.I.IsConditionGroupMet(le.conditionGroup)) return;
+        }
         ExecuteCommonLogic(le.logic, le.paramList.ToArray());
     }
 

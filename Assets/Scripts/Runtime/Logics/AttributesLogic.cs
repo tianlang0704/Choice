@@ -22,7 +22,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 
     public List<float> DisplayAttrData {
         get { 
-            return DataSystem.Instance.DataDic
+            return DataSystem.I.DataDic
                 .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
                 .Select((attrKvp) => (float)attrKvp.Value)
                 .ToList(); 
@@ -31,7 +31,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 
     public List<float> DisplayAttrDataChange {
         get { 
-            return DataSystem.Instance.DataChange
+            return DataSystem.I.DataChange
                 .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
                 .Select((attrKvp) => (float)attrKvp.Value)
                 .ToList(); 
