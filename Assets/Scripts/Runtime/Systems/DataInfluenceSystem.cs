@@ -28,6 +28,11 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         
     }
 
+    public void Init()
+    {
+        influDic.Clear();
+    }
+
     float GetRandomAttr(int [] randArr)
     {
         return GetRandomAttr(randArr.Select((e)=>(float)e).ToList());    

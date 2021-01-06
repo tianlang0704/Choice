@@ -57,7 +57,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Id = 2,
                 Type = ItemType.Goods,
                 Name = "护身符",
-                Desc = "地狱消耗1次",
+                Desc = "抵御消耗1次",
                 HaveLogicList = CommonLogicSystem.I.GetLogicList(),
                 UseLogicList = CommonLogicSystem.I.GetLogicList(),
                 CostType = DataType.Gold,
@@ -79,7 +79,21 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "万能车票",
                 Desc = "重新选择入口",
                 HaveLogicList = CommonLogicSystem.I.GetLogicList(),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(
+                    Logic.ShowSelectScene
+                ),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = 5,
+                Type = ItemType.Goods,
+                Name = "尿遁符",
+                Desc = "跳过本回合",
+                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(
+                    Logic.SkipTurn
+                ),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },

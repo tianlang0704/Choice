@@ -16,21 +16,21 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
     {
         AllScenes = new Dictionary<int, SceneData>() {
             {
-                20001,
+                1,
                 new SceneData(){
                     name = "路",
                     influence = DataInfluenceSystem.I.GetAttrInfluences(0, 2),
                 }
             },
             {
-                20002,
+                2,
                 new SceneData(){
                     name = "草原",
                     influence = DataInfluenceSystem.I.GetAttrInfluences(0, 0),
                 }
             },
             {
-                20003,
+                3,
                 new SceneData(){
                     name = "地狱",
                     influence = DataInfluenceSystem.I.GetAttrInfluences(0, -5),
@@ -52,19 +52,15 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 
     public void Init() 
     {
-        SetSceneById(20001);
-    }
-
-    public void InitIfNot()
-    {
-        if (current == null) {
-            current = AllScenes[20001];
-        }
+        SetSceneById(1);
     }
 
     private void SyncData()
     {
         var sceneID = DataSystem.I.GetAttrDataByType<int>(DataType.Scene);
+        if (current != null) {
+            
+        }
         current = AllScenes[sceneID];
     }
 

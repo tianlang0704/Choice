@@ -8,22 +8,12 @@ using System;
 
 public class Dialog : UILogicBase<Dialog>
 {
-    List<Button> answButtons = new List<Button>();
+    List<UIViewBase> answButtons = new List<UIViewBase>();
     Action<int> cb = null;
     // Start is called before the first frame update
     override protected void Awake()
     {
         base.Awake();
-        answButtons.Add(uiRoot.i<Button>("Ex_A1"));
-        answButtons.Add(uiRoot.i<Button>("Ex_A2"));
-        answButtons.Add(uiRoot.i<Button>("Ex_A3"));
-        answButtons.Add(uiRoot.i<Button>("Ex_A4"));
-        for (int i = 0; i < answButtons.Count; i++)
-        {
-            var button = answButtons[i];
-            var index = i; //i不能被闭包捕获
-            button.onClick.AddListener(() => {OnCallback(index);});
-        }
     }
     void Start()
     {
@@ -55,21 +45,30 @@ public class Dialog : UILogicBase<Dialog>
 
     public void ResetAllAnsws()
     {
-        foreach (var button in answButtons)
+        foreach (var answ in answButtons)
         {
-            // button.onClick.RemoveAllListeners();
-            button.gameObject.SetActive(false);
+            answ.i<Button>("Ex_弹窗答案").onClick.RemoveAllListeners();
+            ObjectPoolManager.I.RecycleGameObject(answ.gameObject);
         }
+        answButtons.Clear();
     }
 
-    public void ShowAnsw(int i, string content)
+    public void ShowAnsw(string content)
     {
-        if (i >= answButtons.Count || string.IsNullOrEmpty(content)) return;
-        var button = answButtons[i];
-        button.gameObject.SetActive(true);
-        if (i >= answButtons.Count) return;
-        var text = button.i<TextMeshProUGUI>("Ex_Text");
-        if (text == null) return;
+        if (string.IsNullOrEmpty(content)) return;
+        // 加载答案按钮
+        var answ = ObjectPoolManager.Instance.GetGameObject<UIViewBase>("Prefabs/弹窗答案");
+        var parent = uiRoot.i<RectTransform>("Ex_答案框");
+        answ.transform.SetParent(parent, false);
+        // 设置文字
+        var text = answ.i<TextMeshProUGUI>("Ex_Text");
         text.text = content;
+        // 添加按钮回调
+        var index = answButtons.Count;
+        answ.i<Button>("Ex_弹窗答案").onClick.AddListener(() => {
+            OnCallback(index);
+        });
+        // 添加到答案列表
+        answButtons.Add(answ);
     }
 }

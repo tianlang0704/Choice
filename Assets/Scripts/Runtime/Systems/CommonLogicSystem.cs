@@ -12,6 +12,7 @@ public enum Logic {
     UseItem,            // 使用道具
     SkipTurn,           // 跳过回合
     SetScene,           // 设置场景
+    ShowSelectScene,    // 显示选择场景
 }
 
 public class LogicExecution {
@@ -40,8 +41,11 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         for (int i = 0; i < paramList.Length; i+=3)
         {
             Logic logic = (Logic)paramList[i];
-            List<object> param = new List<object>() {paramList[i+1]};
-            Condition condition = paramList[i+2] as Condition;
+            var p = i+1 >= paramList.Count() ? null : paramList[i+1];
+            List<object> param = new List<object>();
+            if (p != null) param.Add(p);
+            var c = i+2 >= paramList.Count() ? null : paramList[i+2];
+            Condition condition = c as Condition;
             list.Add(new LogicExecution(){
                 logic = logic, 
                 paramList = param,
@@ -79,6 +83,12 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
             AddItem(paramList);
         } else if (logic == Logic.UseItem) {
             UseItem(paramList);
+        } else if (logic == Logic.SkipTurn) {
+            SkipTurn(paramList);
+        } else if (logic == Logic.SetScene) {
+            SetScene(paramList);
+        } else if (logic == Logic.ShowSelectScene) {
+            ShowSelectSceneDialog(paramList);
         }
     }
 
@@ -125,9 +135,10 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     
     public void SkipTurn(params object[] paramList)
     {
-        if (paramList.Length <= 0) return;
-        var turnNum = (int)paramList[0];
-        TurnFLowLogic.I.SkipTurn();
+        var turnNum = 1;
+        if (paramList.Length > 0)
+            turnNum = (int)paramList[0];
+        TurnFLowLogic.I.SkipTurn(turnNum);
     }
 
     public void SetScene(params object[] paramList)
@@ -135,5 +146,10 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         if (paramList.Length <= 0) return;
         var id = (int)paramList[0];
         GameScenesLogic.I.SetSceneById(id);
+    }
+
+    public void ShowSelectSceneDialog(params object[] paramList)
+    {
+        CommonFlowLogic.I.ShowSelectSceneDialog();
     }
 }

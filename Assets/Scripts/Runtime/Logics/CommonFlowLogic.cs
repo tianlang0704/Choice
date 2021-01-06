@@ -58,7 +58,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         dialog.ResetAllAnsws();
         for (int i = 0; i < list.Length; i++) {
             var arg = list[i];
-            dialog.ShowAnsw(i, arg);
+            dialog.ShowAnsw(arg);
         }
     }
 
@@ -83,7 +83,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         return isDead;
     }
 
-    public void ShowSceneChoice()
+    public void ShowSelectSceneDialog()
     {
         if (dialog == null) {
             dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
@@ -93,13 +93,17 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         dialog.transform.SetParent(root.transform, false);
         dialog.SetContent("选择一个新场景");
         dialog.SetCB((b) => {
-            GameScenesLogic.I.SetSceneById(20001+b);
+            // 更新场景
+            GameScenesLogic.I.SetSceneById(1+b);
+            // 重新刷新卡牌
+            CardPoolLogic.I.ShuffleDayCards();
+            TurnFLowLogic.I.NextTurn();
         });
         dialog.ResetAllAnsws();
         var nameList = GameScenesLogic.I.AllScenes.Select((s)=>s.Value.name).ToList();
         for (int i = 0; i < nameList.Count; i++) {
             var arg = nameList[i];
-            dialog.ShowAnsw(i, arg);
+            dialog.ShowAnsw(arg);
         }
     }
 }

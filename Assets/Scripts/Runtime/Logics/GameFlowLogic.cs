@@ -31,11 +31,12 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
     IEnumerator GameLoop()
     {
         // 初始化
-        DataSystem.I.Init();        // 初始化数据
-        AttributesLogic.I.Init();   // 初始化属性
-        GameScenesLogic.I.Init();   // 初始化场景
-        ItemLogic.I.Init();         // 初始化道具
-        DayFlowLogic.I.Init();      // 初始化日循环
+        DataSystem.I.Init();            // 初始化数据
+        DataInfluenceSystem.I.Init();   // 初始化数据影响
+        AttributesLogic.I.Init();       // 初始化属性
+        GameScenesLogic.I.Init();       // 初始化场景
+        ItemLogic.I.Init();             // 初始化道具
+        DayFlowLogic.I.Init();          // 初始化日循环
         DataSystem.I.SetAttrDataByType(DataType.Day, 1);
         while(IsGameContinue())
         {

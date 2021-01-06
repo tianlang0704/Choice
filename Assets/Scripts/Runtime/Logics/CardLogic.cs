@@ -8,6 +8,7 @@ public class Card
     public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
     public int Id;
     public CardType type = CardType.Basic;
+    public Condition condition;
     public string content = "";
     public float baseWeight = 1;
     public List<Answer> answers;

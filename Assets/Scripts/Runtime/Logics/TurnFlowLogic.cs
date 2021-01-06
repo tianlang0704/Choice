@@ -61,16 +61,27 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     public void ShowTurnDialog() {
         // 抽卡
         var card = CardPoolLogic.I.RerollTurnCard();
-        CommonFlowLogic.I.ShowDialog(card.content, (ansNum) => {
-            // 获取答案
-            Answer answer = card.answers[ansNum];
-            // 执行逻辑列表
-            CommonLogicSystem.I.ExecuteCommonLogic(answer.logicList);
-            // 更新界面
-            GameUILogic.I.UpdateView();
-            // 下一回合
-            NextTurn();
-        }, card.answers.Select((a)=>a.content).ToArray());
+        // 处理没有卡用了
+        // if (card == null) {
+
+        // }
+        CommonFlowLogic.I.ShowDialog(
+            card.content, 
+                (ansNum) => {
+                // 获取答案
+                Answer answer = card.answers[ansNum];
+                // 执行逻辑列表
+                CommonLogicSystem.I.ExecuteCommonLogic(answer.logicList);
+                // 更新界面
+                GameUILogic.I.UpdateView();
+                // 下一回合
+                NextTurn();
+            }, 
+            card.answers
+                .Where((a)=>ConditionSystem.I.IsConditionMet(a.condition))
+                .Select((a)=>a.content)
+                .ToArray()
+        );
     }
 
     // 跳过一回合

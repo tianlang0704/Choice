@@ -18,6 +18,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         allCards = new List<Card>(){
             new Card() {
                 Id = 1,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "炎炎夏日，路中间趴着一条黑狗，抬头望着你.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -53,6 +54,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             new Card() {
                 Id = 2,
                 baseWeight = 0,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "这只狗子, 在后面一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -74,6 +76,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             new Card() {
                 Id = 3,
                 baseWeight = 0,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "这只狗子, 在后面一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -102,6 +105,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             new Card() {
                 Id = 4,
                 baseWeight = 0,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "黑狗吊着一袋不知道什么东西, 向你跑了过来.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -126,6 +130,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             },
             new Card() {
                 Id = 5,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "路边有个凉茶店.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -144,6 +149,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             },
             new Card() {
                 Id = 6,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "你走着走着, 发现有个野孩子, 一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -177,6 +183,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             },
             new Card() {
                 Id = 7,
+                condition = new Condition() {Formula = "Scene == 1"},
                 content = "路过一个村庄, 一伙刁民将你拦下. ",
                 answers = new List<Answer>() {
                     new Answer() {
@@ -227,7 +234,10 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
 
     public void ShuffleDayCards()
     {
-        var allCardsIdList = allCards.Select((c)=>c.Id).ToList();
+        var allCardsIdList = allCards
+                                .Where((c) => ConditionSystem.I.IsConditionMet(c.condition))
+                                .Select((c) => c.Id)
+                                .ToList();
         DataSystem.I.SetAttrDataByType(DataType.DayCards, allCardsIdList);
         SyncDayCardsToData();
     }
