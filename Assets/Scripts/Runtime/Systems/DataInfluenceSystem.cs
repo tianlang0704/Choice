@@ -7,7 +7,7 @@ using UnityEngine;
 public class AttrInfluence 
 {
     public int instenceId;
-    public AttributeType attributeType;
+    public DataType attributeType;
     public Attr attr;
     public bool isAdd = true;
     public DurationAndFrequency durFre = null;
@@ -15,7 +15,7 @@ public class AttrInfluence
 
 public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
 {
-    Dictionary<AttributeType, List<AttrInfluence>> influDic = new Dictionary<AttributeType, List<AttrInfluence>>();
+    Dictionary<DataType, List<AttrInfluence>> influDic = new Dictionary<DataType, List<AttrInfluence>>();
     // Start is called before the first frame update
     void Start()
     {
@@ -76,14 +76,14 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         float Luck = 0, float Bag = 0, float Distance = 0, float Day = 0)
     {
         var infList = new List<AttrInfluence>() {
-            new AttrInfluence() {attributeType = AttributeType.HP, attr = Hp},
-            new AttrInfluence() {attributeType = AttributeType.Stamina, attr = Stamina},
-            new AttrInfluence() {attributeType = AttributeType.Mood, attr = Mood},
-            new AttrInfluence() {attributeType = AttributeType.Gold, attr = Gold},
-            new AttrInfluence() {attributeType = AttributeType.Luck, attr = Luck},
-            new AttrInfluence() {attributeType = AttributeType.Bag, attr = Bag},
-            new AttrInfluence() {attributeType = AttributeType.Distance, attr = Distance},
-            new AttrInfluence() {attributeType = AttributeType.Day, attr = Day},
+            new AttrInfluence() {attributeType = DataType.HP, attr = Hp},
+            new AttrInfluence() {attributeType = DataType.Stamina, attr = Stamina},
+            new AttrInfluence() {attributeType = DataType.Mood, attr = Mood},
+            new AttrInfluence() {attributeType = DataType.Gold, attr = Gold},
+            new AttrInfluence() {attributeType = DataType.Luck, attr = Luck},
+            new AttrInfluence() {attributeType = DataType.Bag, attr = Bag},
+            new AttrInfluence() {attributeType = DataType.Distance, attr = Distance},
+            new AttrInfluence() {attributeType = DataType.Day, attr = Day},
         };
         return infList;
     }
@@ -100,7 +100,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         var attr = new Attr();
         attr.SetCustomValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
-            attributeType = AttributeType.CardWeight,
+            attributeType = DataType.CardWeight,
             attr = attr,
             durFre = new DurationAndFrequency() { turn = turn }
         };
@@ -109,6 +109,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     // 添加一个影响
     public void AddInfluence(List<AttrInfluence> influenceList)
     {
+        if (influenceList == null) return;
         influenceList.ForEach((influ) => {
             if (!influDic.ContainsKey(influ.attributeType)) {
                 influDic[influ.attributeType] = new List<AttrInfluence>();
@@ -122,6 +123,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     // 移除一个影响
     public void RemoveInfluence(List<AttrInfluence> influenceList)
     {
+        if (influenceList == null) return;
         influenceList.ForEach((influ) => {
             if (influDic.ContainsKey(influ.attributeType)) {
                 influDic[influ.attributeType].Remove(influ);
@@ -132,7 +134,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         });
     }
     // 应用系统里某个类型的影响
-    public void ApplyInfluenceByType(Attr baseAttr, AttributeType type)
+    public void ApplyInfluenceByType(Attr baseAttr, DataType type)
     {
         if (!influDic.ContainsKey(type)) return;
         var list = influDic[type];
@@ -157,7 +159,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     public void ApplyChangeToAttr(Attr baseAttr, AttrInfluence influence) 
     {
         var typeInt = (int)influence.attributeType;
-        if(typeInt >= (int)AttributeType._ValueTypeMax) return;
+        if(typeInt >= (int)DataType._ValueTypeMax) return;
         if (influence.attr.Type == Attr.DataType.FLOAT || influence.attr.Type == Attr.DataType.INT) {
             var changeAmount = influence.attr;
             if (!influence.isAdd) {
@@ -172,7 +174,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     // 应用卡片偏重
     public void ApplyChangeToCardWeight(Attr baseAttr, AttrInfluence influence)
     {
-        if (influence.attributeType != AttributeType.CardWeight) return;
+        if (influence.attributeType != DataType.CardWeight) return;
         if (influence.attr.Type != Attr.DataType.CUSTOM) return;
         // 从属性中获取现在表
         Dictionary<int, float> curWeights = baseAttr.GetCustomValue<Dictionary<int, float>>();

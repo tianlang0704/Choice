@@ -5,14 +5,19 @@ using System.Linq;
 using UnityEngine;
 
 public enum Logic {
-    AttrChange = 0,
-    AttrInfluence,
+    AttrChange = 0,     // 永久改变数值
+    AttrChangeShield,   // 永久改变数值, 但是先检查护身符
+    AttrInfluence,      // 暂时影响数值
+    AddItem,            // 添加道具
+    UseItem,            // 使用道具
+    SkipTurn,           // 跳过回合
+    SetScene,           // 设置场景
 }
 
 public class LogicExecution {
     public Logic logic;
     public List<object> paramList;
-    public ConditionGroup conditionGroup;
+    public Condition condition;
 }
 
 public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
@@ -36,11 +41,12 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         {
             Logic logic = (Logic)paramList[i];
             List<object> param = new List<object>() {paramList[i+1]};
-            ConditionGroup cg = paramList[i+2] as ConditionGroup;
+            Condition condition = paramList[i+2] as Condition;
             list.Add(new LogicExecution(){
                 logic = logic, 
                 paramList = param,
-                conditionGroup = cg});
+                condition = condition
+            });
         }
         return list;
     }
@@ -55,8 +61,8 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
 
     public void ExecuteCommonLogic(LogicExecution le)
     {
-        if (le.conditionGroup != null) {
-            if (!ConditionSystem.I.IsConditionGroupMet(le.conditionGroup)) return;
+        if (le.condition != null) {
+            if (!ConditionSystem.I.IsConditionMet(le.condition)) return;
         }
         ExecuteCommonLogic(le.logic, le.paramList.ToArray());
     }
@@ -65,8 +71,14 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     {
         if (logic == Logic.AttrChange) {
             AttrChange(paramList);
+        } else if (logic == Logic.AttrChangeShield) {
+            AttrChangeShield(paramList);
         } else if (logic == Logic.AttrInfluence) {
             AttrInfluence(paramList);
+        } else if (logic == Logic.AddItem) {
+            AddItem(paramList);
+        } else if (logic == Logic.UseItem) {
+            UseItem(paramList);
         }
     }
 
@@ -82,5 +94,46 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         if (paramList.Length <= 0) return;
         var influenceList = paramList[0] as List<AttrInfluence>;
         DataSystem.I.ApplyInfluenceList(influenceList);
+    }
+
+    public void AttrChangeShield(params object[] paramList)
+    {
+        if (paramList.Length <= 0) return;
+        // 检测是否有护身符, 有就使用, 没有就改变数值
+        if (ConditionSystem.I.IsConditionMet(new Condition() {Formula = $"IsHaveItem(2)"})) {
+            ItemLogic.I.ConsumeItem(2, 1);
+        } else {
+            AttrChange(paramList);
+        }
+    }
+
+    public void AddItem(params object[] paramList)
+    {
+        if (paramList.Length <= 0) return;
+        var itemID = (int)paramList[0];
+        int num = (int)(paramList[1] ?? 1);
+        ItemLogic.I.AddItem(itemID, num);
+    }
+
+    public void UseItem(params object[] paramList)
+    {
+        if (paramList.Length <= 0) return;
+        var itemID = (int)paramList[0];
+        int num = (int)(paramList[1] ?? 1);
+        ItemLogic.I.ConsumeItem(itemID, num);
+    }
+    
+    public void SkipTurn(params object[] paramList)
+    {
+        if (paramList.Length <= 0) return;
+        var turnNum = (int)paramList[0];
+        TurnFLowLogic.I.SkipTurn();
+    }
+
+    public void SetScene(params object[] paramList)
+    {
+        if (paramList.Length <= 0) return;
+        var id = (int)paramList[0];
+        GameScenesLogic.I.SetSceneById(id);
     }
 }

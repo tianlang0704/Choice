@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
 using System;
+using System.Linq;
 
 public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 {
@@ -61,6 +62,13 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         }
     }
 
+    public void CloseDialog()
+    {
+        if (dialog == null) return;
+        dialog.gameObject.SetActive(false);
+
+    }
+
     public bool CheckAndNotifyDead()
     {
         // 如果死亡, 显示死亡提示
@@ -73,5 +81,25 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             }, "YES", "NO");
         }
         return isDead;
+    }
+
+    public void ShowSceneChoice()
+    {
+        if (dialog == null) {
+            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
+        }
+        var root = FindObjectOfType<Canvas>();
+        dialog.gameObject.SetActive(true);
+        dialog.transform.SetParent(root.transform, false);
+        dialog.SetContent("选择一个新场景");
+        dialog.SetCB((b) => {
+            GameScenesLogic.I.SetSceneById(20001+b);
+        });
+        dialog.ResetAllAnsws();
+        var nameList = GameScenesLogic.I.AllScenes.Select((s)=>s.Value.name).ToList();
+        for (int i = 0; i < nameList.Count; i++) {
+            var arg = nameList[i];
+            dialog.ShowAnsw(i, arg);
+        }
     }
 }

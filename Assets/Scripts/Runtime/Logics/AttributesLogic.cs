@@ -5,26 +5,27 @@ using System.Linq;
 
 public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
-    public List<AttributeType> DisplayAttrTypes = new List<AttributeType>() {
-        AttributeType.Mood,
-        AttributeType.HP,
-        AttributeType.Stamina,
-        AttributeType.Gold,
+    public List<DataType> DisplayAttrTypes = new List<DataType>() {
+        DataType.Mood,
+        DataType.HP,
+        DataType.Stamina,
+        DataType.Gold,
     };
 
-    public List<AttributeType> DeadlyAttrTypes = new List<AttributeType>() {
-        AttributeType.Mood,
-        AttributeType.HP,
-        AttributeType.Stamina,
-        AttributeType.Gold,
+    public List<DataType> DeadlyAttrTypes = new List<DataType>() {
+        DataType.Mood,
+        DataType.HP,
+        DataType.Stamina,
+        DataType.Gold,
     };
 
+    private Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
 
     public List<float> DisplayAttrData {
         get { 
             return DataSystem.I.DataDic
-                .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
-                .Select((attrKvp) => (float)attrKvp.Value)
+                .Where((attrKvp) => DisplayAttrTypes.Contains((DataType)attrKvp.Key))
+                .Select((attrKvp) => DataSystem.I.CopyAttrDataWithInfluenceByType<float>(attrKvp.Key))
                 .ToList(); 
         }
     }
@@ -32,7 +33,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     public List<float> DisplayAttrDataChange {
         get { 
             return DataSystem.I.DataChange
-                .Where((attrKvp) => DisplayAttrTypes.Contains((AttributeType)attrKvp.Key))
+                .Where((attrKvp) => DisplayAttrTypes.Contains((DataType)attrKvp.Key))
                 .Select((attrKvp) => (float)attrKvp.Value)
                 .ToList(); 
         }
@@ -55,7 +56,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         
     }
 
-    public bool IsAttrTypeDeadly(AttributeType type)
+    public bool IsAttrTypeDeadly(DataType type)
     {
         if (DeadlyAttrTypes.Contains(type)) return true;
         return false;
@@ -63,10 +64,10 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 
     public bool IsDead()
     {
-        var attrTypes = System.Enum.GetValues(typeof(AttributeType));
+        var attrTypes = System.Enum.GetValues(typeof(DataType));
         foreach (int type in attrTypes) {
             var attrData = DataSystem.Instance.GetAttrDataByType(type);
-            if (IsAttrTypeDeadly((AttributeType)type) && attrData <= 0) return true;
+            if (IsAttrTypeDeadly((DataType)type) && attrData <= 0) return true;
         }
         return false;
     }
@@ -78,9 +79,14 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
             DataSystem.I.SetAttrDataByType(type, 10);
         }
         // 初始化其他属性
-        DataSystem.I.SetAttrDataByType(AttributeType.Bag, 5);
-        DataSystem.I.SetAttrDataByType(AttributeType.Luck, 0);
-        DataSystem.I.SetAttrDataByType(AttributeType.Distance, 0);
-        DataSystem.I.SetAttrDataByType(AttributeType.Day, 0);
+        DataSystem.I.SetAttrDataByType(DataType.Bag, 5);
+        DataSystem.I.SetAttrDataByType(DataType.Luck, 0);
+        DataSystem.I.SetAttrDataByType(DataType.Distance, 0);
+        DataSystem.I.SetAttrDataByType(DataType.Day, 0);
+        // 初始化属性最大值
+        maxValueDic[DataType.Mood] = 20;
+        maxValueDic[DataType.HP] = 20;
+        maxValueDic[DataType.Stamina] = 20;
+        maxValueDic[DataType.Gold] = 20;
     }
 }

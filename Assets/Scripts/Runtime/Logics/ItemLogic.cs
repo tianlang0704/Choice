@@ -10,37 +10,81 @@ public enum ItemType
     Goods = 0,
     Equips,
     Relics,
+    Unkown = 999,
 }
 
 public class Item
 {
     public int Id;
+    public int Num;
     public ItemType Type;
-    public string name;
-    public string desc;
-    public string icon;
-    public List<AttrInfluence> influences;
-    public List<LogicExecution> logics;
+    public string Name;
+    public string Desc;
+    public string Icon;
+    public List<AttrInfluence> HaveInfluenceList;
+    public List<LogicExecution> HaveLogicList;
+    public List<LogicExecution> UseLogicList;
+    public List<LogicExecution> RemoveLogicList;
+    public DataType CostType;
+    public float CostNum;
 }
 
 public class ItemLogic : SingletonBehaviour<ItemLogic>
 {
-    List<Item> allGoods;
+    List<Item> allItemList;
+    Dictionary<int, Item> allItemDic = new Dictionary<int, Item>();
+    Dictionary<int, Item> haveItemDic = new Dictionary<int, Item>();
 
-    void Wake()
+    void Awake()
     {
-        allGoods = new List<Item>() {
+        allItemList = new List<Item>() {
             new Item() {
                 Id = 1,
                 Type = ItemType.Goods,
-                name = "测试道具",
-                desc = "这是一个测试道具",
-                influences = AIS.I.GetAttrInfluences(1f,0,0,0,0,0,0,0),
-                logics = CommonLogicSystem.I.GetLogicList(
-                    Logic.AttrChange, AIS.I.GetAttrInfluences(1f,0,0,0,0,0,0,0)
-                )
+                Name = "烤肉",
+                Desc = "恢复生命+3",
+                HaveInfluenceList = AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0),
+                // HaveLogicList = CommonLogicSystem.I.GetLogicList(
+                //     Logic.AttrInfluence, AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0), null
+                // ),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(
+                    Logic.AttrChange, AIS.I.GetAttrInfluences(3f,0,0,0,0,0,0,0), null
+                ),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = 2,
+                Type = ItemType.Goods,
+                Name = "护身符",
+                Desc = "地狱消耗1次",
+                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = 3,
+                Type = ItemType.Goods,
+                Name = "万能钥匙",
+                Desc = "开锁",
+                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = 4,
+                Type = ItemType.Goods,
+                Name = "万能车票",
+                Desc = "重新选择入口",
+                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(),
+                CostType = DataType.Gold,
+                CostNum = 3,
             },
         };
+        allItemList.ForEach((i) => allItemDic[i.Id] = i);
     }
     // Start is called before the first frame update
     void Start()
@@ -52,5 +96,135 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     void Update()
     {
         
+    }
+
+    public void Init()
+    {
+        // 测试满道具
+        var itemData = allItemList.ToDictionary((i)=>i.Id, (i)=>1);
+        DataSystem.I.SetAttrDataByType<Dictionary<int, int>>(DataType.Items, itemData);
+        SyncItemToData();
+        GameUILogic.I.UpdateItems();
+    }
+
+    public void SyncItemToData()
+    {
+        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        if (itemDic == null) return;
+        // 重新同步数据
+        foreach (var itemKvp in itemDic) {
+            AddToHave(itemKvp.Key, itemKvp.Value, true);
+        }
+    }
+    // 检查是否拥有道具ID
+    public bool IsHaveItem(int id)
+    {
+        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        return itemDic.ContainsKey(id);
+    }
+    // 添加道具
+    public void AddItem(int id, int num)
+    {
+        AddToData(id, num);
+        AddToHave(id, num);
+    }
+    void AddToHave(int id, int num, bool isSetNum = false)
+    {
+        // 创建或获取现有道具
+        Item haveItem = null;
+        if (haveItemDic.ContainsKey(id)) {
+            haveItem = haveItemDic[id];
+        } else if (allItemDic.ContainsKey(id)) {
+            haveItem = allItemDic[id];
+        }
+        if (haveItem == null) {
+            return;
+        }
+        // 更新数量
+        haveItem.Num += num;
+        // 更新拥有道具
+        haveItemDic[id] = haveItem;
+        // 更新拥有效果
+        CommonLogicSystem.I.ExecuteCommonLogic(haveItem.HaveLogicList);
+        DataInfluenceSystem.I.AddInfluence(haveItem.HaveInfluenceList);
+    }
+    void AddToData(int id, int num)
+    {
+        // 获取ID对应的记录
+        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        if (itemDic == null)
+            itemDic = new Dictionary<int, int>();
+        // 添加数量
+        var existNum = 0;
+        if (itemDic.ContainsKey(id))
+            existNum = itemDic[id];
+        existNum += num;
+        // 存值
+        itemDic[id] = existNum;
+        DataSystem.I.SetAttrDataByType(DataType.Items, itemDic);
+    }
+
+    // 使用道具
+    public void ConsumeItem(int id, int num)
+    {
+        int actualNum = SubtractFromData(id, num);
+        SubtractFromHave(id, num);
+        ExecuteUseLogic(id, actualNum);
+    }
+    int SubtractFromData(int id, int num, bool isLimitToHave = false)
+    {
+        // 获取ID对应的记录, 没有就直接返回
+        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        if (itemDic == null)
+            return 0;
+        // 减值, 如果设定不能为负数就最多只减拥有量
+        var existNum = 0;
+        if (itemDic.ContainsKey(id))
+            existNum = itemDic[id];
+        var actualNum = num;
+        if (isLimitToHave) {
+            actualNum = Mathf.Min(existNum, num);
+        }
+        existNum -= actualNum;
+        // 存储回去
+        itemDic[id] = existNum;
+        DataSystem.I.SetAttrDataByType(DataType.Items, itemDic);
+        // 返回实际减少数量
+        return actualNum;
+    }
+    int SubtractFromHave(int id, int num, bool isLimitToHave = false)
+    {
+        if (!haveItemDic.ContainsKey(id)) 
+            return 0;
+        var actualNum = num;
+        var haveItem = allItemDic[id];
+        if (isLimitToHave) {
+            actualNum = Mathf.Min(haveItem.Num, num);
+        }
+        haveItem.Num -= actualNum;
+        // 更新效果
+        CommonLogicSystem.I.ExecuteCommonLogic(haveItem.RemoveLogicList);
+        DataInfluenceSystem.I.RemoveInfluence(haveItem.HaveInfluenceList);
+        return actualNum;
+    }
+
+    // 运行道具使用逻辑
+    void ExecuteUseLogic(int id, int num)
+    {
+        if (!allItemDic.ContainsKey(id)) return;
+        var useItem = allItemDic[id];
+        var useItemLogicList = useItem.UseLogicList;
+        if (useItemLogicList == null) return;
+        if (num > 0) {
+            for (int i = 0; i < num; i++) {
+                CommonLogicSystem.I.ExecuteCommonLogic(useItemLogicList);
+            }
+        }
+    }
+
+    public List<Item> GetGoods()
+    {
+        var goods = haveItemDic.Select((i)=>i.Value).Where((i)=>i.Type == ItemType.Goods && i.Num > 0).ToList();
+        return goods;
     }
 }

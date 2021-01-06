@@ -12,7 +12,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
 
     protected void Awake()
     {
-        
+        calcEngine.AddFunction("IsHaveItem", IsHaveItem);
     }
     // Start is called before the first frame update
     void Start()
@@ -28,10 +28,10 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     public void UpdateVariable()
     {
         variables.Clear();
-        foreach (int type in Enum.GetValues(typeof(AttributeType)))
+        foreach (int type in Enum.GetValues(typeof(DataType)))
         {
-            if (type >= (int)AttributeType._ValueTypeMax) break;
-            var name = Enum.GetName(typeof(AttributeType), type);
+            if (type >= (int)DataType._ValueTypeMax) break;
+            var name = Enum.GetName(typeof(DataType), type);
             var value = DataSystem.I.GetAttrDataByType<float>(type);
             variables[name] = value;
         }
@@ -40,5 +40,14 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     public float CalcFormula(string formula)
     {
         return Convert.ToSingle(calcEngine.Calculate(formula, variables));
+    }
+    
+    private double IsHaveItem(double id)
+    {
+        if (ItemLogic.I.IsHaveItem(Convert.ToInt32(id))) {
+            return 1f;
+        } else {
+            return 0f;
+        }
     }
 }

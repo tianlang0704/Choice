@@ -23,21 +23,24 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         StopCoroutine(GameLoop());
     }
 
+    bool IsGameContinue()
+    {
+        return !AttributesLogic.I.IsDead();
+    }
+
     IEnumerator GameLoop()
     {
         // 初始化
         DataSystem.I.Init();        // 初始化数据
         AttributesLogic.I.Init();   // 初始化属性
         GameScenesLogic.I.Init();   // 初始化场景
+        ItemLogic.I.Init();         // 初始化道具
         DayFlowLogic.I.Init();      // 初始化日循环
-        DataSystem.I.SetAttrDataByType(AttributeType.Day, 1);
-        while(!AttributesLogic.I.IsDead())
+        DataSystem.I.SetAttrDataByType(DataType.Day, 1);
+        while(IsGameContinue())
         {
             // 开始一天
             yield return DayFlowLogic.I.DayLoop();
-            // 刷新一天
-            DayFlowLogic.I.IncreaseDay();
-            DurFreSystem.I.UpdateDay();
         }
         // 检查和提示死亡
         CommonFlowLogic.I.CheckAndNotifyDead();

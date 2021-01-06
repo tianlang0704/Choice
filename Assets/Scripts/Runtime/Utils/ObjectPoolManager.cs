@@ -12,10 +12,7 @@ public class ObjectPoolManager : SingletonBehaviour<ObjectPoolManager>
     // Start is called before the first frame update
     void Start()
     {
-        if (poolObject == null) {
-            poolObject = new GameObject(poolGOName);
-        }
-        DontDestroyOnLoad(poolObject);   
+        
     }
 
     // Update is called once per frame
@@ -27,6 +24,10 @@ public class ObjectPoolManager : SingletonBehaviour<ObjectPoolManager>
     // 获取池子载体
     private GameObject GetPoolObject()
     {
+        if (poolObject == null) {
+            poolObject = new GameObject(poolGOName);
+            DontDestroyOnLoad(poolObject);
+        }
         return poolObject;
     }
 
@@ -73,8 +74,8 @@ public class ObjectPoolManager : SingletonBehaviour<ObjectPoolManager>
         var path = outTracker[gameObject];
         outTracker.Remove(gameObject);
         // 放回池子中
+        gameObject.transform.SetParent(GetPoolObject().transform, false);
         gameObject.SetActive(false);
         GetPool(path).Add(gameObject);
-        gameObject.transform.SetParent(GetPoolObject().transform);
     }
 }

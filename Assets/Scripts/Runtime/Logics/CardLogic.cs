@@ -16,6 +16,7 @@ public class Card
 public class Answer
 {
     public string content;
+    public Condition condition;
     public List<AttrInfluence> influenceList;
     public List<LogicExecution> logicList;
 }

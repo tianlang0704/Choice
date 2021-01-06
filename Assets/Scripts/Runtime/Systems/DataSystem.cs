@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum AttributeType {
+public enum DataType {
     HP = 0,             // 生命
     Stamina,            // 体力
     Mood,               // 心情
@@ -19,20 +19,18 @@ public enum AttributeType {
     _ValueTypeMax = 999, // 数值类型属性
     CardWeight,         // 卡片附加几率
     DayCards,           // 一天卡池ID
-    Goods,              // 道具ID
-    Equips,             // 装备ID
-    Relics,             // 遗物ID
+    Items,              // 物品(包括 道具, 装备, 遗物)
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>
 {
     public static float INVALID_ATTR = -99999999f;
-    private Dictionary<AttributeType, Attr> dataDic = new Dictionary<AttributeType, Attr>();
-    public Dictionary<AttributeType, Attr> DataDic {
+    private Dictionary<DataType, Attr> dataDic = new Dictionary<DataType, Attr>();
+    public Dictionary<DataType, Attr> DataDic {
         get {return dataDic;}
     }
-    private Dictionary<AttributeType, Attr> dataChange = new Dictionary<AttributeType, Attr>();
-    public Dictionary<AttributeType, Attr> DataChange {
+    private Dictionary<DataType, Attr> dataChange = new Dictionary<DataType, Attr>();
+    public Dictionary<DataType, Attr> DataChange {
         get {return dataChange;}
     }
 
@@ -58,18 +56,18 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         dataDic.Clear();
         dataChange.Clear();
         // 初始化全部数据
-        var dataTypes = System.Enum.GetValues(typeof(AttributeType));
+        var dataTypes = System.Enum.GetValues(typeof(DataType));
         foreach (int type in dataTypes) {
-            if (System.Enum.GetName(typeof(AttributeType), type).FirstOrDefault() == '_') continue;
-            dataDic[(AttributeType)type] = new Attr();
+            if (System.Enum.GetName(typeof(DataType), type).FirstOrDefault() == '_') continue;
+            dataDic[(DataType)type] = new Attr();
         }
         // 初始化改变数据
         foreach (int type in dataTypes) {
-            dataChange[(AttributeType)type] = new Attr();
+            dataChange[(DataType)type] = new Attr();
         }
     }
     // 属性是否有值
-    public bool IsAttrExist(AttributeType type)
+    public bool IsAttrExist(DataType type)
     {
         if (!dataDic.ContainsKey(type)) return false;
         return true;
@@ -77,27 +75,27 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     // 获取原属性
     public Attr GetAttrDataByType(int type)
     {
-        return GetAttrDataByType((AttributeType)type);
+        return GetAttrDataByType((DataType)type);
     }
     // 获取原属性
-    public Attr GetAttrDataByType(AttributeType type)
+    public Attr GetAttrDataByType(DataType type)
     {
         if (!(IsAttrExist(type))) return null;
-        return dataDic[(AttributeType)type];
+        return dataDic[(DataType)type];
     }
     // 获取原值
     public T GetAttrDataByType<T>(int type)
     {
-        return GetAttrDataByType<T>((AttributeType)(type));
+        return GetAttrDataByType<T>((DataType)(type));
     }
     // 获取原值
-    public T GetAttrDataByType<T>(AttributeType type)
+    public T GetAttrDataByType<T>(DataType type)
     {
         var attr = GetAttrDataByType(type);
         return attr.GetValue<T>();
     }
     // 获取包含所有影响的值
-    public T CopyAttrDataWithInfluenceByType<T>(AttributeType type)
+    public T CopyAttrDataWithInfluenceByType<T>(DataType type)
     {
         var attr = new Attr();
         DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
@@ -107,10 +105,10 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     // 把数值转换成影响
     public AttrInfluence GetInfluenceFromType(int type)
     {
-        return GetInfluenceFromType((AttributeType)type);
+        return GetInfluenceFromType((DataType)type);
     }
     // 把数值转换成影响
-    public AttrInfluence GetInfluenceFromType(AttributeType type)
+    public AttrInfluence GetInfluenceFromType(DataType type)
     {
         var attr = GetAttrDataByType(type);
         return new AttrInfluence(){
@@ -121,10 +119,10 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     // 设置值
     public void SetAttrDataByType<T>(int type, T value)
     {
-        SetAttrDataByType((AttributeType)type, value);
+        SetAttrDataByType((DataType)type, value);
     }
     // 设置值
-    public void SetAttrDataByType<T>(AttributeType type, T value)
+    public void SetAttrDataByType<T>(DataType type, T value)
     {
         dataDic[type].SetValue<T>(value);
     }

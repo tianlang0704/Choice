@@ -23,7 +23,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                     new Answer() {
                         content = "直接走过去. -1生命, 20%狂犬病(接下来2回合不可看到答案).",
                         logicList = CLS.I.GetLogicList(
-                            Logic.AttrChange, AIS.I.GetAttrInfluences(-1,0,0,0,0,0,1,0), CS.I.GetAttrConditionGroup("HP > 1"),
+                            Logic.AttrChange, AIS.I.GetAttrInfluences(-1,0,0,0,0,0,1,0), CS.I.GetCondition("HP > 1"),
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 2, 100), null
                         ),
                     },
@@ -228,14 +228,14 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     public void ShuffleDayCards()
     {
         var allCardsIdList = allCards.Select((c)=>c.Id).ToList();
-        DataSystem.I.SetAttrDataByType(AttributeType.DayCards, allCardsIdList);
+        DataSystem.I.SetAttrDataByType(DataType.DayCards, allCardsIdList);
         SyncDayCardsToData();
     }
 
     public void SyncDayCardsToData()
     {
         dayCards.Clear();
-        var idList = DataSystem.I.GetAttrDataByType<List<int>>(AttributeType.DayCards);
+        var idList = DataSystem.I.GetAttrDataByType<List<int>>(DataType.DayCards);
         if (idList == null) return;
         foreach (var id in idList)
         {
@@ -243,9 +243,10 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         }
     }
 
-    public Card GetCardForTurn()
+    Card turnCard;
+    public Card RerollTurnCard()
     {
-        var weightTable = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<int, float>>(AttributeType.CardWeight);
+        var weightTable = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<int, float>>(DataType.CardWeight);
         float weightSum = 0;
         dayCards.ForEach((card) => {
             weightSum += card.baseWeight;
@@ -266,6 +267,12 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                 break;
             }
         }
+        turnCard = select;
         return select;
+    }
+
+    public Card GetTurnCard()
+    {
+        return turnCard;
     }
 }
