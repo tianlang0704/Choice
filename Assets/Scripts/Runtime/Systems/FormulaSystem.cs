@@ -7,7 +7,7 @@ using Jace;
 
 public class FormulaSystem : SingletonBehaviour<FormulaSystem>
 {
-    CalculationEngine calcEngine = new CalculationEngine();
+    CalculationEngine calcEngine = new CalculationEngine(new JaceOptions() { ExecutionMode = Jace.Execution.ExecutionMode.Interpreted });
     Dictionary<string, double> variables = new Dictionary<string, double>();
 
     protected void Awake()
