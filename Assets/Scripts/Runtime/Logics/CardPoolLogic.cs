@@ -5,11 +5,13 @@ using UnityEngine;
 using AIS = DataInfluenceSystem;
 using CLS = CommonLogicSystem;
 using CS = ConditionSystem;
+using LEList = System.Collections.Generic.List<(Logic, System.Collections.Generic.List<object>, Condition)>;
+using LEParam = System.Collections.Generic.List<object>;
 
 public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
 {
     List<Card> allCards;
-    Dictionary<int, Card> allCardsIdIndex;
+    Dictionary<int, Card> allCardsIdIndex = new Dictionary<int, Card>();
 
     List<Card> dayCards = new List<Card>();
 
@@ -17,158 +19,173 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     {
         allCards = new List<Card>(){
             new Card() {
+                Id = 10001,
+                DrawPriority = 1,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                DrawCondition = new Condition() {Formula = "CurrentTurn >= 7"},
+                content = "今天结束了, 请休息",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "休息一下",
+                        logicListFunc = () => { return CLS.I.GetLogicList(() => { return new LEList() {
+                            (Logic.AttrChange, new LEParam(){WeatherLogic.I.GetCurrentWeather().baseConsumption}, null)
+                        };});},
+                    },
+                }
+            },
+            new Card() {
                 Id = 1,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "炎炎夏日，路中间趴着一条黑狗，抬头望着你.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "直接走过去. -1生命, 20%狂犬病(接下来2回合不可看到答案).",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(-1,0,0,0,0,0,1,0), CS.I.GetCondition("HP > 1"),
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 2, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "一口气冲过去. -3体力, +5行程.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,-3f,0,0,0,0,5,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 2, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "过去摸摸它. -1心情.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,-1,0,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 3, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "食物, 喂给他吃.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,0,0,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 3, 100), null
-                        ),
+                        );},
                     },
                 }
             },
             new Card() {
                 Id = 2,
                 baseWeight = 0,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "这只狗子, 在后面一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "把它赶走. -2生命, 50%狂犬病(接下来2回合不可看到答案).",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(-2,0,0,0,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 4, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "接着跑, 一定要甩开它! -5体力, +10里程.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,-5,0,0,0,0,11,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 4, 100), null
-                        ),
+                        );},
                     },
                 }
             },
             new Card() {
                 Id = 3,
                 baseWeight = 0,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "这只狗子, 在后面一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "买点吃的给它吧. -3金币.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,0,-3,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 4, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "过去摸摸它. +2心情",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,2,0,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 4, 100), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "食物, 喂给她吃. +3心情",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,3,0,0,0,1,0), null,
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 4, 100), null
-                        ),
+                        );},
                     },
                 }
             },
             new Card() {
                 Id = 4,
                 baseWeight = 0,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "黑狗吊着一袋不知道什么东西, 向你跑了过来.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "药包(+2生命)",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(2,0,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "钱袋子(+5金币)",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,0,5,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "大朗烧饼(+4体力)",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,4,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                 }
             },
             new Card() {
                 Id = 5,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "路边有个凉茶店.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "坐下休息一下, +2体力. 被老板骂走, -1心情.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,2,-1,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "来碗茶歇歇脚. -2金币, +3体力.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,3,0,-2,0,0,1,0), null
-                        ),
+                        );},
                     },
                 }
             },
             new Card() {
                 Id = 6,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "你走着走着, 发现有个野孩子, 一直跟着你.",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "捡起木棍吓跑他. -2体力",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,-2,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "加速甩开他. -4体力.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,-4,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "可怜的孩子, 去买点吃的吧. -3金币.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,0,-3,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "不理他.",
@@ -183,39 +200,37 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             },
             new Card() {
                 Id = 7,
-                condition = new Condition() {Formula = "Scene == 1"},
+                FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "路过一个村庄, 一伙刁民将你拦下. ",
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "随意给一个破烂, 心情-1.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,-1,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "把玉坠给他们, 生命+2.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(2,0,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "无视他们, 被追着打了一顿, 生命-1.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(-1,0,0,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                     new Answer() {
                         content = "拼命逃跑, 逃过一劫, 心情+1.",
-                        logicList = CLS.I.GetLogicList(
+                        logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(0,0,1,0,0,0,1,0), null
-                        ),
+                        );},
                     },
                 }
             },
         };
-        allCardsIdIndex = new Dictionary<int, Card>();
-        foreach (var card in allCards)
-        {
+        foreach (var card in allCards) {
             allCardsIdIndex[card.Id] = card;
         }
     }
@@ -240,7 +255,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     public void ShuffleDayCards()
     {
         var allCardsIdList = allCards
-                                .Where((c) => ConditionSystem.I.IsConditionMet(c.condition))
+                                .Where((c) => ConditionSystem.I.IsConditionMet(c.FillCondition))
                                 .Select((c) => c.Id)
                                 .ToList();
         DataSystem.I.SetAttrDataByType(DataType.DayCards, allCardsIdList);
@@ -263,7 +278,13 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     {
         var weightTable = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<int, float>>(DataType.CardWeight);
         float weightSum = 0;
-        dayCards.ForEach((card) => {
+        var validCards = dayCards
+            .Where((c) => ConditionSystem.I.IsConditionMet(c.DrawCondition))    // 筛选满足条件的卡
+            .GroupBy((c) => c.DrawPriority)                                     // 有限度分组
+            .OrderBy((g) => g.First().DrawPriority)                             // 有限度分组排序
+            .Last()                                                             // 选有限度最高的组
+            .ToList();
+        validCards.ForEach((card) => {
             weightSum += card.baseWeight;
             if (weightTable != null) {
                 weightSum += weightTable.FirstOrDefault((kvp)=>kvp.Key == card.Id).Value;
@@ -271,7 +292,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         });
         Card select = null;
         float random = Random.Range(0, weightSum);
-        foreach (var card in dayCards) {
+        foreach (var card in validCards) {
             var cardWeight = card.baseWeight;
             if (weightTable != null) {
                 cardWeight += weightTable.FirstOrDefault((kvp)=>kvp.Key == card.Id).Value;

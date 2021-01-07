@@ -35,6 +35,15 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         
     }
 
+    public List<LogicExecution> GetLogicList(Func<List<(Logic l, List<object> p, Condition c)>> paramFunc)
+    {
+        var inputList = paramFunc();
+        var leList = inputList.Select((o) => {
+            return new LogicExecution() { logic = o.l, paramList = o.p, condition = o.c};
+        }).ToList();
+        return leList;
+    }
+
     public List<LogicExecution> GetLogicList(params object[] paramList)
     {
         var list = new List<LogicExecution>();

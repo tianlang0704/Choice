@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Card 
 {
     public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
     public int Id;
+    public int DrawPriority = 0;
     public CardType type = CardType.Basic;
-    public Condition condition;
+    public Condition FillCondition;
+    public Condition DrawCondition;
     public string content = "";
     public float baseWeight = 1;
     public List<Answer> answers;
@@ -18,8 +21,7 @@ public class Answer
 {
     public string content;
     public Condition condition;
-    public List<AttrInfluence> influenceList;
-    public List<LogicExecution> logicList;
+    public Func<List<LogicExecution>> logicListFunc;
 }
 
 public class CardLogic : SingletonBehaviour<CardLogic>
