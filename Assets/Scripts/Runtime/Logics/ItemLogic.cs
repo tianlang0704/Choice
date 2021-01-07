@@ -27,6 +27,9 @@ public class Item
     public List<LogicExecution> RemoveLogicList;
     public DataType CostType;
     public float CostNum;
+    public Item ShallowCopy() {
+        return MemberwiseClone() as Item;
+    }
 }
 
 public class ItemLogic : SingletonBehaviour<ItemLogic>
@@ -43,7 +46,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "烤肉",
                 Desc = "恢复生命+3",
-                HaveInfluenceList = AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0),
+                // HaveInfluenceList = AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0),
                 // HaveLogicList = CommonLogicSystem.I.GetLogicList(
                 //     Logic.AttrInfluence, AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0), null
                 // ),
@@ -126,6 +129,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
         if (itemDic == null) return;
         // 重新同步数据
+        haveItemDic.Clear();
         foreach (var itemKvp in itemDic) {
             AddToHave(itemKvp.Key, itemKvp.Value, true);
         }
@@ -149,13 +153,17 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         if (haveItemDic.ContainsKey(id)) {
             haveItem = haveItemDic[id];
         } else if (allItemDic.ContainsKey(id)) {
-            haveItem = allItemDic[id];
+            haveItem = allItemDic[id].ShallowCopy();
         }
         if (haveItem == null) {
             return;
         }
         // 更新数量
-        haveItem.Num += num;
+        if (isSetNum) {
+            haveItem.Num = num;
+        } else {
+            haveItem.Num += num;
+        }
         // 更新拥有道具
         haveItemDic[id] = haveItem;
         // 更新拥有效果
@@ -211,7 +219,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         if (!haveItemDic.ContainsKey(id)) 
             return 0;
         var actualNum = num;
-        var haveItem = allItemDic[id];
+        var haveItem = haveItemDic[id];
         if (isLimitToHave) {
             actualNum = Mathf.Min(haveItem.Num, num);
         }

@@ -232,6 +232,11 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         
     }
 
+    public void Init()
+    {
+        DataSystem.I.SetAttrDataByType<List<int>>(DataType.DayCards, null);
+    }
+
     public void ShuffleDayCards()
     {
         var allCardsIdList = allCards
