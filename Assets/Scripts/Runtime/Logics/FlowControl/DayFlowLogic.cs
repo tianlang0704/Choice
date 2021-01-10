@@ -34,18 +34,18 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     // 日循环
     public IEnumerator DayLoop()
     {
-        // 重置现在回合为0
-        DataSystem.I.SetAttrDataByType(DataType.CurrentTurn, 0);
+        // 刷新一天
+        DayFlowLogic.I.IncreaseDay();
+        DurFreSystem.I.UpdateDay();
         // 重新刷新卡牌
         CardPoolLogic.I.ShuffleDayCards();
+        // 重置现在回合为0
+        DataSystem.I.SetAttrDataByType(DataType.CurrentTurn, 0);
         // 开始日循环
         while(IsDayContinue())
         {
             yield return TurnFLowLogic.I.TurnLoop();
         }
-        // 刷新一天
-        DayFlowLogic.I.IncreaseDay();
-        DurFreSystem.I.UpdateDay();
     }
 
     // 增加天数

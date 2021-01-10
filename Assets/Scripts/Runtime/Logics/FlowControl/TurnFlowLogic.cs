@@ -29,6 +29,8 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     {
         // 增加回合数
         IncreaseTurn(1);
+        // 更新时长和频率
+        DurFreSystem.I.UpdateTurn();
         // 更新界面
         GameUILogic.I.UpdateView();
         // 问答
@@ -38,8 +40,6 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         nextTurn = false;
         // 检查死亡
         if (AttributesLogic.I.IsDead()) yield break;
-        // 更新
-        DurFreSystem.I.UpdateTurn();
         // 稍微等下下再结束本回合
         yield return new WaitForSeconds(0.1f);
     }

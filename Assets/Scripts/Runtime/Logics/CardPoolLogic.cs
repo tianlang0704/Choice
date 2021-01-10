@@ -27,9 +27,9 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "休息一下",
-                        logicListFunc = () => { return CLS.I.GetLogicList(() => { return new LEList() {
+                        logicListFunc = () => { return CLS.I.GetLogicList(new LEList() {
                             (Logic.AttrChange, new LEParam(){WeatherLogic.I.GetCurrentWeather().baseConsumption}, null)
-                        };});},
+                        });},
                     },
                 }
             },
@@ -39,7 +39,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                 content = "炎炎夏日，路中间趴着一条黑狗，抬头望着你.",
                 answers = new List<Answer>() {
                     new Answer() {
-                        content = "直接走过去. -1生命, 20%狂犬病(接下来2回合不可看到答案).",
+                        content = "直接走过去. -1生命, 20%几率狂犬病(接下来2回合不可看到答案).",
                         logicListFunc = () => { return CLS.I.GetLogicList(
                             Logic.AttrChange, AIS.I.GetAttrInfluences(-1,0,0,0,0,0,1,0), CS.I.GetCondition("HP > 1"),
                             Logic.AttrInfluence, AIS.I.GetCardWeightInfluence(1, 2, 100), null
@@ -276,6 +276,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     Card turnCard;
     public Card RerollTurnCard()
     {
+        // 筛选条件
         var weightTable = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<int, float>>(DataType.CardWeight);
         float weightSum = 0;
         var validCards = dayCards
@@ -284,13 +285,14 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             .OrderBy((g) => g.First().DrawPriority)                             // 有限度分组排序
             .Last()                                                             // 选有限度最高的组
             .ToList();
+        // 计算比重
         validCards.ForEach((card) => {
             weightSum += card.baseWeight;
             if (weightTable != null) {
                 weightSum += weightTable.FirstOrDefault((kvp)=>kvp.Key == card.Id).Value;
             }
         });
-        Card select = null;
+        // 按比重抽取
         float random = Random.Range(0, weightSum);
         foreach (var card in validCards) {
             var cardWeight = card.baseWeight;
@@ -299,12 +301,22 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             }
             random -= cardWeight;
             if (random <= 0) {
-                select = card;
+                turnCard = card.ShallowCopy();
                 break;
             }
         }
-        turnCard = select;
-        return select;
+        // 处理看不见
+        if (!ConditionSystem.I.IsConditionMet(turnCard.SeeCondition)) {
+            turnCard.content = "???";
+            for (int i = 0; i < turnCard.answers.Count; i++)
+            {
+                var a = turnCard.answers[i].ShallowCopy();
+                turnCard.answers = new List<Answer>();
+                turnCard.answers.Add(a);
+                a.content = "????";
+            }
+        }
+        return turnCard;
     }
 
     public Card GetTurnCard()

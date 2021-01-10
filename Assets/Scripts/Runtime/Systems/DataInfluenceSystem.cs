@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class AttrInfluence 
 {
-    public int instenceId;
-    public DataType attributeType;
-    public Attr attr;
-    public bool isAdd = true;
-    public DurationAndFrequency durFre = null;
+    public int InstenceId;
+    public DataType AttributeType;
+    public Attr Attr;
+    public bool IsAdd = true;
+    public DurationAndFrequency DurFre = null;
 }
 
 public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
@@ -76,21 +76,51 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     //     return infList;
     // } 
 
+    // 获取属性影响
     public List<AttrInfluence> GetAttrInfluences(
         float Hp = 0, float Stamina = 0, float Mood = 0, float Gold = 0, 
         float Luck = 0, float Bag = 0, float Distance = 0, float Day = 0)
     {
         var infList = new List<AttrInfluence>() {
-            new AttrInfluence() {attributeType = DataType.HP, attr = Hp},
-            new AttrInfluence() {attributeType = DataType.Stamina, attr = Stamina},
-            new AttrInfluence() {attributeType = DataType.Mood, attr = Mood},
-            new AttrInfluence() {attributeType = DataType.Gold, attr = Gold},
-            new AttrInfluence() {attributeType = DataType.Luck, attr = Luck},
-            new AttrInfluence() {attributeType = DataType.Bag, attr = Bag},
-            new AttrInfluence() {attributeType = DataType.Distance, attr = Distance},
-            new AttrInfluence() {attributeType = DataType.Day, attr = Day},
+            new AttrInfluence() {AttributeType = DataType.HP, Attr = Hp},
+            new AttrInfluence() {AttributeType = DataType.Stamina, Attr = Stamina},
+            new AttrInfluence() {AttributeType = DataType.Mood, Attr = Mood},
+            new AttrInfluence() {AttributeType = DataType.Gold, Attr = Gold},
+            new AttrInfluence() {AttributeType = DataType.Luck, Attr = Luck},
+            new AttrInfluence() {AttributeType = DataType.Bag, Attr = Bag},
+            new AttrInfluence() {AttributeType = DataType.Distance, Attr = Distance},
+            new AttrInfluence() {AttributeType = DataType.Day, Attr = Day},
         };
         return infList;
+    }
+    public List<AttrInfluence> GetAttrInfluences(
+        string Hp = null, string Stamina = null, string Mood = null, string Gold = null, 
+        string Luck = null, string Bag = null, string Distance = null, string Day = null)
+    {
+        var infList = new List<AttrInfluence>() {
+            new AttrInfluence() {AttributeType = DataType.HP, Attr = Hp},
+            new AttrInfluence() {AttributeType = DataType.Stamina, Attr = Stamina},
+            new AttrInfluence() {AttributeType = DataType.Mood, Attr = Mood},
+            new AttrInfluence() {AttributeType = DataType.Gold, Attr = Gold},
+            new AttrInfluence() {AttributeType = DataType.Luck, Attr = Luck},
+            new AttrInfluence() {AttributeType = DataType.Bag, Attr = Bag},
+            new AttrInfluence() {AttributeType = DataType.Distance, Attr = Distance},
+            new AttrInfluence() {AttributeType = DataType.Day, Attr = Day},
+        };
+        return infList;
+    }
+
+    // 通过公式获取单个影响属性
+    public List<AttrInfluence> GetAttrInfluences(List<(DataType type, string formula)> formulaList)
+    {
+        return formulaList.Select((f) => GetAttrInfluence(f.type, f.formula).First()).ToList();
+    }
+    public List<AttrInfluence> GetAttrInfluence(DataType type, string formula)
+    {
+        return new List<AttrInfluence>() {new AttrInfluence() {
+            AttributeType = type,
+            Attr = formula
+        }};
     }
 
     // 卡牌偏重
@@ -103,39 +133,49 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             weightChangeDic[cardId] = weightChange;
         }
         var attr = new Attr();
-        attr.SetCustomValue(weightChangeDic);
+        attr.SetValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
-            attributeType = DataType.CardWeight,
-            attr = attr,
-            durFre = new DurationAndFrequency() { turn = turn }
+            AttributeType = DataType.CardWeight,
+            Attr = attr,
+            DurFre = new DurationAndFrequency() { turn = turn }
         };
         return new List<AttrInfluence>{attrInfluence};
     }
     // 添加一个影响
+    public void AddInfluence(AttrInfluence influ)
+    {
+        if (!influDic.ContainsKey(influ.AttributeType)) {
+            influDic[influ.AttributeType] = new List<AttrInfluence>();
+        }
+        influDic[influ.AttributeType].Add(influ);
+        if (influ.DurFre != null) {
+            DurFreSystem.I.AddDurFreControl(influ.DurFre, () => {
+                DataInfluenceSystem.I.RemoveInfluence(influ);
+            });
+        }
+    }
     public void AddInfluence(List<AttrInfluence> influenceList)
     {
         if (influenceList == null) return;
         influenceList.ForEach((influ) => {
-            if (!influDic.ContainsKey(influ.attributeType)) {
-                influDic[influ.attributeType] = new List<AttrInfluence>();
-            }
-            influDic[influ.attributeType].Add(influ);
-            if (influ.durFre != null) {
-                DurFreSystem.I.AddInfluenceDurFreControl(influ);
-            }
+            AddInfluence(influ);
         });
     }
     // 移除一个影响
+    public void RemoveInfluence(AttrInfluence influ)
+    {
+        if (influDic.ContainsKey(influ.AttributeType)) {
+            influDic[influ.AttributeType].Remove(influ);
+        }
+        if (influ.DurFre != null) {
+            DurFreSystem.I.RemoveDurFreControl(influ.DurFre);
+        }
+    }
     public void RemoveInfluence(List<AttrInfluence> influenceList)
     {
         if (influenceList == null) return;
         influenceList.ForEach((influ) => {
-            if (influDic.ContainsKey(influ.attributeType)) {
-                influDic[influ.attributeType].Remove(influ);
-            }
-            if (influ.durFre != null) {
-                DurFreSystem.I.RemoveInfluenceDurFreControl(influ);
-            }
+            RemoveInfluence(influ);
         });
     }
     // 应用系统里某个类型的影响
@@ -163,33 +203,32 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     // 应用属性影响列表
     public void ApplyChangeToAttr(Attr baseAttr, AttrInfluence influence) 
     {
-        var typeInt = (int)influence.attributeType;
+        var typeInt = (int)influence.AttributeType;
         if(typeInt >= (int)DataType._ValueTypeMax) return;
-        if (influence.attr.Type == Attr.DataType.FLOAT || influence.attr.Type == Attr.DataType.INT) {
-            var changeAmount = influence.attr;
-            if (!influence.isAdd) {
+        if (influence.Attr.Type == Attr.DataType.FLOAT || influence.Attr.Type == Attr.DataType.INT) {
+            var changeAmount = influence.Attr;
+            if (!influence.IsAdd) {
                 changeAmount *= -1;
             }
-            baseAttr.SetValue(baseAttr + changeAmount);
-        } else if(influence.attr.Type == Attr.DataType.CUSTOM){
+            baseAttr.SetValue(baseAttr.GetValue<float>() + changeAmount);
+        } else if(influence.Attr.Type == Attr.DataType.CUSTOM){
             print("不能改变CUSTOM类型属性, 其实这里也不应该出现CUSTOM类型属性");
         }
     }
-
     // 应用卡片偏重
     public void ApplyChangeToCardWeight(Attr baseAttr, AttrInfluence influence)
     {
-        if (influence.attributeType != DataType.CardWeight) return;
-        if (influence.attr.Type != Attr.DataType.CUSTOM) return;
+        if (influence.AttributeType != DataType.CardWeight) return;
+        if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
         // 从属性中获取现在表
-        Dictionary<int, float> curWeights = baseAttr.GetCustomValue<Dictionary<int, float>>();
+        var curWeights = baseAttr.GetValue<Dictionary<int, float>>();
         if (curWeights == null) {
             curWeights = new Dictionary<int, float>();
-            baseAttr.SetCustomValue<Dictionary<int, float>>(curWeights);
+            baseAttr.SetValue(curWeights);
         }
         // 获取新表
-        var newAttr = influence.attr;
-        var newWeights = newAttr.GetCustomValue<Dictionary<int, float>>();
+        var newAttr = influence.Attr;
+        var newWeights = newAttr.GetValue<Dictionary<int, float>>();
         // 循环加值
         foreach (var newKvp in newWeights)
         {
@@ -201,7 +240,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
                 value = 0f;
             }
             // 改变值
-            if (influence.isAdd) {
+            if (influence.IsAdd) {
                 value += newKvp.Value;
             } else {
                 value -= newKvp.Value;

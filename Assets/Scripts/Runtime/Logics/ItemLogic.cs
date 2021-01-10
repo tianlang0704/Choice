@@ -10,6 +10,7 @@ public enum ItemType
     Goods = 0,
     Equips,
     Relics,
+    Buff,
     Unkown = 999,
 }
 
@@ -21,6 +22,7 @@ public class Item
     public string Name;
     public string Desc;
     public string Icon;
+    public DurationAndFrequency DurFre;
     public List<AttrInfluence> HaveInfluenceList;
     public List<LogicExecution> HaveLogicList;
     public List<LogicExecution> UseLogicList;
@@ -100,6 +102,13 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
+            new Item() {
+                Id = 6,
+                Type = ItemType.Buff,
+                Name = "狂犬病",
+                Desc = "看不见卡牌",
+                DurFre = new DurationAndFrequency() { turn = 2 }
+            },
         };
         allItemList.ForEach((i) => allItemDic[i.Id] = i);
     }
@@ -138,7 +147,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public bool IsHaveItem(int id)
     {
         var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
-        return itemDic.ContainsKey(id);
+        return itemDic.ContainsKey(id) && itemDic[id] > 0;
     }
     // 添加道具
     public void AddItem(int id, int num)
@@ -169,6 +178,12 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         // 更新拥有效果
         CommonLogicSystem.I.ExecuteCommonLogic(haveItem.HaveLogicList);
         DataInfluenceSystem.I.AddInfluence(haveItem.HaveInfluenceList);
+        // 更新频率和时长
+        if (haveItem.DurFre != null) {
+            DurFreSystem.I.AddDurFreControl(haveItem.DurFre, () => {
+                ConsumeItem(id, 1);
+            });
+        }
     }
     void AddToData(int id, int num)
     {
@@ -227,6 +242,10 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         // 更新效果
         CommonLogicSystem.I.ExecuteCommonLogic(haveItem.RemoveLogicList);
         DataInfluenceSystem.I.RemoveInfluence(haveItem.HaveInfluenceList);
+        // 更新频率和时长
+        if (haveItem.DurFre != null) {
+            DurFreSystem.I.RemoveDurFreControl(haveItem.DurFre);
+        }
         return actualNum;
     }
 

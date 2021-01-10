@@ -13,11 +13,16 @@ public class DurationAndFrequency{
     public int curDay = 0;
     public int curTurnInterval = 0;
     public int curDayInterval = 0;
+    public DurationAndFrequency ShallowCopy()
+    {
+        return (DurationAndFrequency)this.MemberwiseClone();
+    }
 }
 
 public class DurFreSystem : SingletonBehaviour<DurFreSystem>
 {
-    List<AttrInfluence> influTrackingList = new List<AttrInfluence>();
+    // List<DurationAndFrequency> trackingList = new List<DurationAndFrequency>();
+    Dictionary<DurationAndFrequency, Action> tracker = new Dictionary<DurationAndFrequency, Action>();
     // Start is called before the first frame update
     void Start()
     {
@@ -40,59 +45,62 @@ public class DurFreSystem : SingletonBehaviour<DurFreSystem>
 
     public void UpdateTurn()
     {   
-        influTrackingList.ForEach((influ) => {
-            influ.durFre.curTurn += 1;
+        tracker.ToList().ForEach((kvp) => {
+            kvp.Key.curTurn += 1;
         });
         CheckAndRemove();
     }
 
     public void ResetTurn()
     {
-        influTrackingList.ForEach((influ) => {
-            influ.durFre.curTurn = 0;
+        tracker.ToList().ForEach((kvp) => {
+            kvp.Key.curTurn = 0;
         });
     }
 
     public void UpdateDay()
     {
-        influTrackingList.ForEach((influ) => {
-            influ.durFre.curDay += 1;
+        tracker.ToList().ForEach((kvp) => {
+            kvp.Key.curDay += 1;
         });
         CheckAndRemove();
     }
 
     public void ResetDay()
     {
-        influTrackingList.ForEach((influ) => {
-            influ.durFre.curDay = 0;
+        tracker.ToList().ForEach((kvp) => {
+            kvp.Key.curDay = 0;
         });
     }
 
     void CheckAndRemove()
     {
-        var influenceToRemove = new List<AttrInfluence>();
-        influTrackingList.ForEach((influ) => {
-            var durFre = influ.durFre;
+        var durFreToRemove = new List<DurationAndFrequency>();
+        tracker.ToList().ForEach((kvp) => {
+            var durFre = kvp.Key;
             if (durFre.curTurn >= durFre.turn && durFre.curDay >= durFre.day) {
-                influenceToRemove.Add(influ);
+                // 添加去除
+                durFreToRemove.Add(durFre);
+                // 调用回调
+                if (kvp.Value != null) {
+                    kvp.Value();
+                }
             }
         });
-        influenceToRemove.ForEach((influ) => {
-            influTrackingList.Remove(influ);
+        durFreToRemove.ForEach((durFre) => {
+            tracker.Remove(durFre);
         });
-        DataInfluenceSystem.I.RemoveInfluence(influenceToRemove);
     }
 
-    public void AddInfluenceDurFreControl(AttrInfluence influence)
+    public void AddDurFreControl(DurationAndFrequency durFre, Action cb)
     {
-        var durFre = influence.durFre;
         if (durFre == null || (durFre.turn == 0 && durFre.day == 0)) return;
-        ResetDurFre(influence.durFre);
-        influTrackingList.Add(influence);
+        ResetDurFre(durFre);
+        tracker[durFre] = cb;
     }
 
-    public void RemoveInfluenceDurFreControl(AttrInfluence influence)
+    public void RemoveDurFreControl(DurationAndFrequency durFre)
     {
-        influTrackingList.Remove(influence);
+        tracker.Remove(durFre);
     }
 }

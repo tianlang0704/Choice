@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -95,6 +96,10 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         return attr.GetValue<T>();
     }
     // 获取包含所有影响的值
+    public T CopyAttrDataWithInfluenceByType<T>(int type)
+    {
+        return CopyAttrDataWithInfluenceByType<T>((DataType)type);
+    }
     public T CopyAttrDataWithInfluenceByType<T>(DataType type)
     {
         var attr = new Attr();
@@ -112,8 +117,8 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     {
         var attr = GetAttrDataByType(type);
         return new AttrInfluence(){
-            attributeType = type,
-            attr = attr,
+            AttributeType = type,
+            Attr = attr,
         };
     }
     // 设置值
@@ -131,7 +136,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     {
         foreach (var influence in list)
         {
-            var type = influence.attributeType;
+            var type = influence.AttributeType;
             var attr = GetAttrDataByType(type);
             DataInfluenceSystem.I.ApplyChangeToAttr(attr, influence);
             var attrChange = new Attr();

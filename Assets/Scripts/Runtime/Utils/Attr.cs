@@ -7,6 +7,7 @@ public class Attr
         FLOAT = 0,
         INT,
         CUSTOM,
+        FORMULA,
         EMPTY,
     }
     public Attr(){
@@ -16,6 +17,9 @@ public class Attr
         SetValue(value);
     }
     public Attr(float value) {
+        SetValue(value);
+    }
+    public Attr(string value) {
         SetValue(value);
     }
     private DataType _type = DataType.CUSTOM;
@@ -30,6 +34,8 @@ public class Attr
             Type = DataType.FLOAT;
         } else if (typeof(T) == typeof(int)){
             Type = DataType.INT;
+        } else if (typeof(T) == typeof(string)){
+            Type = DataType.FORMULA;
         } else {
             Type = DataType.CUSTOM;
         }
@@ -43,22 +49,16 @@ public class Attr
                 value = Convert.ToInt32(_value);
             } else if (typeof(T) == typeof(float) && _value is int) {
                 value = Convert.ToSingle(_value);
+            } else if (typeof(T) == typeof(float) && _value is string) {
+                value = FormulaSystem.I.CalcFormula((string)_value);
+            } else if (typeof(T) == typeof(int) && _value is string) {
+                value = (int)FormulaSystem.I.CalcFormula((string)_value); 
             }
         } else {
             value = _value;
         }
         if (value == null) return default;
         return (T)value;
-    }
-    public void SetCustomValue<T>(T value) where T:class
-    {
-        _value = (object)value;
-        Type = DataType.CUSTOM;
-    }
-
-    public T GetCustomValue<T>() where T:class
-    {
-        return _value as T;
     }
     
     public static implicit operator int(Attr value)
@@ -77,6 +77,16 @@ public class Attr
     }
 
     public static implicit operator Attr(float value)
+    {
+        return new Attr(value);
+    }
+
+    public static implicit operator string(Attr value)
+    {
+        return (string)value._value;
+    }
+
+    public static implicit operator Attr(string value)
     {
         return new Attr(value);
     }

@@ -22,11 +22,19 @@ public class ConditionSystem : SingletonBehaviour<ConditionSystem>
         
     }
 
-    public bool IsConditionMet(Condition condition)
+    public void Init()
+    {
+        
+    }
+
+    public bool IsConditionMet(Condition condition, bool isUpdate = true)
     {
         if (condition == null) return true;
-        FormulaSystem.I.UpdateVariable();
-        return FormulaSystem.I.CalcFormula(condition.Formula) == 1f;
+        if (isUpdate) {
+            FormulaSystem.I.UpdateVariable();
+        }
+        var res = FormulaSystem.I.CalcFormula(condition.Formula);
+        return res == 1f;
     }
 
     public Condition GetCondition(string formula)
