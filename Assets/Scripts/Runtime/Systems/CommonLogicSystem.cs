@@ -17,7 +17,7 @@ public enum Logic {
 
 public class LogicExecution {
     public Logic logic;
-    public List<object> paramList;
+    public object param;
     public Condition condition;
 }
 
@@ -35,32 +35,12 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         
     }
 
-    public List<LogicExecution> GetLogicList(List<(Logic l, List<object> p, Condition c)> exeList)
+    public List<LogicExecution> GetLogicList(List<(Logic l, object p, Condition c)> exeList)
     {
         var leList = exeList.Select((o) => {
-            return new LogicExecution() { logic = o.l, paramList = o.p, condition = o.c};
+            return new LogicExecution() { logic = o.l, param = o.p, condition = o.c};
         }).ToList();
         return leList;
-    }
-
-    public List<LogicExecution> GetLogicList(params object[] paramList)
-    {
-        var list = new List<LogicExecution>();
-        for (int i = 0; i < paramList.Length; i+=3)
-        {
-            Logic logic = (Logic)paramList[i];
-            var p = i+1 >= paramList.Count() ? null : paramList[i+1];
-            List<object> param = new List<object>();
-            if (p != null) param.Add(p);
-            var c = i+2 >= paramList.Count() ? null : paramList[i+2];
-            Condition condition = c as Condition;
-            list.Add(new LogicExecution(){
-                logic = logic, 
-                paramList = param,
-                condition = condition
-            });
-        }
-        return list;
     }
 
     public void ExecuteCommonLogic(List<LogicExecution> leList)
@@ -76,87 +56,91 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         if (le.condition != null) {
             if (!ConditionSystem.I.IsConditionMet(le.condition)) return;
         }
-        ExecuteCommonLogic(le.logic, le.paramList.ToArray());
+        ExecuteCommonLogic(le.logic, le.param);
     }
 
-    public void ExecuteCommonLogic(Logic logic, params object[] paramList)
+    public void ExecuteCommonLogic(Logic logic, object param)
     {
         if (logic == Logic.AttrChange) {
-            AttrChange(paramList);
+            AttrChange(param);
         } else if (logic == Logic.AttrChangeShield) {
-            AttrChangeShield(paramList);
+            AttrChangeShield(param);
         } else if (logic == Logic.AttrInfluence) {
-            AttrInfluence(paramList);
+            AttrInfluence(param);
         } else if (logic == Logic.AddItem) {
-            AddItem(paramList);
+            AddItem(param);
         } else if (logic == Logic.UseItem) {
-            UseItem(paramList);
+            UseItem(param);
         } else if (logic == Logic.SkipTurn) {
-            SkipTurn(paramList);
+            SkipTurn(param);
         } else if (logic == Logic.SetScene) {
-            SetScene(paramList);
+            SetScene(param);
         } else if (logic == Logic.ShowSelectScene) {
-            ShowSelectSceneDialog(paramList);
+            ShowSelectSceneDialog(param);
         }
     }
 
-    public void AttrInfluence(params object[] paramList)
+    public void AttrInfluence(object param)
     {
-        if (paramList.Length <= 0) return;
-        var influenceList = paramList[0] as List<AttrInfluence>;
+        if (param == null) return;
+        var influenceList = param as List<AttrInfluence>;
         DataInfluenceSystem.I.AddInfluence(influenceList);
     }
 
-    public void AttrChange(params object[] paramList)
+    public void AttrChange(object param)
     {
-        if (paramList.Length <= 0) return;
-        var influenceList = paramList[0] as List<AttrInfluence>;
+        if (param == null) return;
+        var influenceList = param as List<AttrInfluence>;
         DataSystem.I.ApplyInfluenceList(influenceList);
     }
 
-    public void AttrChangeShield(params object[] paramList)
+    public void AttrChangeShield(object param)
     {
-        if (paramList.Length <= 0) return;
+        if (param == null) return;
         // 检测是否有护身符, 有就使用, 没有就改变数值
         if (ConditionSystem.I.IsConditionMet(new Condition() {Formula = $"IsHaveItem(2)"})) {
             ItemLogic.I.ConsumeItem(2, 1);
         } else {
-            AttrChange(paramList);
+            var influenceList = param as List<AttrInfluence>;
+            AttrChange(influenceList);
         }
     }
 
-    public void AddItem(params object[] paramList)
+    public void AddItem(object param)
     {
-        if (paramList.Length <= 0) return;
-        var itemID = (int)paramList[0];
-        int num = (int)(paramList[1] ?? 1);
-        ItemLogic.I.AddItem(itemID, num);
+        if (param == null) return;
+        (int itemID, int num, float pos) = ((int, int, float))param;
+        var rand = UnityEngine.Random.Range(0f, 1f);
+        if (rand < pos) {
+            ItemLogic.I.AddItem(itemID, num);   
+        }
     }
 
-    public void UseItem(params object[] paramList)
+    public void UseItem(object param)
     {
-        if (paramList.Length <= 0) return;
-        var itemID = (int)paramList[0];
-        int num = (int)(paramList[1] ?? 1);
-        ItemLogic.I.ConsumeItem(itemID, num);
+        if (param == null) return;
+        (int itemID, int num, float pos) = ((int, int, float))param;
+        if (pos >= 1 || (pos < 1 && UnityEngine.Random.Range(0, 1) < pos)) {
+            ItemLogic.I.ConsumeItem(itemID, num);   
+        }
     }
     
-    public void SkipTurn(params object[] paramList)
+    public void SkipTurn(object param)
     {
         var turnNum = 1;
-        if (paramList.Length > 0)
-            turnNum = (int)paramList[0];
+        if (param != null)
+            turnNum = (int)param;
         TurnFLowLogic.I.SkipTurn(turnNum);
     }
 
-    public void SetScene(params object[] paramList)
+    public void SetScene(object param)
     {
-        if (paramList.Length <= 0) return;
-        var id = (int)paramList[0];
+        if (param == null) return;
+        var id = (int)param;
         GameScenesLogic.I.SetSceneById(id);
     }
 
-    public void ShowSelectSceneDialog(params object[] paramList)
+    public void ShowSelectSceneDialog(object param)
     {
         CommonFlowLogic.I.ShowSelectSceneDialog();
     }

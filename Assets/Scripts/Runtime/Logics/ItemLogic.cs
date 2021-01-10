@@ -48,13 +48,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "烤肉",
                 Desc = "恢复生命+3",
-                // HaveInfluenceList = AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0),
-                // HaveLogicList = CommonLogicSystem.I.GetLogicList(
-                //     Logic.AttrInfluence, AIS.I.GetAttrInfluences(5f,0,0,0,0,0,0,0), null
-                // ),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(
-                    Logic.AttrChange, AIS.I.GetAttrInfluences(3f,0,0,0,0,0,0,0), null
-                ),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, AIS.I.GetAttrInfluences(3f,0,0,0,0,0,0,0), null)
+                }),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
@@ -63,8 +59,6 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "护身符",
                 Desc = "抵御消耗1次",
-                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
@@ -73,8 +67,6 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "万能钥匙",
                 Desc = "开锁",
-                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
@@ -83,10 +75,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "万能车票",
                 Desc = "重新选择入口",
-                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(
-                    Logic.ShowSelectScene
-                ),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.ShowSelectScene, null, null)
+                }),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
@@ -95,10 +86,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Goods,
                 Name = "尿遁符",
                 Desc = "跳过本回合",
-                HaveLogicList = CommonLogicSystem.I.GetLogicList(),
-                UseLogicList = CommonLogicSystem.I.GetLogicList(
-                    Logic.SkipTurn
-                ),
+                UseLogicList = CommonLogicSystem.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.SkipTurn, null, null)
+                }),
                 CostType = DataType.Gold,
                 CostNum = 3,
             },
@@ -108,6 +98,12 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "狂犬病",
                 Desc = "看不见卡牌",
                 DurFre = new DurationAndFrequency() { turn = 2 }
+            },
+            new Item() {
+                Id = 7,
+                Type = ItemType.Goods,
+                Name = "衣服",
+                Desc = "好像可以穿?",
             },
         };
         allItemList.ForEach((i) => allItemDic[i.Id] = i);
@@ -127,7 +123,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public void Init()
     {
         // 测试满道具
-        var itemData = allItemList.ToDictionary((i)=>i.Id, (i)=>1);
+        var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
         DataSystem.I.SetAttrDataByType<Dictionary<int, int>>(DataType.Items, itemData);
         SyncItemToData();
         GameUILogic.I.UpdateItems();
