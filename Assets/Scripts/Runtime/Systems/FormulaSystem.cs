@@ -64,9 +64,17 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         }
     }
 
-    public float CalcFormula(string formula)
+    public float CalcFormula(string formula, Dictionary<string, double> moreVariables = null)
     {
-        return Convert.ToSingle(calcEngine.Calculate(formula, variables));
+        if (moreVariables == null) {
+            moreVariables = variables;
+        } else {
+            moreVariables = moreVariables
+                .Concat(
+                    variables.Where((kvp) => !moreVariables.ContainsKey(kvp.Key)))
+                .ToDictionary((kvp)=>kvp.Key, (kvp)=>kvp.Value);
+        }
+        return Convert.ToSingle(calcEngine.Calculate(formula, moreVariables));
     }
     
     private double IsHaveItem(double id)

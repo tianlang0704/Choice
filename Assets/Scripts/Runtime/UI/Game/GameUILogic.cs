@@ -100,7 +100,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
         }
 
         // 数量
-        var amountText = amount.ToString();
+        var amountText = Mathf.Ceil(amount).ToString();
         foreach (char c in amountText) {
             outText += string.Format(resStrFormat, c);
         }
@@ -122,7 +122,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
         // 数量
         var outText = "";
-        var amountText = amount.ToString();
+        var amountText = Mathf.Ceil(amount).ToString();
         foreach (var c in amountText) {
             outText += string.Format(resStrFormat, c);
         }

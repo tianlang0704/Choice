@@ -9,6 +9,7 @@ public class Card
     public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
     public int Id;
     public int DrawPriority = 0;
+    public bool IsMaskable = true;
     public CardType type = CardType.Basic;
     public Condition FillCondition;
     public Condition DrawCondition;

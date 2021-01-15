@@ -8,8 +8,9 @@ public class AttrInfluence
 {
     public int InstenceId;
     public DataType AttributeType;
-    public Attr Attr;
-    public bool IsAdd = true;
+    public Attr Attr = null;
+    public string Formula;
+    public bool IsSet = false;
     public DurationAndFrequency DurFre = null;
 }
 
@@ -98,14 +99,14 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         string Luck = null, string Bag = null, string Distance = null, string Day = null)
     {
         var infList = new List<AttrInfluence>() {
-            new AttrInfluence() {AttributeType = DataType.HP, Attr = Hp},
-            new AttrInfluence() {AttributeType = DataType.Stamina, Attr = Stamina},
-            new AttrInfluence() {AttributeType = DataType.Mood, Attr = Mood},
-            new AttrInfluence() {AttributeType = DataType.Gold, Attr = Gold},
-            new AttrInfluence() {AttributeType = DataType.Luck, Attr = Luck},
-            new AttrInfluence() {AttributeType = DataType.Bag, Attr = Bag},
-            new AttrInfluence() {AttributeType = DataType.Distance, Attr = Distance},
-            new AttrInfluence() {AttributeType = DataType.Day, Attr = Day},
+            new AttrInfluence() {AttributeType = DataType.HP, Formula = Hp},
+            new AttrInfluence() {AttributeType = DataType.Stamina, Formula = Stamina},
+            new AttrInfluence() {AttributeType = DataType.Mood, Formula = Mood},
+            new AttrInfluence() {AttributeType = DataType.Gold, Formula = Gold},
+            new AttrInfluence() {AttributeType = DataType.Luck, Formula = Luck},
+            new AttrInfluence() {AttributeType = DataType.Bag, Formula = Bag},
+            new AttrInfluence() {AttributeType = DataType.Distance, Formula = Distance},
+            new AttrInfluence() {AttributeType = DataType.Day, Formula = Day},
         };
         return infList;
     }
@@ -119,7 +120,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     {
         return new List<AttrInfluence>() {new AttrInfluence() {
             AttributeType = type,
-            Attr = formula
+            Formula = formula
         }};
     }
 
@@ -205,14 +206,18 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     {
         var typeInt = (int)influence.AttributeType;
         if(typeInt >= (int)DataType._ValueTypeMax) return;
-        if (influence.Attr.Type == Attr.DataType.FLOAT || influence.Attr.Type == Attr.DataType.INT) {
-            var changeAmount = influence.Attr;
-            if (!influence.IsAdd) {
-                changeAmount *= -1;
-            }
+        float changeAmount = 0f;
+        if (influence.Formula != null) {
+            changeAmount = FormulaSystem.I.CalcFormula(influence.Formula, new Dictionary<string, double>() {
+                { "Value", DataSystem.I.GetAttrDataByType<float>(influence.AttributeType) }
+            });
+        } else {
+            changeAmount = influence.Attr;
+        }
+        if (influence.IsSet) {
+            baseAttr.SetValue(changeAmount);
+        } else {
             baseAttr.SetValue(baseAttr.GetValue<float>() + changeAmount);
-        } else if(influence.Attr.Type == Attr.DataType.CUSTOM){
-            print("不能改变CUSTOM类型属性, 其实这里也不应该出现CUSTOM类型属性");
         }
     }
     // 应用卡片偏重
@@ -240,7 +245,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
                 value = 0f;
             }
             // 改变值
-            if (influence.IsAdd) {
+            if (influence.IsSet) {
                 value += newKvp.Value;
             } else {
                 value -= newKvp.Value;

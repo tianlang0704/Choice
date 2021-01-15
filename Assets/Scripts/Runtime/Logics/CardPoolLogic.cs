@@ -20,6 +20,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             new Card() {
                 Id = 10001,
                 DrawPriority = 1,
+                IsMaskable = false,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
                 DrawCondition = new Condition() {Formula = "CurrentTurn >= 7"},
                 content = "今天结束了, 请休息",
@@ -308,7 +309,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             }
         }
         // 处理看不见
-        if (!ConditionSystem.I.IsConditionMet(turnCard.SeeCondition)) {
+        if (turnCard.IsMaskable && !ConditionSystem.I.IsConditionMet(turnCard.SeeCondition)) {
             turnCard.content = "???";
             for (int i = 0; i < turnCard.answers.Count; i++)
             {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum Logic {
     AttrChange = 0,     // 永久改变数值
-    AttrChangeShield,   // 永久改变数值, 但是先检查护身符
+    AttrChangeHurt,   // 永久改变数值, 但是先检查护身符
     AttrInfluence,      // 暂时影响数值
     AddItem,            // 添加道具
     UseItem,            // 使用道具
@@ -63,8 +63,8 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     {
         if (logic == Logic.AttrChange) {
             AttrChange(param);
-        } else if (logic == Logic.AttrChangeShield) {
-            AttrChangeShield(param);
+        } else if (logic == Logic.AttrChangeHurt) {
+            AttrChangeHurt(param);
         } else if (logic == Logic.AttrInfluence) {
             AttrInfluence(param);
         } else if (logic == Logic.AddItem) {
@@ -94,7 +94,7 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         DataSystem.I.ApplyInfluenceList(influenceList);
     }
 
-    public void AttrChangeShield(object param)
+    public void AttrChangeHurt(object param)
     {
         if (param == null) return;
         // 检测是否有护身符, 有就使用, 没有就改变数值

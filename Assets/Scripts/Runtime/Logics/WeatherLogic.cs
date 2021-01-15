@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using AIS = DataInfluenceSystem;
 
 public class Weather {
     public int Id;
@@ -21,7 +22,7 @@ public class WeatherLogic : SingletonBehaviour<WeatherLogic>
             new Weather() {
                 Id = 1,
                 Name = "晴天",
-                baseConsumption = DataInfluenceSystem.I.GetAttrInfluences(-2),
+                baseConsumption = AIS.I.GetAttrInfluence(DataType.HP, $"-1*Value*(Day+1)*0.1"),
             }
         };
         foreach (var weather in allWeather) {

@@ -17,6 +17,8 @@ public enum DataType {
     Weather,            // 天气
     CurrentTurn,        // 现在回合数
     MaxTurn,            // 总回合数
+    IncomeFactor,       // 收益因数
+    HurtFactor,         // 伤害因数
     _ValueTypeMax = 999, // 数值类型属性
     CardWeight,         // 卡片附加几率
     DayCards,           // 一天卡池ID
@@ -104,16 +106,15 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     {
         var attr = new Attr();
         DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
-        DataInfluenceSystem.I.ApplyInfluence(attr, GetInfluenceFromType(type));
+        DataInfluenceSystem.I.ApplyInfluence(attr, ConvertDataToInfluence(type));
         return attr.GetValue<T>();
     }
     // 把数值转换成影响
-    public AttrInfluence GetInfluenceFromType(int type)
+    public AttrInfluence ConvertDataToInfluence(int type)
     {
-        return GetInfluenceFromType((DataType)type);
+        return ConvertDataToInfluence((DataType)type);
     }
-    // 把数值转换成影响
-    public AttrInfluence GetInfluenceFromType(DataType type)
+    public AttrInfluence ConvertDataToInfluence(DataType type)
     {
         var attr = GetAttrDataByType(type);
         return new AttrInfluence(){
@@ -137,11 +138,12 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         foreach (var influence in list)
         {
             var type = influence.AttributeType;
-            var attr = GetAttrDataByType(type);
-            DataInfluenceSystem.I.ApplyChangeToAttr(attr, influence);
             var attrChange = new Attr();
             DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influence);
             dataChange[type] = attrChange;
+            var attr = GetAttrDataByType(type);
+            attr.SetValue(attr.GetValue<float>() + attrChange.GetValue<float>());
+            // DataInfluenceSystem.I.ApplyChangeToAttr(attr, influence);
         }
     }
 }

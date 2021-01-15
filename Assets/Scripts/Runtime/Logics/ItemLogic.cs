@@ -176,7 +176,8 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         DataInfluenceSystem.I.AddInfluence(haveItem.HaveInfluenceList);
         // 更新频率和时长
         if (haveItem.DurFre != null) {
-            DurFreSystem.I.AddDurFreControl(haveItem.DurFre, () => {
+            var durFreCopy = haveItem.DurFre.ShallowCopy();
+            DurFreSystem.I.AddDurFreControl(durFreCopy, () => {
                 ConsumeItem(id, 1);
             });
         }
