@@ -155,4 +155,14 @@ public class DataSystem : SingletonBehaviour<DataSystem>
             SetAttrDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
         }
     }
+
+    // 设置回调
+    public void AddCallback(DataType type, Callback cb)
+    {
+        if (!dataChangeCallback.ContainsKey(type)) {
+            dataChangeCallback[type] = cb;
+        } else {
+            dataChangeCallback[type] += cb;
+        }
+    }
 }

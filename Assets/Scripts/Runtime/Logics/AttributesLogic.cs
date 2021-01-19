@@ -116,5 +116,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         ResetQualityWeight();
         // 初始化幸运影响卡牌
         UpdateCardWeightFromLuck();
+        // 幸运变化回调
+        DataSystem.I.AddCallback(DataType.Luck, UpdateCardWeightFromLuck);
     }
 }

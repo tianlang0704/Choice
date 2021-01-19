@@ -33,9 +33,9 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         // 初始化
         DataSystem.I.Init();            // 初始化数据
         DataInfluenceSystem.I.Init();   // 初始化数据影响
+        AttributesLogic.I.Init();       // 初始化属性
         FormulaSystem.I.Init();         // 初始化公式系统
         ConditionSystem.I.Init();       // 初始化条件系统
-        AttributesLogic.I.Init();       // 初始化属性
         GameScenesLogic.I.Init();       // 初始化场景
         CardPoolLogic.I.Init();         // 初始化卡牌池
         ItemLogic.I.Init();             // 初始化道具
