@@ -21,12 +21,15 @@ public enum DataType {
     HurtFactor,         // 伤害因数
     _ValueTypeMax = 999, // 数值类型属性
     CardWeight,         // 卡片附加几率
+    CardLuckWeight,     // 卡牌幸运权重
+    CardQualityWeight,  // 卡牌质量权重
     DayCards,           // 一天卡池ID
     Items,              // 物品(包括 道具, 装备, 遗物)
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>
 {
+    public delegate void Callback();
     public static float INVALID_ATTR = -99999999f;
     private Dictionary<DataType, Attr> dataDic = new Dictionary<DataType, Attr>();
     public Dictionary<DataType, Attr> DataDic {
@@ -36,7 +39,10 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     public Dictionary<DataType, Attr> DataChange {
         get {return dataChange;}
     }
-
+    private Dictionary<DataType, Callback> dataChangeCallback = new Dictionary<DataType, Callback>();
+    public Dictionary<DataType, Callback> DataChangeCallback {
+        get {return dataChangeCallback;}
+    }
     void Awake()
     {
 
@@ -58,6 +64,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     {
         dataDic.Clear();
         dataChange.Clear();
+        dataChangeCallback.Clear();
         // 初始化全部数据
         var dataTypes = System.Enum.GetValues(typeof(DataType));
         foreach (int type in dataTypes) {
@@ -131,6 +138,9 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     public void SetAttrDataByType<T>(DataType type, T value)
     {
         dataDic[type].SetValue<T>(value);
+        if (dataChangeCallback.ContainsKey(type)) {
+            dataChangeCallback[type]();
+        }
     }
     // 直接应用影响
     public void ApplyInfluenceList(List<AttrInfluence> list)
@@ -142,8 +152,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
             DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influence);
             dataChange[type] = attrChange;
             var attr = GetAttrDataByType(type);
-            attr.SetValue(attr.GetValue<float>() + attrChange.GetValue<float>());
-            // DataInfluenceSystem.I.ApplyChangeToAttr(attr, influence);
+            SetAttrDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
         }
     }
 }

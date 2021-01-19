@@ -97,7 +97,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Type = ItemType.Buff,
                 Name = "狂犬病",
                 Desc = "看不见卡牌",
-                DurFre = new DurationAndFrequency() { turn = 2 }
+                DurFre = new DurationAndFrequency() { Turn = 2 }
             },
             new Item() {
                 Id = 7,

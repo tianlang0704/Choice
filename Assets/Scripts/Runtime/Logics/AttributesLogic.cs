@@ -72,6 +72,30 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         return false;
     }
 
+    public void UpdateCardWeightFromLuck()
+    {
+        var luck = DataSystem.I.GetAttrDataByType<float>(DataType.Luck);
+        var variWeight = Mathf.Lerp(0, 80, luck/40f);
+        Dictionary<int, float> luckWeight = new Dictionary<int, float>();
+        luckWeight[0] = 80 - variWeight;
+        luckWeight[1] = 20 + variWeight;
+        DataSystem.I.SetAttrDataByType(DataType.CardLuckWeight, luckWeight);
+    }
+
+    public void ResetQualityWeight()
+    {
+        Dictionary<CardQuality, float> qualityWeight = new Dictionary<CardQuality, float>(){
+            {CardQuality.Red, 15f},
+            {CardQuality.White, 30},
+            {CardQuality.Green, 25},
+            {CardQuality.Blue, 15f},
+            {CardQuality.Purple, 10f},
+            {CardQuality.Gold, 5f},
+        };
+        DataSystem.I.SetAttrDataByType(DataType.CardQualityWeight, qualityWeight);
+        DataInfluenceSystem.I.RemoveInfluence(DataType.CardQualityWeight);
+    }
+    
     public void Init()
     {
         // 初始化显示属性
@@ -80,7 +104,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         }
         // 初始化其他属性
         DataSystem.I.SetAttrDataByType(DataType.Bag, 5);
-        DataSystem.I.SetAttrDataByType(DataType.Luck, 0);
+        DataSystem.I.SetAttrDataByType(DataType.Luck, 5);
         DataSystem.I.SetAttrDataByType(DataType.Distance, 0);
         DataSystem.I.SetAttrDataByType(DataType.Day, 0);
         // 初始化属性最大值
@@ -88,5 +112,9 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         maxValueDic[DataType.HP] = 20;
         maxValueDic[DataType.Stamina] = 20;
         maxValueDic[DataType.Gold] = 20;
+        // 初始化质量影响卡牌
+        ResetQualityWeight();
+        // 初始化幸运影响卡牌
+        UpdateCardWeightFromLuck();
     }
 }

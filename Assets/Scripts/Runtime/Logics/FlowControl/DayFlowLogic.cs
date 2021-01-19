@@ -37,6 +37,7 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
         // 刷新一天
         DayFlowLogic.I.IncreaseDay();
         DurFreSystem.I.UpdateDay();
+        AttributesLogic.I.ResetQualityWeight();
         // 重新刷新卡牌
         CardPoolLogic.I.ShuffleDayCards();
         // 重置现在回合为0

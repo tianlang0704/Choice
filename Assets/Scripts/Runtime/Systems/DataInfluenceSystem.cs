@@ -138,7 +138,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         var attrInfluence = new AttrInfluence(){
             AttributeType = DataType.CardWeight,
             Attr = attr,
-            DurFre = new DurationAndFrequency() { turn = turn }
+            DurFre = new DurationAndFrequency() { Turn = turn }
         };
         return new List<AttrInfluence>{attrInfluence};
     }
@@ -162,6 +162,24 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             AddInfluence(influ);
         });
     }
+    // 添加或者改变第一个影响
+    public void AddOrChangeInfluence(AttrInfluence influ)
+    {
+        var existingQualityWeightList = DataInfluenceSystem.I.GetExistingInfluenceListForType(influ.AttributeType);
+        if (existingQualityWeightList != null && existingQualityWeightList.Count > 0) {
+            var existingQualityWeight = existingQualityWeightList[0];
+            ApplyInfluence(existingQualityWeight.Attr, influ);
+        } else {
+            AddInfluence(influ);
+        }
+    }
+    public void AddOrChangeInfluence(List<AttrInfluence> influenceList)
+    {
+        if (influenceList == null) return;
+        influenceList.ForEach((influ) => {
+            AddOrChangeInfluence(influ);
+        });
+    }
     // 移除一个影响
     public void RemoveInfluence(AttrInfluence influ)
     {
@@ -174,10 +192,22 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     }
     public void RemoveInfluence(List<AttrInfluence> influenceList)
     {
-        if (influenceList == null) return;
-        influenceList.ForEach((influ) => {
+        if (influenceList == null || influenceList.Count <= 0) return;
+        for (int i = influenceList.Count - 1; i <= 0; i++) {
+            var influ = influenceList[i];
             RemoveInfluence(influ);
-        });
+        }
+    }
+    public void RemoveInfluence(DataType type)
+    {
+        if (!influDic.ContainsKey(type)) return;
+        var infList = influDic[type];
+        RemoveInfluence(infList);
+    }
+    public List<AttrInfluence> GetExistingInfluenceListForType(DataType type)
+    {
+        if (!influDic.ContainsKey(type)) return null;
+        return influDic[type];
     }
     // 应用系统里某个类型的影响
     public void ApplyInfluenceByType(Attr baseAttr, DataType type)
@@ -200,6 +230,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     {
         ApplyChangeToAttr(baseAttr, influence);
         ApplyChangeToCardWeight(baseAttr, influence);
+        ApplyChangeToQualityWeight(baseAttr, influence);
     }
     // 应用属性影响列表
     public void ApplyChangeToAttr(Attr baseAttr, AttrInfluence influence) 
@@ -220,10 +251,13 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             baseAttr.SetValue(baseAttr.GetValue<float>() + changeAmount);
         }
     }
+
     // 应用卡片偏重
     public void ApplyChangeToCardWeight(Attr baseAttr, AttrInfluence influence)
     {
-        if (influence.AttributeType != DataType.CardWeight) return;
+        if (influence.AttributeType != DataType.CardWeight &&
+            influence.AttributeType != DataType.CardLuckWeight
+        ) return;
         if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
         // 从属性中获取现在表
         var curWeights = baseAttr.GetValue<Dictionary<int, float>>();
@@ -234,24 +268,25 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         // 获取新表
         var newAttr = influence.Attr;
         var newWeights = newAttr.GetValue<Dictionary<int, float>>();
-        // 循环加值
-        foreach (var newKvp in newWeights)
-        {
-            // 找旧值
-            float value;
-            if (curWeights.ContainsKey(newKvp.Key)){
-                value = curWeights[newKvp.Key];
-            } else {
-                value = 0f;
-            }
-            // 改变值
-            if (influence.IsSet) {
-                value += newKvp.Value;
-            } else {
-                value -= newKvp.Value;
-            }
-            // 设置回表
-            curWeights[newKvp.Key] = value;
+        // 应用偏重
+        GameUtil.ApplyDicWeight(curWeights, newWeights, influence.IsSet);
+    }
+
+    // 应用卡片质量偏重
+    public void ApplyChangeToQualityWeight(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.AttributeType != DataType.CardQualityWeight) return;
+        if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
+        // 从属性中获取现在表
+        var curWeights = baseAttr.GetValue<Dictionary<CardQuality, float>>();
+        if (curWeights == null) {
+            curWeights = new Dictionary<CardQuality, float>();
+            baseAttr.SetValue(curWeights);
         }
+        // 获取新表
+        var newAttr = influence.Attr;
+        var newWeights = newAttr.GetValue<Dictionary<CardQuality, float>>();
+        // 应用偏重
+        GameUtil.ApplyDicWeight(curWeights, newWeights, influence.IsSet);
     }
 }

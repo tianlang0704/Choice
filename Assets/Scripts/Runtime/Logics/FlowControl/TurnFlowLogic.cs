@@ -62,12 +62,22 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         // 抽卡
         var card = CardPoolLogic.I.RerollTurnCard();
         // 处理没有卡用了
-        // if (card == null) {
-
-        // }
+        if (card == null) {
+            // 先找有没有通用提示卡
+            card = CardPoolLogic.I.GetCardById(10002); 
+            // 如果没有提示卡, 就跳过今天
+            if (card == null) {
+                // 更新界面
+                GameUILogic.I.UpdateView();
+                // 下一回合
+                NextTurn();
+                return;
+            }
+        }
+        // 显示卡片
         CommonFlowLogic.I.ShowDialog(
             card.content, 
-                (ansNum) => {
+            (ansNum) => {
                 // 获取答案
                 Answer answer = card.answers[ansNum];
                 // 执行逻辑列表

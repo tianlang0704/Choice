@@ -4,15 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class DurationAndFrequency{
-    public int turn = 0;
-    public int day = 0;
-    public int turnInterval = 0;
-    public int dayInterval = 0;
-    public int curTurn = -1;
-    public int curDay = 0;
-    public int curTurnInterval = 0;
-    public int curDayInterval = 0;
+public enum DruFreUpdateType {
+    Turn = 1,
+    Day
+}
+
+public class DurationAndFrequency {
+    public int Turn = 0;
+    public int Day = 0;
+    public int TurnInterval = 0;
+    public int DayInterval = 0;
+    public int CurTurn = -1;
+    public int CurDay = 0;
+    public int CurTurnInterval = 0;
+    public int CurDayInterval = 0;
+    public Action<DruFreUpdateType> UpdateCallback;
+    public Func<bool> Predicate;
     public DurationAndFrequency ShallowCopy()
     {
         return (DurationAndFrequency)this.MemberwiseClone();
@@ -37,16 +44,19 @@ public class DurFreSystem : SingletonBehaviour<DurFreSystem>
 
     private void ResetDurFre(DurationAndFrequency durFre)
     {
-        durFre.curDay = 0;
-        durFre.curTurn = -1;
-        durFre.curDayInterval = 0;
-        durFre.curTurnInterval = 0;
+        durFre.CurDay = 0;
+        durFre.CurTurn = -1;
+        durFre.CurDayInterval = 0;
+        durFre.CurTurnInterval = 0;
     }
 
     public void UpdateTurn()
     {   
         tracker.ToList().ForEach((kvp) => {
-            kvp.Key.curTurn += 1;
+            kvp.Key.CurTurn += 1;
+            if (kvp.Key.UpdateCallback != null) {
+                kvp.Key.UpdateCallback(DruFreUpdateType.Turn);
+            }
         });
         CheckAndRemove();
     }
@@ -54,14 +64,17 @@ public class DurFreSystem : SingletonBehaviour<DurFreSystem>
     public void ResetTurn()
     {
         tracker.ToList().ForEach((kvp) => {
-            kvp.Key.curTurn = 0;
+            kvp.Key.CurTurn = 0;
         });
     }
 
     public void UpdateDay()
     {
         tracker.ToList().ForEach((kvp) => {
-            kvp.Key.curDay += 1;
+            kvp.Key.CurDay += 1;
+            if (kvp.Key.UpdateCallback != null) {
+                kvp.Key.UpdateCallback(DruFreUpdateType.Day);
+            }
         });
         CheckAndRemove();
     }
@@ -69,16 +82,20 @@ public class DurFreSystem : SingletonBehaviour<DurFreSystem>
     public void ResetDay()
     {
         tracker.ToList().ForEach((kvp) => {
-            kvp.Key.curDay = 0;
+            kvp.Key.CurDay = 0;
         });
     }
 
     void CheckAndRemove()
     {
+        // 检查时间
         var durFreToRemove = new List<DurationAndFrequency>();
         tracker.ToList().ForEach((kvp) => {
             var durFre = kvp.Key;
-            if (durFre.curTurn >= durFre.turn && durFre.curDay >= durFre.day) {
+            if (durFre.CurTurn >= durFre.Turn && 
+                durFre.CurDay >= durFre.Day &&
+                (durFre.Predicate == null || durFre.Predicate())
+            ) {
                 // 添加去除
                 durFreToRemove.Add(durFre);
                 // 调用回调
@@ -94,7 +111,10 @@ public class DurFreSystem : SingletonBehaviour<DurFreSystem>
 
     public void AddDurFreControl(DurationAndFrequency durFre, Action cb)
     {
-        if (durFre == null || (durFre.turn == 0 && durFre.day == 0)) return;
+        if (durFre == null || (durFre.Turn == 0 && durFre.Day == 0 && durFre.Predicate == null)) {
+            cb();
+            return;
+        }
         ResetDurFre(durFre);
         tracker[durFre] = cb;
     }

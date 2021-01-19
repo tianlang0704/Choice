@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-
+public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
+public enum CardQuality { Red = 0, White, Green, Blue, Purple, Gold, Special }
 public class Card 
 {
-    public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
     public int Id;
     public int DrawPriority = 0;
     public bool IsMaskable = true;
-    public CardType type = CardType.Basic;
+    public CardType Type = CardType.Basic;
+    public CardQuality Quality = CardQuality.White;
     public Condition FillCondition;
     public Condition DrawCondition;
     public Condition SeeCondition = new Condition() { Formula = "IsHaveItem(6)==0" };
@@ -46,5 +47,18 @@ public class CardLogic : SingletonBehaviour<CardLogic>
     void Update()
     {
         
+    }
+
+    public void MaskCard(Card c)
+    {
+        c.content = "???";
+        var oriAnswers = c.answers;
+        c.answers = new List<Answer>();
+        for (int i = 0; i < oriAnswers.Count; i++)
+        {
+            var a = oriAnswers[i].ShallowCopy();
+            a.content = "????";
+            c.answers.Add(a);
+        }
     }
 }
