@@ -22,7 +22,9 @@ public class WeatherLogic : SingletonBehaviour<WeatherLogic>
             new Weather() {
                 Id = 1,
                 Name = "晴天",
-                baseConsumption = AIS.I.GetAttrInfluence(DataType.HP, $"-1*Value*(Day+1)*0.1"),
+                baseConsumption = new List<AttrInfluence>() {
+                    AIS.I.GetAttrInfluence(DataType.HP, $"-1*Value*(CurrentDay+1)*0.1")
+                },
             }
         };
         foreach (var weather in allWeather) {
@@ -44,7 +46,7 @@ public class WeatherLogic : SingletonBehaviour<WeatherLogic>
     public void Init()
     {
         var weatherIndex = Random.Range(0, allWeather.Count());
-        DataSystem.I.SetAttrDataByType(DataType.Weather, allWeather[weatherIndex].Id);
+        DataSystem.I.SetDataByType(DataType.Weather, allWeather[weatherIndex].Id);
     }
 
     public void SyncWeatherData()

@@ -13,13 +13,11 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     };
 
     public List<DataType> DeadlyAttrTypes = new List<DataType>() {
-        DataType.Mood,
+        // DataType.Mood,
         DataType.HP,
-        DataType.Stamina,
-        DataType.Gold,
+        // DataType.Stamina,
+        // DataType.Gold,
     };
-
-    private Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
 
     public List<float> DisplayAttrData {
         get { 
@@ -39,9 +37,47 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         }
     }
 
+    private Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
+    private Dictionary<int, Dictionary<float, List<int>>> moodToBuff;
+
     protected void Awake()
     {
-
+        moodToBuff = new Dictionary<int, Dictionary<float, List<int>>>() {
+            {0, new Dictionary<float, List<int>>() {
+                {1f, new List<int>() {GameUtil.ItemId(10002), GameUtil.ItemId(10003), GameUtil.ItemId(10004)}},
+            }},
+            {1, new Dictionary<float, List<int>>() {
+                {0.3f, new List<int>() {GameUtil.ItemId(10002), GameUtil.ItemId(10003), GameUtil.ItemId(10004)}},
+                {0.7f, new List<int>() {GameUtil.ItemId(10005), GameUtil.ItemId(10006)}},
+            }},
+            {2, new Dictionary<float, List<int>>() {
+                {0.15f, new List<int>() {GameUtil.ItemId(10002), GameUtil.ItemId(10003), GameUtil.ItemId(10004)}},
+                {0.30f, new List<int>() {GameUtil.ItemId(10005), GameUtil.ItemId(10006)}},
+                {0.55f, new List<int>() {GameUtil.ItemId(10007), GameUtil.ItemId(10008)}},
+            }},
+            {3, new Dictionary<float, List<int>>() {
+                {0.15f, new List<int>() {GameUtil.ItemId(10005), GameUtil.ItemId(10006)}},
+                {0.30f, new List<int>() {GameUtil.ItemId(10007), GameUtil.ItemId(10008)}},
+                {0.55f, new List<int>() {GameUtil.ItemId(10009), GameUtil.ItemId(10010), GameUtil.ItemId(10011)}},
+            }},
+            {10, new Dictionary<float, List<int>>() {
+                {1f, new List<int>() {GameUtil.ItemId(10012), GameUtil.ItemId(10013), GameUtil.ItemId(10014)}},
+            }},
+            {9, new Dictionary<float, List<int>>() {
+                {0.3f, new List<int>() {GameUtil.ItemId(10012), GameUtil.ItemId(10013), GameUtil.ItemId(10014)}},
+                {0.7f, new List<int>() {GameUtil.ItemId(10015), GameUtil.ItemId(10016)}},
+            }},
+            {8, new Dictionary<float, List<int>>() {
+                {0.15f, new List<int>() {GameUtil.ItemId(10012), GameUtil.ItemId(10013), GameUtil.ItemId(10014)}},
+                {0.30f, new List<int>() {GameUtil.ItemId(10015), GameUtil.ItemId(10016)}},
+                {0.55f, new List<int>() {GameUtil.ItemId(10017), GameUtil.ItemId(10018)}},
+            }},
+            {7, new Dictionary<float, List<int>>() {
+                {0.15f, new List<int>() {GameUtil.ItemId(10015), GameUtil.ItemId(10016)}},
+                {0.30f, new List<int>() {GameUtil.ItemId(10017), GameUtil.ItemId(10018)}},
+                {0.55f, new List<int>() {GameUtil.ItemId(10019), GameUtil.ItemId(10020), GameUtil.ItemId(10021)}},
+            }},
+        };
     }
 
     // Start is called before the first frame update
@@ -62,6 +98,105 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         return false;
     }
 
+    public void Init()
+    {
+        // 初始化显示属性
+        foreach (var type in DisplayAttrTypes) {
+            DataSystem.I.SetDataByType(type, 5);
+        }
+        // 初始化其他属性
+        DataSystem.I.SetDataByType(DataType.Bag, 5);
+        DataSystem.I.SetDataByType(DataType.Luck, 5);
+        DataSystem.I.SetDataByType(DataType.Distance, 0);
+        DataSystem.I.SetDataByType(DataType.CurrentDay, 0);
+        DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
+        DataSystem.I.SetDataByType(DataType.HurtFactor, 1);
+        DataSystem.I.SetDataByType(DataType.IncomeFactor, 1);
+        DataSystem.I.SetDataByType(DataType.CostFactor, 1);
+        // 初始化属性最大值
+        maxValueDic[DataType.Mood] = 10;
+        maxValueDic[DataType.HP] = 10;
+        maxValueDic[DataType.Stamina] = 10;
+        maxValueDic[DataType.Gold] = 10;
+        // 初始化质量影响卡牌
+        Dictionary<CardQuality, float> qualityWeight = new Dictionary<CardQuality, float>(){
+            {CardQuality.Red, 15f},
+            {CardQuality.White, 30f},
+            {CardQuality.Green, 25f},
+            {CardQuality.Blue, 15f},
+            {CardQuality.Purple, 10f},
+            {CardQuality.Gold, 5f},
+        };
+        DataSystem.I.SetDataByType(DataType.CardQualityWeight, qualityWeight);
+        // 初始化幸运影响卡牌
+        UpdateCardWeightFromLuck();
+        // 幸运变化回调
+        DataSystem.I.AddCallback(DataType.Luck, () => {
+            UpdateCardWeightFromLuck();
+        });
+        // 心情变化回调
+        DataSystem.I.AddCallback(DataType.Mood, () => {
+            RollMoodBuff();
+        });
+    }
+    public void ApplyInfluence(AttrInfluence influ, float factor = 1f)
+    {
+        if (influ == null) return;
+        if ((int)influ.AttributeType < (int)DataType._AttrTypeMax) {
+            var type = influ.AttributeType;
+            if (maxValueDic.ContainsKey(type)) {
+                // 计算最终值
+                Attr tempAttr = new Attr();
+                var curValueInflu = DataSystem.I.ConvertDataToInfluence(type);
+                DataInfluenceSystem.I.ApplyInfluence(tempAttr, curValueInflu);
+                DataInfluenceSystem.I.ApplyInfluence(tempAttr, influ);
+                // 限制值范围
+                var maxValue = maxValueDic[type];
+                var unclampedValue = (tempAttr - curValueInflu.Attr) * factor;
+                var clampedValue = Mathf.Clamp(curValueInflu.Attr + unclampedValue, 0, maxValue);
+                tempAttr.SetValue(clampedValue - curValueInflu.Attr);
+                // 重新设置影响值
+                influ = influ.ShallowCopy();
+                influ.Formula = null;
+                influ.Attr = tempAttr;
+            }
+        }
+        DataSystem.I.ApplyInfluence(influ);
+    }
+    public void ApplyInfluence(List<AttrInfluence> influList, float factor = 1f)
+    {
+        foreach (var influence in influList) {
+            ApplyInfluence(influence, factor);
+        }
+    }
+    public void ApplyInfluence(List<AttrInfluence> influList, DataType factorType, DataType modifierType)
+    {
+        var factor = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(factorType);
+        var modifierList = DataSystem.I.CopyAttrDataWithInfluenceByType<List<AttrInfluence>>(modifierType);
+        foreach (var influence in influList) {
+            var influToUse = influence;
+            // 查看是否需要修改伤害值
+            var validModifier = modifierList?.Where((i)=>i.AttributeType == influToUse.AttributeType || i.AttributeType == DataType.Any).ToList();
+            if (validModifier != null && validModifier.Count > 0) {
+                 influToUse = DataInfluenceSystem.I.ModifyAndCopyInfluence(influToUse, validModifier);
+            }
+            ApplyInfluence(influToUse, factor);
+        }
+    }
+    public void ApplyInfluenceIncome(List<AttrInfluence> influList)
+    {
+        ApplyInfluence(influList, DataType.IncomeFactor, DataType.IncomeModifier);
+    }
+    public void ApplyInfluenceHurt(List<AttrInfluence> influList)
+    {
+        ApplyInfluence(influList, DataType.HurtFactor, DataType.HurtModifier);
+    }
+    public void ApplyInfluenceCost(List<AttrInfluence> influList)
+    {
+        ApplyInfluence(influList, DataType.CostFactor, DataType.CostModifier);
+    }
+
+    // 获取是否死亡
     public bool IsDead()
     {
         var attrTypes = System.Enum.GetValues(typeof(DataType));
@@ -72,6 +207,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         return false;
     }
 
+    // 从幸运中获取卡牌质量偏重
     public void UpdateCardWeightFromLuck()
     {
         var luck = DataSystem.I.GetAttrDataByType<float>(DataType.Luck);
@@ -79,44 +215,42 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         Dictionary<int, float> luckWeight = new Dictionary<int, float>();
         luckWeight[0] = 80 - variWeight;
         luckWeight[1] = 20 + variWeight;
-        DataSystem.I.SetAttrDataByType(DataType.CardLuckWeight, luckWeight);
+        DataSystem.I.SetDataByType(DataType.CardLuckWeight, luckWeight);
     }
 
-    public void ResetQualityWeight()
+    // 随机心情BUFF
+    public void RollMoodBuff()
     {
-        Dictionary<CardQuality, float> qualityWeight = new Dictionary<CardQuality, float>(){
-            {CardQuality.Red, 15f},
-            {CardQuality.White, 30},
-            {CardQuality.Green, 25},
-            {CardQuality.Blue, 15f},
-            {CardQuality.Purple, 10f},
-            {CardQuality.Gold, 5f},
-        };
-        DataSystem.I.SetAttrDataByType(DataType.CardQualityWeight, qualityWeight);
-        DataInfluenceSystem.I.RemoveInfluence(DataType.CardQualityWeight);
-    }
-    
-    public void Init()
-    {
-        // 初始化显示属性
-        foreach (var type in DisplayAttrTypes) {
-            DataSystem.I.SetAttrDataByType(type, 10);
+        // 检查心情变化
+        var moodChange = 0;
+        if (DataSystem.I.DataChange.ContainsKey(DataType.Mood)) {
+            moodChange = DataSystem.I.DataChange[DataType.Mood];
         }
-        // 初始化其他属性
-        DataSystem.I.SetAttrDataByType(DataType.Bag, 5);
-        DataSystem.I.SetAttrDataByType(DataType.Luck, 5);
-        DataSystem.I.SetAttrDataByType(DataType.Distance, 0);
-        DataSystem.I.SetAttrDataByType(DataType.Day, 0);
-        // 初始化属性最大值
-        maxValueDic[DataType.Mood] = 20;
-        maxValueDic[DataType.HP] = 20;
-        maxValueDic[DataType.Stamina] = 20;
-        maxValueDic[DataType.Gold] = 20;
-        // 初始化质量影响卡牌
-        ResetQualityWeight();
-        // 初始化幸运影响卡牌
-        UpdateCardWeightFromLuck();
-        // 幸运变化回调
-        DataSystem.I.AddCallback(DataType.Luck, UpdateCardWeightFromLuck);
+        if (moodChange == 0) return;
+        // 从现在心情取出BUFF
+        var curMood = DataSystem.I.GetAttrDataByType<float>(DataType.Mood);
+        var floorMood = (int)Mathf.Floor(curMood);
+        if (!moodToBuff.ContainsKey(floorMood)) return; // 没有buff就不做任何事情
+        var buffDic = moodToBuff[floorMood];
+        // 通过Buff组几率来取一个BUFF组
+        List<int> buffList = null;
+        float random = Random.Range(0f, 1f);
+        var keys = buffDic.Keys.ToList();
+        foreach (var key in keys) {
+            random -= key;
+            if (random < 0) {
+                buffList = buffDic[key];
+            }
+        }
+        if (buffList == null || buffList.Count <= 0) return;
+        // 平均从BUFF组中随机一个BUFF出来
+        var buffRandom = Random.Range(0, buffList.Count);
+        var buff = buffList[buffRandom];
+        // 算时长
+        var turnMultiplier = 3;
+        var buffDuration = Mathf.Abs(moodChange) * turnMultiplier;
+        var durFre = new DurationAndFrequency() { Turn = buffDuration };
+        // 添加
+        ItemLogic.I.AddItem(buff, 1, durFre);
     }
 }

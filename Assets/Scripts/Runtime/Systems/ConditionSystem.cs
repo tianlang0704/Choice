@@ -27,13 +27,13 @@ public class ConditionSystem : SingletonBehaviour<ConditionSystem>
         
     }
 
-    public bool IsConditionMet(Condition condition, bool isUpdate = true)
+    public bool IsConditionMet(Condition condition, bool isUpdate = true, Dictionary<string, double> additionalParams = null)
     {
         if (condition == null) return true;
         if (isUpdate) {
             FormulaSystem.I.UpdateVariable();
         }
-        var res = FormulaSystem.I.CalcFormula(condition.Formula);
+        var res = FormulaSystem.I.CalcFormula(condition.Formula, additionalParams);
         return res == 1f;
     }
 

@@ -19,21 +19,21 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 1,
                 new SceneData(){
                     name = "路",
-                    influence = DataInfluenceSystem.I.GetAttrInfluences(0, 2),
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 2),
                 }
             },
             {
                 2,
                 new SceneData(){
                     name = "草原",
-                    influence = DataInfluenceSystem.I.GetAttrInfluences(0, 0),
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 0),
                 }
             },
             {
                 3,
                 new SceneData(){
                     name = "地狱",
-                    influence = DataInfluenceSystem.I.GetAttrInfluences(0, -5),
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, -5),
                 }
             },
         };
@@ -71,7 +71,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 
     public void SetSceneById(int id)
     {
-        DataSystem.I.SetAttrDataByType(DataType.Scene, id);
+        DataSystem.I.SetDataByType(DataType.Scene, id);
         SyncData();
     }
 }

@@ -79,27 +79,54 @@ public static class GameUtil {
         }
         return resKey;
     }
-    
-    static public void ApplyDicWeight<K>(Dictionary<K,float> source, Dictionary<K,float> inf, bool isSet)
+    static public void ApplyInfluListDicAttr<K>(Attr baseAttr, AttrInfluence influence)
     {
+        ApplyDicAttr<K, List<AttrInfluence>>(baseAttr, influence, (a, b) => { a.AddRange(b); return a; });
+    }
+    static public void ApplyFloatDicAttr<K>(Attr baseAttr, AttrInfluence influence)
+    {
+        ApplyDicAttr<K, float>(baseAttr, influence, (a, b) => a + b);
+    }
+    static public void ApplyDicAttr<K, V>(Attr baseAttr, AttrInfluence influence, Func<V,V,V> addFunc = null)
+    {
+        if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
+        // 从属性中获取现在表
+        var curWeights = baseAttr.GetValue<Dictionary<K, V>>();
+        if (curWeights == null) {
+            curWeights = new Dictionary<K, V>();
+            baseAttr.SetValue(curWeights);
+        }
+        // 获取新表
+        var newAttr = influence.Attr;
+        var newWeights = newAttr.GetValue<Dictionary<K, V>>();
         // 循环加值
-        foreach (var newKvp in inf)
+        foreach (var newKvp in newWeights)
         {
             // 找旧值
-            float value;
-            if (source.ContainsKey(newKvp.Key)){
-                value = source[newKvp.Key];
+            V value;
+            if (curWeights.ContainsKey(newKvp.Key)){
+                value = curWeights[newKvp.Key];
             } else {
                 value = default;
             }
             // 改变值
-            if (isSet) {
+            if (influence.IsSet) {
                 value = newKvp.Value;
             } else {
-                value += newKvp.Value;
+                value = addFunc(value, newKvp.Value);
             }
             // 设置回表
-            source[newKvp.Key] = value;
+            curWeights[newKvp.Key] = value;
         }
+    }
+
+    static public int CardId(int rawId)
+    {
+        return (int)ProfileIdBase.Card + rawId;
+    }
+
+    static public int ItemId(int rawId)
+    {
+        return (int)ProfileIdBase.Item + rawId;
     }
  }

@@ -5,24 +5,32 @@ using System.Linq;
 using UnityEngine;
 
 public enum DataType {
+    Any = -1,           // 用在一些需要匹配所有属性的地方
     HP = 0,             // 生命
     Stamina,            // 体力
     Mood,               // 心情
     Gold,               // 金币
     Luck,               // 幸运
     Bag,                // 负重
+    _AttrTypeMax = 1000,// 属性类型最大值 
     Distance,           // 距离
-    Day,                // 天数
+    CurrentDay,         // 天数
     Scene,              // 场景
     Weather,            // 天气
     CurrentTurn,        // 现在回合数
     MaxTurn,            // 总回合数
     IncomeFactor,       // 收益因数
     HurtFactor,         // 伤害因数
-    _ValueTypeMax = 999, // 数值类型属性
+    CostFactor,         // 费用因数
+    AnswerNumOffset,    // 答案数量加减
+    _ValueTypeMax = 10000, // 数值类型最大值
     CardWeight,         // 卡片附加几率
     CardLuckWeight,     // 卡牌幸运权重
     CardQualityWeight,  // 卡牌质量权重
+    HurtModifier,       // 伤害修改
+    IncomeModifier,     // 收入修改
+    CostModifier,       // 费用修改
+    ItemNumModifier,    // 道具数量修改
     DayCards,           // 一天卡池ID
     Items,              // 物品(包括 道具, 装备, 遗物)
 }
@@ -61,17 +69,16 @@ public class DataSystem : SingletonBehaviour<DataSystem>
 
     // 初始化
     public void Init() 
-    {
-        dataDic.Clear();
-        dataChange.Clear();
+    {    
         dataChangeCallback.Clear();
         // 初始化全部数据
+        dataDic.Clear();
         var dataTypes = System.Enum.GetValues(typeof(DataType));
         foreach (int type in dataTypes) {
-            if (System.Enum.GetName(typeof(DataType), type).FirstOrDefault() == '_') continue;
             dataDic[(DataType)type] = new Attr();
         }
         // 初始化改变数据
+        dataChange.Clear();
         foreach (int type in dataTypes) {
             dataChange[(DataType)type] = new Attr();
         }
@@ -112,8 +119,8 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     public T CopyAttrDataWithInfluenceByType<T>(DataType type)
     {
         var attr = new Attr();
-        DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
         DataInfluenceSystem.I.ApplyInfluence(attr, ConvertDataToInfluence(type));
+        DataInfluenceSystem.I.ApplyInfluenceByType(attr, type);
         return attr.GetValue<T>();
     }
     // 把数值转换成影响
@@ -130,12 +137,12 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         };
     }
     // 设置值
-    public void SetAttrDataByType<T>(int type, T value)
+    public void SetDataByType<T>(int type, T value)
     {
-        SetAttrDataByType((DataType)type, value);
+        SetDataByType((DataType)type, value);
     }
     // 设置值
-    public void SetAttrDataByType<T>(DataType type, T value)
+    public void SetDataByType<T>(DataType type, T value)
     {
         dataDic[type].SetValue<T>(value);
         if (dataChangeCallback.ContainsKey(type)) {
@@ -143,19 +150,29 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         }
     }
     // 直接应用影响
-    public void ApplyInfluenceList(List<AttrInfluence> list)
+    public void ApplyInfluence(AttrInfluence influ)
     {
-        foreach (var influence in list)
-        {
-            var type = influence.AttributeType;
-            var attrChange = new Attr();
-            DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influence);
-            dataChange[type] = attrChange;
-            var attr = GetAttrDataByType(type);
-            SetAttrDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
+        var type = influ.AttributeType;
+        var attrChange = new Attr();
+        DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influ);
+        dataChange[type] += attrChange.GetValue<float>();
+        var attr = GetAttrDataByType(type);
+        SetDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
+    }
+    public void ApplyInfluence(List<AttrInfluence> list)
+    {
+        foreach (var influence in list) {
+            ApplyInfluence(influence);
         }
     }
-
+    public void RestDataChange()
+    {
+        dataChange.Clear();
+        var dataTypes = System.Enum.GetValues(typeof(DataType));
+        foreach (int type in dataTypes) {
+            dataChange[(DataType)type] = new Attr();
+        }
+    }
     // 设置回调
     public void AddCallback(DataType type, Callback cb)
     {

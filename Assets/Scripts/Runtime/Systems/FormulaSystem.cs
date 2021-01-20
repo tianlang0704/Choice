@@ -18,6 +18,8 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     protected void Awake()
     {
         calcEngine.AddFunction("IsHaveItem", IsHaveItem);
+        calcEngine.AddFunction("TurnCardType", TurnCardType);
+        calcEngine.AddFunction("TurnCardQuality", TurnCardQuality);
     }
     // Start is called before the first frame update
     void Start()
@@ -84,5 +86,19 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         } else {
             return 0;
         }
+    }
+
+    private double TurnCardType()
+    {
+        var turnCard = CardPoolLogic.I.GetTurnCard();
+        if (turnCard == null) return -1;
+        return (double)turnCard.Type;
+    }
+
+    private double TurnCardQuality()
+    {
+        var turnCard = CardPoolLogic.I.GetTurnCard();
+        if (turnCard == null) return -1;
+        return (double)turnCard.Quality;
     }
 }

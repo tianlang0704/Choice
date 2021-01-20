@@ -41,7 +41,7 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         ItemLogic.I.Init();             // 初始化道具
         DayFlowLogic.I.Init();          // 初始化日循环
         WeatherLogic.I.Init();          // 初始化天气
-        DataSystem.I.SetAttrDataByType(DataType.Day, 0);
+        DataSystem.I.SetDataByType(DataType.CurrentDay, 0);
         while(IsGameContinue())
         {
             // 开始一天

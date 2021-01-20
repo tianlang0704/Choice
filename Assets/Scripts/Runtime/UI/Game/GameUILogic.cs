@@ -30,7 +30,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
                 }
             }, "YES", "NO");
         });
-        UpdateView(); 
+        // UpdateView(); 
     }
 
     // Update is called once per frame
@@ -62,7 +62,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
         var sceneName = GameScenesLogic.I.GetCurrentSceneName();
         outStr += "场景:" + sceneName;
         // 更新天数
-        outStr += "\n天: " + DataSystem.I.GetAttrDataByType<int>(DataType.Day);
+        outStr += "\n天: " + DataSystem.I.GetAttrDataByType<int>(DataType.CurrentDay);
         // 更新路程
         outStr += "\n路程: " + DataSystem.I.GetAttrDataByType<int>(DataType.Distance);
         // 更新天气
@@ -139,7 +139,9 @@ public class GameUILogic : UILogicBase<GameUILogic>
         foreach (Transform item in itemBox) {
             ObjectPoolManager.I.RecycleGameObject(item.gameObject);
         }
-        var goods = ItemLogic.I.GetGoods();
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
+        var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Equips);
         foreach (var item in goods) {
             var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
             itemButton.transform.SetParent(itemBox, false);

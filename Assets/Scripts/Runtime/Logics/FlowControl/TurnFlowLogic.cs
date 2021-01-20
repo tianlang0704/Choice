@@ -21,27 +21,36 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
 
     public void Init()
     {
-        DataSystem.I.SetAttrDataByType(DataType.MaxTurn, 7);
+        DataSystem.I.SetDataByType(DataType.MaxTurn, 7);
     }
 
     // 回合循环
     public IEnumerator TurnLoop()
     {
-        // 增加回合数
+        // 更新回合
         IncreaseTurn(1);
-        // 更新时长和频率
         DurFreSystem.I.UpdateTurn();
+        ItemLogic.I.UpdateTurn();
         // 更新界面
         GameUILogic.I.UpdateView();
+        DataSystem.I.RestDataChange();
+        // 检查是否继续
+        if (!IsTurnContinue()) yield break;
         // 问答
         ShowTurnDialog();
         // 等待进入下一回合
         yield return new WaitUntil(() => nextTurn);
         nextTurn = false;
-        // 检查死亡
-        if (AttributesLogic.I.IsDead()) yield break;
+        // 检查是否继续
+        if (!IsTurnContinue()) yield break;
         // 稍微等下下再结束本回合
         yield return new WaitForSeconds(0.1f);
+    }
+
+    // 回合是否继续
+    public bool IsTurnContinue()
+    {
+        return !AttributesLogic.I.IsDead();
     }
 
     // 下一回合
@@ -54,7 +63,7 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     public void IncreaseTurn(int turnNum = 1)
     {
         var curTurn = DataSystem.I.GetAttrDataByType<int>(DataType.CurrentTurn);
-        DataSystem.I.SetAttrDataByType(DataType.CurrentTurn, curTurn + turnNum);
+        DataSystem.I.SetDataByType(DataType.CurrentTurn, curTurn + turnNum);
     }
 
     // 显示回合提问
@@ -64,7 +73,7 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         // 处理没有卡用了
         if (card == null) {
             // 先找有没有通用提示卡
-            card = CardPoolLogic.I.GetCardById(10002); 
+            card = CardPoolLogic.I.GetCardById(GameUtil.CardId(10002)); 
             // 如果没有提示卡, 就跳过今天
             if (card == null) {
                 // 更新界面

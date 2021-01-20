@@ -35,13 +35,17 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     public IEnumerator DayLoop()
     {
         // 刷新一天
+        DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
         DayFlowLogic.I.IncreaseDay();
         DurFreSystem.I.UpdateDay();
-        AttributesLogic.I.ResetQualityWeight();
+        ItemLogic.I.UpdateDay();
+        CardPoolLogic.I.ResetQualityWeight();
+        // 更新界面
+        GameUILogic.I.UpdateView();
+        // 检查是否继续
+        if (!IsDayContinue()) yield break;
         // 重新刷新卡牌
         CardPoolLogic.I.ShuffleDayCards();
-        // 重置现在回合为0
-        DataSystem.I.SetAttrDataByType(DataType.CurrentTurn, 0);
         // 开始日循环
         while(IsDayContinue())
         {
@@ -52,8 +56,8 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     // 增加天数
     public void IncreaseDay(int num = 1)
     {
-        var curDay = DataSystem.I.GetAttrDataByType(DataType.Day);
-        DataSystem.I.SetAttrDataByType(DataType.Day, curDay + num);
+        var curDay = DataSystem.I.GetAttrDataByType(DataType.CurrentDay);
+        DataSystem.I.SetDataByType(DataType.CurrentDay, curDay + num);
     }
 
     private bool ShowDayEndDialog()

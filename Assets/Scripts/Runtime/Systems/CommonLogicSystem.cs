@@ -6,19 +6,23 @@ using UnityEngine;
 
 public enum Logic {
     AttrChange = 0,     // 永久改变数值
-    AttrChangeHurt,   // 永久改变数值, 但是先检查护身符
+    AttrChangeHurt,     // 永久改变数值, 但是先检查护身符, 受伤害因数影响
+    AttrChangeIncome,   // 永久改变数值, 受收益因数影响
+    AttrChangeCost,     // 永久改变数值, 费用
     AttrInfluence,      // 暂时影响数值
     AddItem,            // 添加道具
+    AddItemWithDuration,// 添加道具
     UseItem,            // 使用道具
+    RemoveItem,         // 移除道具
     SkipTurn,           // 跳过回合
     SetScene,           // 设置场景
     ShowSelectScene,    // 显示选择场景
 }
 
 public class LogicExecution {
-    public Logic logic;
-    public object param;
-    public Condition condition;
+    public Logic Logic;
+    public object Param;
+    public Condition Condition;
 }
 
 public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
@@ -38,9 +42,17 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     public List<LogicExecution> GetLogicList(List<(Logic l, object p, Condition c)> exeList)
     {
         var leList = exeList.Select((o) => {
-            return new LogicExecution() { logic = o.l, param = o.p, condition = o.c};
+            return new LogicExecution() { Logic = o.l, Param = o.p, Condition = o.c};
         }).ToList();
         return leList;
+    }
+
+    public void ExecuteCommonLogic(Func<List<LogicExecution>> leListFunc)
+    {
+        if (leListFunc == null) return;
+        var leList = leListFunc();
+        if (leList.Count <= 0) return;
+        ExecuteCommonLogic(leList);
     }
 
     public void ExecuteCommonLogic(List<LogicExecution> leList)
@@ -53,10 +65,10 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
 
     public void ExecuteCommonLogic(LogicExecution le)
     {
-        if (le.condition != null) {
-            if (!ConditionSystem.I.IsConditionMet(le.condition)) return;
+        if (le.Condition != null) {
+            if (!ConditionSystem.I.IsConditionMet(le.Condition)) return;
         }
-        ExecuteCommonLogic(le.logic, le.param);
+        ExecuteCommonLogic(le.Logic, le.Param);
     }
 
     public void ExecuteCommonLogic(Logic logic, object param)
@@ -65,12 +77,20 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
             AttrChange(param);
         } else if (logic == Logic.AttrChangeHurt) {
             AttrChangeHurt(param);
+        } else if (logic == Logic.AttrChangeIncome) {
+            AttrChangeIncome(param);
+        } else if (logic == Logic.AttrChangeCost) {
+            AttrChangeCost(param);
         } else if (logic == Logic.AttrInfluence) {
             AttrInfluence(param);
         } else if (logic == Logic.AddItem) {
             AddItem(param);
+        } else if (logic == Logic.AddItemWithDuration) {
+            AddItemWithDuration(param);
         } else if (logic == Logic.UseItem) {
             UseItem(param);
+        } else if (logic == Logic.RemoveItem) {
+            RemoveItem(param);
         } else if (logic == Logic.SkipTurn) {
             SkipTurn(param);
         } else if (logic == Logic.SetScene) {
@@ -91,38 +111,64 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     {
         if (param == null) return;
         var influenceList = param as List<AttrInfluence>;
-        DataSystem.I.ApplyInfluenceList(influenceList);
+        AttributesLogic.I.ApplyInfluence(influenceList);
     }
 
     public void AttrChangeHurt(object param)
     {
         if (param == null) return;
         // 检测是否有护身符, 有就使用, 没有就改变数值
-        if (ConditionSystem.I.IsConditionMet(new Condition() {Formula = $"IsHaveItem(2)"})) {
-            ItemLogic.I.ConsumeItem(2, 1);
+        var itemId = GameUtil.ItemId(2);
+        if (ConditionSystem.I.IsConditionMet(new Condition() {Formula = $"IsHaveItem({itemId})"})) {
+            ItemLogic.I.ConsumeItem(itemId, 1);
         } else {
             var influenceList = param as List<AttrInfluence>;
-            AttrChange(influenceList);
+            AttributesLogic.I.ApplyInfluenceHurt(influenceList);
         }
+    }
+
+    public void AttrChangeIncome(object param)
+    {
+        if (param == null) return;
+        // 检测是否有护身符, 有就使用, 没有就改变数值
+        var influenceList = param as List<AttrInfluence>;
+        AttributesLogic.I.ApplyInfluenceIncome(influenceList);
+    }
+
+    public void AttrChangeCost(object param)
+    {
+        if (param == null) return;
+        // 检测是否有护身符, 有就使用, 没有就改变数值
+        var influenceList = param as List<AttrInfluence>;
+        AttributesLogic.I.ApplyInfluenceCost(influenceList);
     }
 
     public void AddItem(object param)
     {
         if (param == null) return;
-        (int itemID, int num, float pos) = ((int, int, float))param;
-        var rand = UnityEngine.Random.Range(0f, 1f);
-        if (rand < pos) {
-            ItemLogic.I.AddItem(itemID, num);   
-        }
+        (int itemID, int num) = ((int, int))param;
+        ItemLogic.I.AddItem(itemID, num);
+    }
+
+    public void AddItemWithDuration(object param)
+    {
+        if (param == null) return;
+        (int itemID, int num, DurationAndFrequency durFre) = ((int, int, DurationAndFrequency))param;
+        ItemLogic.I.AddItem(itemID, num, durFre);
     }
 
     public void UseItem(object param)
     {
         if (param == null) return;
-        (int itemID, int num, float pos) = ((int, int, float))param;
-        if (pos >= 1 || (pos < 1 && UnityEngine.Random.Range(0, 1) < pos)) {
-            ItemLogic.I.ConsumeItem(itemID, num);   
-        }
+        (int itemID, int num) = ((int, int))param;
+        ItemLogic.I.ConsumeItem(itemID, num);
+    }
+
+    public void RemoveItem(object param)
+    {
+        if (param == null) return;
+        (int itemID, int num) = ((int, int))param;
+        ItemLogic.I.RemoveItem(itemID, num);
     }
     
     public void SkipTurn(object param)
