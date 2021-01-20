@@ -46,4 +46,9 @@ public class ItemButton : UILogicBase<ItemButton>
     {
         cb = a;
     }
+
+    public void SetColor(Color c)
+    {
+        uiRoot.i<Image>("Ex_道具").color = c;
+    }
 }

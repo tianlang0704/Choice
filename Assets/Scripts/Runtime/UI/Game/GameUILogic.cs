@@ -139,15 +139,17 @@ public class GameUILogic : UILogicBase<GameUILogic>
         foreach (Transform item in itemBox) {
             ObjectPoolManager.I.RecycleGameObject(item.gameObject);
         }
+        var goods = ItemLogic.I.GetHaveItemListByType();
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
-        var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Equips);
         foreach (var item in goods) {
             var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
             itemButton.transform.SetParent(itemBox, false);
             itemButton.i<TextMeshProUGUI>("Ex_文字").text = $"{item.Name}\n{item.Desc}";
+            itemButton.SetColor(ItemLogic.I.IsItemConsumable(item.Id) ? Color.green : Color.white);
             itemButton.SetCB(() => {
-                ItemLogic.I.ConsumeItem(item.Id, 1);
+                ItemLogic.I.ConsumeItem(item.Id, 1, true);
                 UpdateView();
             });
         }

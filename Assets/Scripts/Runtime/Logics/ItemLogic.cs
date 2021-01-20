@@ -8,6 +8,7 @@ using System;
 
 public enum ItemType
 {
+    Any = -1, //匹配所有类型使用
     Goods = 0,
     Equips,
     Relics,
@@ -336,7 +337,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
         DataSystem.I.SetDataByType<Dictionary<int, int>>(DataType.Items, itemData);
         SyncItemToData();
-        AddItem(GameUtil.ItemId(10021), 1, new DurationAndFrequency() { Turn = 3});
+        // AddItem(GameUtil.ItemId(10021), 1, new DurationAndFrequency() { Turn = 3});
         GameUILogic.I.UpdateItems();
     }
     // 同步数据
@@ -453,8 +454,11 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         SubtractFromHave(id, num);
     }
     // 使用道具
-    public void ConsumeItem(int id, int num)
+    public void ConsumeItem(int id, int num, bool isCheckConsumable = false)
     {
+        if (isCheckConsumable && !IsItemConsumable(id)) {
+            return;
+        }
         int actualNum = SubtractFromData(id, num);
         SubtractFromHave(id, num);
         ExecuteUseLogic(id, actualNum);
@@ -519,7 +523,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     {
         var goods = haveItemDic
             .Select((i)=>i.Value)
-            .Where((i)=>typeList == null || i.Num > 0 && typeList.Contains(i.Type))
+            .Where((i)=>(typeList == null || typeList.Contains(i.Type)) && i.Num > 0)
             .ToList();
         return goods;
     }
@@ -538,5 +542,10 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public Item GetRandomHaveItemByType(ItemType type)
     {
         return GetRandomHaveItemByType(new List<ItemType>() { type });
+    }
+    // 检查道具是否可以使用
+    public bool IsItemConsumable(int id)
+    {
+        return allItemDic.ContainsKey(id) && allItemDic[id].UseLogicListFunc != null;
     }
 }
