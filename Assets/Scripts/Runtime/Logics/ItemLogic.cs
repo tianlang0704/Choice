@@ -16,11 +16,14 @@ public enum ItemType
     Unkown = 999,
 }
 
+public enum ItemQuality { Red = 0, White, Green, Blue, Purple, Gold }
+
 public class Item
 {
     public int Id;
     public int Num;
     public ItemType Type;
+    public ItemQuality Quality = ItemQuality.White;
     public string Name;
     public string Desc;
     public string Icon;
@@ -114,9 +117,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "不想活了",
                 Desc = "只会出现红色牌",
                 HaveInfluenceList = new List<AttrInfluence>() {
-                    DIS.I.GetLuckWeightInfluence(new List<(int, float)>() {
-                        (0, 1),
-                        (1, 0),
+                    DIS.I.GetLuckWeightInfluence(new List<(LuckQualityGroup, float)>() {
+                        (LuckQualityGroup.Low, 1),
+                        (LuckQualityGroup.High, 0),
                     }, 999, true, 1000),
                     DIS.I.GetQualityWeightInfluence(new List<(CardQuality, float)>() {
                         (CardQuality.Red, 1),
@@ -161,9 +164,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "我怎么那么倒霉",
                 Desc = "红白绿概率提升10",
                 HaveInfluenceList = new List<AttrInfluence>() {
-                    DIS.I.GetLuckWeightInfluence(new List<(int, float)>(){
-                        (0, 1),
-                        (1, 0),
+                    DIS.I.GetLuckWeightInfluence(new List<(LuckQualityGroup, float)>(){
+                        (LuckQualityGroup.Low, 1),
+                        (LuckQualityGroup.High, 0),
                     }, 999, true, 10000),
                     DIS.I.GetQualityWeightInfluence(new List<(CardQuality, float)>(){
                         (CardQuality.Red, 25),
@@ -241,9 +244,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "天降祥瑞",
                 Desc = "蓝+20, 紫+15, 金+10",
                 HaveInfluenceList = new List<AttrInfluence>() {
-                    DIS.I.GetLuckWeightInfluence(new List<(int, float)>(){
-                        (0, 25),
-                        (1, 75),
+                    DIS.I.GetLuckWeightInfluence(new List<(LuckQualityGroup, float)>(){
+                        (LuckQualityGroup.Low, 25),
+                        (LuckQualityGroup.High, 75),
                     }, 999, true, 10002),
                     DIS.I.GetQualityWeightInfluence(new List<(CardQuality, float)>(){
                         (CardQuality.Blue, 35),
@@ -304,7 +307,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "有个好梦",
                 Desc = "生命恢复+1",
                 HaveInfluenceList = DIS.I.GetAttrInfluenceList(new List<(DataType type, List<AttrInfluence> value)>() {
-                    (DataType.IncomeModifier, new List<AttrInfluence>() { DIS.I.GetAttrInfluence(DataType.HP, 1) })
+                    (DataType.IncomeModifier, new List<AttrInfluence>() { DIS.I.GetAttrInfluence(DataType.HP, 1, 0, false, 0, new Condition() { Formula = "Target>0"}) })
                 }, 999),
             },
             new Item() {
@@ -343,7 +346,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     // 同步数据
     public void SyncItemToData()
     {
-        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        var itemDic = DataSystem.I.GetDataByType<Dictionary<int, int>>(DataType.Items);
         if (itemDic == null) return;
         // 重新同步数据
         haveItemDic.Clear();
@@ -354,7 +357,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     // 检查是否拥有道具ID
     public bool IsHaveItem(int id)
     {
-        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        var itemDic = DataSystem.I.GetDataByType<Dictionary<int, int>>(DataType.Items);
         return itemDic.ContainsKey(id) && itemDic[id] > 0;
     }
     // 更新回合
@@ -435,7 +438,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     void AddToData(int id, int num)
     {
         // 获取ID对应的记录
-        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        var itemDic = DataSystem.I.GetDataByType<Dictionary<int, int>>(DataType.Items);
         if (itemDic == null)
             itemDic = new Dictionary<int, int>();
         // 添加数量
@@ -466,7 +469,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     int SubtractFromData(int id, int num, bool isLimitToHave = false)
     {
         // 获取ID对应的记录, 没有就直接返回
-        var itemDic = DataSystem.I.GetAttrDataByType<Dictionary<int, int>>(DataType.Items);
+        var itemDic = DataSystem.I.GetDataByType<Dictionary<int, int>>(DataType.Items);
         if (itemDic == null)
             return 0;
         // 减值, 如果设定不能为负数就最多只减拥有量

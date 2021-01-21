@@ -36,8 +36,6 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
                 .ToList(); 
         }
     }
-
-    private Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
     private Dictionary<int, Dictionary<float, List<int>>> moodToBuff;
 
     protected void Awake()
@@ -114,10 +112,12 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         DataSystem.I.SetDataByType(DataType.IncomeFactor, 1);
         DataSystem.I.SetDataByType(DataType.CostFactor, 1);
         // 初始化属性最大值
+        Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
         maxValueDic[DataType.Mood] = 10;
         maxValueDic[DataType.HP] = 10;
         maxValueDic[DataType.Stamina] = 10;
-        maxValueDic[DataType.Gold] = 10;
+        // maxValueDic[DataType.Gold] = 10;
+        DataSystem.I.SetDataByType(DataType.AttrMaxTable, maxValueDic);
         // 初始化质量影响卡牌
         Dictionary<CardQuality, float> qualityWeight = new Dictionary<CardQuality, float>(){
             {CardQuality.Red, 15f},
@@ -144,7 +144,8 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         if (influ == null) return;
         if ((int)influ.AttributeType < (int)DataType._AttrTypeMax) {
             var type = influ.AttributeType;
-            if (maxValueDic.ContainsKey(type)) {
+            var maxValueDic = DataSystem.I.GetDataByType<Dictionary<DataType, float>>(DataType.AttrMaxTable);
+            if (maxValueDic != null && maxValueDic.ContainsKey(type)) {
                 // 计算最终值
                 Attr tempAttr = new Attr();
                 var curValueInflu = DataSystem.I.ConvertDataToInfluence(type);
@@ -201,7 +202,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     {
         var attrTypes = System.Enum.GetValues(typeof(DataType));
         foreach (int type in attrTypes) {
-            var attrData = DataSystem.Instance.GetAttrDataByType(type);
+            var attrData = DataSystem.Instance.GetDataByType(type);
             if (IsAttrTypeDeadly((DataType)type) && attrData <= 0) return true;
         }
         return false;
@@ -210,11 +211,11 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     // 从幸运中获取卡牌质量偏重
     public void UpdateCardWeightFromLuck()
     {
-        var luck = DataSystem.I.GetAttrDataByType<float>(DataType.Luck);
+        var luck = DataSystem.I.GetDataByType<float>(DataType.Luck);
         var variWeight = Mathf.Lerp(0, 80, luck/40f);
-        Dictionary<int, float> luckWeight = new Dictionary<int, float>();
-        luckWeight[0] = 80 - variWeight;
-        luckWeight[1] = 20 + variWeight;
+        Dictionary<LuckQualityGroup, float> luckWeight = new Dictionary<LuckQualityGroup, float>();
+        luckWeight[LuckQualityGroup.Low] = 80 - variWeight;
+        luckWeight[LuckQualityGroup.High] = 20 + variWeight;
         DataSystem.I.SetDataByType(DataType.CardLuckWeight, luckWeight);
     }
 
@@ -228,7 +229,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         }
         if (moodChange == 0) return;
         // 从现在心情取出BUFF
-        var curMood = DataSystem.I.GetAttrDataByType<float>(DataType.Mood);
+        var curMood = DataSystem.I.GetDataByType<float>(DataType.Mood);
         var floorMood = (int)Mathf.Floor(curMood);
         if (!moodToBuff.ContainsKey(floorMood)) return; // 没有buff就不做任何事情
         var buffDic = moodToBuff[floorMood];

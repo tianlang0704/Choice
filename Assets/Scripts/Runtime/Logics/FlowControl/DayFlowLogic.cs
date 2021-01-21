@@ -26,8 +26,8 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     // 一天是否继续
     public bool IsDayContinue()
     {
-        var curTurn = DataSystem.I.GetAttrDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetAttrDataByType<int>(DataType.MaxTurn);
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
         return curTurn < maxTurn && !AttributesLogic.Instance.IsDead();
     }
 
@@ -56,15 +56,15 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     // 增加天数
     public void IncreaseDay(int num = 1)
     {
-        var curDay = DataSystem.I.GetAttrDataByType(DataType.CurrentDay);
+        var curDay = DataSystem.I.GetDataByType(DataType.CurrentDay);
         DataSystem.I.SetDataByType(DataType.CurrentDay, curDay + num);
     }
 
     private bool ShowDayEndDialog()
     {
         // 检查是否完成一天
-        var curTurn = DataSystem.I.GetAttrDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetAttrDataByType<int>(DataType.MaxTurn);
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
         if (curTurn >= maxTurn) {
             CommonFlowLogic.Instance.ShowDialog("一天的旅程安稳地结束了, 下一天会是什么样呢?", (answIdx) => {
             }, "呼木");

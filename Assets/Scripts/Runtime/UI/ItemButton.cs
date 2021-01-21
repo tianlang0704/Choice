@@ -46,9 +46,19 @@ public class ItemButton : UILogicBase<ItemButton>
     {
         cb = a;
     }
-
+    
+    public void SetText(string t)
+    {
+        uiRoot.i<TextMeshProUGUI>("Ex_文字").text = t;
+    }
+    
     public void SetColor(Color c)
     {
         uiRoot.i<Image>("Ex_道具").color = c;
+    }
+
+    public void SetTextColor(Color c)
+    {
+        uiRoot.i<TextMeshProUGUI>("Ex_文字").color = c;
     }
 }

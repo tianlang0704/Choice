@@ -47,43 +47,61 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     public void SyncDayCardsToData()
     {
         dayCards.Clear();
-        var idList = DataSystem.I.GetAttrDataByType<List<int>>(DataType.DayCards);
+        var idList = DataSystem.I.GetDataByType<List<int>>(DataType.DayCards);
         if (idList == null) return;
-        foreach (var id in idList)
-        {
-            dayCards.Add(CardLogic.I.AllCardsIdIndex[id]);
+        foreach (var id in idList) {
+            var card = CardLogic.I.GetCardById(id);
+            if (card == null) continue;
+            dayCards.Add(card);
         }
     }
 
-    public Card GetCardById(int id)
-    {
-        if (!CardLogic.I.AllCardsIdIndex.ContainsKey(id)) return null;
-        return CardLogic.I.AllCardsIdIndex[id];
-    }
-
-    Card PickCard()
+    (List<Card>, List<CardQuality>) GetCardListFromWeights()
     {
         // 计算幸运比重
-        var luckWeight = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<int, float>>(DataType.CardLuckWeight);
-        int luckKey = GameUtil.RandomWeightKey(luckWeight);
-        // 计算质量比重
-        List<CardQuality> qualityList;
-        if (luckKey == 0) {
+        var luckWeight = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<LuckQualityGroup, float>>(DataType.CardLuckWeight);
+        LuckQualityGroup? luckKey = luckWeight != null ? GameUtil.RandomWeightKey(luckWeight) : (LuckQualityGroup?)null;
+        // 计算运气比重
+        List<CardQuality> qualityList = null;
+        if (luckKey == LuckQualityGroup.Low) {
             qualityList = new List<CardQuality>(){CardQuality.Red, CardQuality.White, CardQuality.Green};
-        } else {
+        } else if (luckKey == LuckQualityGroup.High) {
             qualityList = new List<CardQuality>(){CardQuality.Blue, CardQuality.Purple, CardQuality.Gold};
+        } else if (luckKey == LuckQualityGroup.Any) {
+            // 故意留空为null
         }
+        // 计算质量比重
         var qualityWeight = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<CardQuality, float>>(DataType.CardQualityWeight);
-        var validQualityWeight = qualityList.Where((q)=>qualityWeight.ContainsKey(q)).ToDictionary((q)=>q, (q)=>qualityWeight[q]);
-        var randQuality = GameUtil.RandomWeightKey(validQualityWeight);
+        Dictionary<CardQuality, float> validQualityWeight = qualityList?
+            .Where((q)=>qualityWeight.ContainsKey(q))
+            .ToDictionary((q)=>q, (q)=>qualityWeight[q])
+            ?? qualityWeight;
+        CardQuality? randQuality = validQualityWeight != null ? GameUtil.RandomWeightKey(validQualityWeight) : (CardQuality?)null;
+        // 计算类型
+        var typeFilter = DataSystem.I.CopyAttrDataWithInfluenceByType<List<CardType>>(DataType.CardTypeFilter);
         // 筛选条件
         var validCards = dayCards
-            .Where((c) => c.Quality == randQuality || c.Quality == CardQuality.Special)     // 筛选质量
+            .Where((c) => 
+                randQuality == null ||
+                randQuality == CardQuality.Any || 
+                c.Quality == randQuality || 
+                c.Quality == CardQuality.Any)                                               // 筛选质量
+            .Where((c) => 
+                typeFilter == null || 
+                typeFilter.Contains(c.Type) || 
+                c.Type == CardType.Any)                                                     // 筛选类型
             .Where((c) => ConditionSystem.I.IsConditionMet(c.DrawCondition))                // 筛选满足条件的卡
             .GroupBy((c) => c.DrawPriority)                                                 // 优先度分组
             .OrderBy((g) => g.FirstOrDefault().DrawPriority)                                // 优先度分组排序
             .LastOrDefault()                                                                // 选优先度最高的组
             ?.ToList();
+        return (validCards, qualityList);
+    }
+
+    Card PickCard()
+    {
+        // 获取卡牌
+        (List<Card> validCards, List<CardQuality> qualityList) = GetCardListFromWeights();
         if (validCards == null || validCards.Count <= 0) return null;
         // 计算单张卡比重
         float cardWeightSum = 0;
@@ -115,6 +133,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     // 更改质量比重
     void UpdateQualityWeight(CardQuality pickQuality, List<CardQuality> qualityList)
     {
+        if (qualityList == null) return;
         // 计算质量比重变化
         float minus = -5f;
         float plus = -1 * minus / (qualityList.Count - 1);

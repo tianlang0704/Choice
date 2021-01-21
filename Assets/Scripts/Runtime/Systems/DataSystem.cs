@@ -24,15 +24,17 @@ public enum DataType {
     CostFactor,         // 费用因数
     AnswerNumOffset,    // 答案数量加减
     _ValueTypeMax = 10000, // 数值类型最大值
+    AttrMaxTable,       // 数值最大表
     CardWeight,         // 卡片附加几率
     CardLuckWeight,     // 卡牌幸运权重
-    CardQualityWeight,  // 卡牌质量权重
+    CardQualityWeight,  // 卡牌质量权
+    CardTypeFilter,     // 类型过滤器
     HurtModifier,       // 伤害修改
     IncomeModifier,     // 收入修改
     CostModifier,       // 费用修改
     ItemNumModifier,    // 道具数量修改
     DayCards,           // 一天卡池ID
-    Items,              // 物品(包括 道具, 装备, 遗物)
+    Items,              // 物品(包括 道具, 装备, 遗物, BUFF)
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>
@@ -90,25 +92,25 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         return true;
     }
     // 获取原属性
-    public Attr GetAttrDataByType(int type)
+    public Attr GetDataByType(int type)
     {
-        return GetAttrDataByType((DataType)type);
+        return GetDataByType((DataType)type);
     }
     // 获取原属性
-    public Attr GetAttrDataByType(DataType type)
+    public Attr GetDataByType(DataType type)
     {
         if (!(IsAttrExist(type))) return null;
         return dataDic[(DataType)type];
     }
     // 获取原值
-    public T GetAttrDataByType<T>(int type)
+    public T GetDataByType<T>(int type)
     {
-        return GetAttrDataByType<T>((DataType)(type));
+        return GetDataByType<T>((DataType)(type));
     }
     // 获取原值
-    public T GetAttrDataByType<T>(DataType type)
+    public T GetDataByType<T>(DataType type)
     {
-        var attr = GetAttrDataByType(type);
+        var attr = GetDataByType(type);
         return attr.GetValue<T>();
     }
     // 获取包含所有影响的值
@@ -130,7 +132,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     }
     public AttrInfluence ConvertDataToInfluence(DataType type)
     {
-        var attr = GetAttrDataByType(type);
+        var attr = GetDataByType(type);
         return new AttrInfluence(){
             AttributeType = type,
             Attr = attr,
@@ -156,7 +158,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         var attrChange = new Attr();
         DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influ);
         dataChange[type] += attrChange.GetValue<float>();
-        var attr = GetAttrDataByType(type);
+        var attr = GetDataByType(type);
         SetDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
     }
     public void ApplyInfluence(List<AttrInfluence> list)

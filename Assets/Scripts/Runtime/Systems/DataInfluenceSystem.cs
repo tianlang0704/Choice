@@ -175,18 +175,37 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     }
     // 幸运偏重
     public AttrInfluence GetLuckWeightInfluence(
-        List<(int i, float w)> paramList,
+        List<(LuckQualityGroup i, float w)> paramList,
         int turn = 0, 
         bool isSet = false,
         int priority = 0
 
     ) {
-        Dictionary<int, float> weightChangeDic = paramList.ToDictionary((p)=>p.i, (p)=>p.w);
+        Dictionary<LuckQualityGroup, float> weightChangeDic = paramList.ToDictionary((p)=>p.i, (p)=>p.w);
         var attr = new Attr();
         attr.SetValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
             Priority = priority,
             AttributeType = DataType.CardLuckWeight,
+            Attr = attr,
+            IsSet = isSet,
+            DurFre = new DurationAndFrequency() { Turn = turn },
+        };
+        return attrInfluence;
+    }
+    // 幸运偏重
+    public AttrInfluence GetCardTypeInfluence(
+        List<CardType> paramList,
+        int turn = 0, 
+        bool isSet = false,
+        int priority = 0
+
+    ) {
+        var attr = new Attr();
+        attr.SetValue(paramList);
+        var attrInfluence = new AttrInfluence(){
+            Priority = priority,
+            AttributeType = DataType.CardTypeFilter,
             Attr = attr,
             IsSet = isSet,
             DurFre = new DurationAndFrequency() { Turn = turn },
@@ -307,7 +326,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     Dictionary<string, double> GetAdditionalParams(Attr baseAttr, AttrInfluence influence)
     {
         return new Dictionary<string, double>() {
-            { "Value", DataSystem.I.GetAttrDataByType<float>(influence.AttributeType) },
+            { "Value", DataSystem.I.GetDataByType<float>(influence.AttributeType) },
             { "Target", baseAttr.GetValue<float>() },
         };
     }
@@ -319,7 +338,9 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         }
         ApplyChangeToAttr(baseAttr, influence);
         ApplyChangeToCardWeight(baseAttr, influence);
-        ApplyChangeToQualityWeight(baseAttr, influence);
+        ApplyChangeToCardLuckWeight(baseAttr, influence);
+        ApplyChangeToCardQualityWeight(baseAttr, influence);
+        ApplyChangeToCardTypeFilter(baseAttr, influence);
         ApplyChangeToIncomeHurtModifier(baseAttr, influence);
         ApplyChangeToItemNumModifier(baseAttr, influence);
     }
@@ -357,37 +378,40 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     // 应用卡片偏重
     public void ApplyChangeToCardWeight(Attr baseAttr, AttrInfluence influence)
     {
-        if (influence.AttributeType != DataType.CardWeight &&
-            influence.AttributeType != DataType.CardLuckWeight
-        ) return;
+        if (influence.AttributeType != DataType.CardWeight) return;
         // 应用数值
         GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
     }
 
+    // 应用卡片幸运偏重
+    public void ApplyChangeToCardLuckWeight(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.AttributeType != DataType.CardLuckWeight) return;
+        // 应用数值
+        GameUtil.ApplyFloatDicAttr<LuckQualityGroup>(baseAttr, influence);
+    }
+
     // 应用卡片质量偏重
-    public void ApplyChangeToQualityWeight(Attr baseAttr, AttrInfluence influence)
+    public void ApplyChangeToCardQualityWeight(Attr baseAttr, AttrInfluence influence)
     {
         if (influence.AttributeType != DataType.CardQualityWeight) return;
         // 应用数值
         GameUtil.ApplyFloatDicAttr<CardQuality>(baseAttr, influence);
     }
 
+    // 应用卡片类型过滤
+    public void ApplyChangeToCardTypeFilter(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.AttributeType != DataType.CardTypeFilter) return;
+        // 应用数值
+        GameUtil.ApplyListAttr<CardType>(baseAttr, influence);
+    }
+
     // 应用伤害和收入修正
     public void ApplyChangeToIncomeHurtModifier(Attr baseAttr, AttrInfluence influence)
     {
         if (influence.AttributeType != DataType.HurtModifier && influence.AttributeType != DataType.IncomeModifier) return;
-        if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
-        // 从属性中获取现在表
-        var baseList = baseAttr.GetValue<List<AttrInfluence>>();
-        if (baseList == null) {
-            baseList = new List<AttrInfluence>();
-            baseAttr.SetValue(baseList);
-        }
-        // 获取新表
-        var newAttr = influence.Attr;
-        var newList = newAttr.GetValue<List<AttrInfluence>>();
-        // 应用对应值
-        baseList.AddRange(newList);
+        GameUtil.ApplyListAttr<AttrInfluence>(baseAttr, influence);
     }
     // 应用道具添加数量修正
     public void ApplyChangeToItemNumModifier(Attr baseAttr, AttrInfluence influence)

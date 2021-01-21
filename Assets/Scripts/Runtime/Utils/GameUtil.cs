@@ -120,6 +120,27 @@ public static class GameUtil {
         }
     }
 
+    static public void ApplyListAttr<V>(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
+        
+        // 应用对应值
+        if (influence.IsSet) {
+            baseAttr.SetValue(influence.Attr.GetValue<List<V>>());
+        } else {
+            // 从属性中获取现在表
+            var baseList = baseAttr.GetValue<List<V>>();
+            if (baseList == null) {
+                baseList = new List<V>();
+                baseAttr.SetValue(baseList);
+            }
+            // 获取新表
+            var newAttr = influence.Attr;
+            var newList = newAttr.GetValue<List<V>>();
+            baseList.AddRange(newList);
+        }
+    }
+
     static public int CardId(int rawId)
     {
         return (int)ProfileIdBase.Card + rawId;
@@ -128,5 +149,10 @@ public static class GameUtil {
     static public int ItemId(int rawId)
     {
         return (int)ProfileIdBase.Item + rawId;
+    }
+
+    static public Color ItemQualityToColor(ItemQuality quality)
+    {
+        return Color.white;
     }
  }

@@ -9,8 +9,9 @@ using CS = ConditionSystem;
 using LEList = System.Collections.Generic.List<(Logic, object, Condition)>;
 
 
-public enum CardType { Basic = 0, Trap, Item, Rest, Event, SceneChange }
-public enum CardQuality { Red = 0, White, Green, Blue, Purple, Gold, Special }
+public enum CardType { Any = -1, Basic = 0, Trap, Item, Rest, Event, SceneChange }
+public enum CardQuality { Any = -1, Red = 0, White, Green, Blue, Purple, Gold }
+public enum LuckQualityGroup { Any = -1, Low = 0, High }
 public class Card 
 {
     public int Id;
@@ -58,7 +59,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
         AllCards = new List<Card>(){
             new Card() {
                 Id = GameUtil.CardId(10001),
-                Quality = CardQuality.Special,
+                Quality = CardQuality.Any,
                 DrawPriority = 1,
                 IsMaskable = false,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
@@ -75,7 +76,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
             },
             new Card() {
                 Id = GameUtil.CardId(10002),
-                Quality = CardQuality.Special,
+                Quality = CardQuality.Any,
                 IsMaskable = false,
                 FillCondition = new Condition() {Formula = "0"},
                 content = "今天没有抽到卡",
@@ -87,7 +88,35 @@ public class CardLogic : SingletonBehaviour<CardLogic>
             },
             new Card() {
                 Id = GameUtil.CardId(1),
-                Quality = CardQuality.Special,
+                Quality = CardQuality.Any,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "金钱+-",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "金钱+",
+                        logicListFunc = () => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,1,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
+                        });},
+                    },
+                    new Answer() {
+                        content = "金钱-",
+                        logicListFunc = () => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChangeHurt, DIS.I.GetAttrInfluenceList(0,0,0,-1,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
+                        });},
+                    },
+                    new Answer() {
+                        content = "获取护符",
+                        logicListFunc = () => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AddItem, (GameUtil.ItemId(2), 1), null),
+                        });},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(2),
+                Quality = CardQuality.Any,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "心情+-",
                 answers = new List<Answer>() {
@@ -103,12 +132,6 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         logicListFunc = () => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
                             (Logic.AttrChangeHurt, DIS.I.GetAttrInfluenceList(0,0,-1,0,0,0,0,0), null),
                             (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
-                        });},
-                    },
-                    new Answer() {
-                        content = "获取护符",
-                        logicListFunc = () => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AddItem, (GameUtil.ItemId(2), 1), null),
                         });},
                     },
                 }
@@ -129,6 +152,18 @@ public class CardLogic : SingletonBehaviour<CardLogic>
     void Update()
     {
         
+    }
+
+    public Card GetCardById(int id)
+    {
+        if (!AllCardsIdIndex.ContainsKey(id)) return null;
+        return AllCardsIdIndex[id];
+    }
+
+    public Card GetCardCopyById(int id)
+    {
+        if (!AllCardsIdIndex.ContainsKey(id)) return null;
+        return AllCardsIdIndex[id].ShallowCopy();
     }
 
     public void MaskCard(Card c)

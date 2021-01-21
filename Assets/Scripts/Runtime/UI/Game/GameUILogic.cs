@@ -54,17 +54,17 @@ public class GameUILogic : UILogicBase<GameUILogic>
             UpdateChangeResource((DataType)type, changeValue);
         }
         // 更新日程
-        var curTurn = DataSystem.I.GetAttrDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetAttrDataByType<int>(DataType.MaxTurn);
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
         uiRoot.i<Slider>("Ex_进度条").value = (float)(curTurn) / (float)maxTurn;
         // 更新场景
         string outStr = "";
         var sceneName = GameScenesLogic.I.GetCurrentSceneName();
         outStr += "场景:" + sceneName;
         // 更新天数
-        outStr += "\n天: " + DataSystem.I.GetAttrDataByType<int>(DataType.CurrentDay);
+        outStr += "\n天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
         // 更新路程
-        outStr += "\n路程: " + DataSystem.I.GetAttrDataByType<int>(DataType.Distance);
+        outStr += "\n路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance);
         // 更新天气
         outStr += "\n天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
         // 输出信息
@@ -146,8 +146,9 @@ public class GameUILogic : UILogicBase<GameUILogic>
         foreach (var item in goods) {
             var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
             itemButton.transform.SetParent(itemBox, false);
-            itemButton.i<TextMeshProUGUI>("Ex_文字").text = $"{item.Name}\n{item.Desc}";
-            itemButton.SetColor(ItemLogic.I.IsItemConsumable(item.Id) ? Color.green : Color.white);
+            itemButton.SetText($"{item.Name}\n{item.Desc}");
+            itemButton.SetTextColor(GameUtil.ItemQualityToColor(item.Quality));
+            itemButton.SetColor(ItemLogic.I.IsItemConsumable(item.Id) ? Color.green : Color.black);
             itemButton.SetCB(() => {
                 ItemLogic.I.ConsumeItem(item.Id, 1, true);
                 UpdateView();

@@ -57,7 +57,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 
     private void SyncData()
     {
-        var sceneID = DataSystem.I.GetAttrDataByType<int>(DataType.Scene);
+        var sceneID = DataSystem.I.GetDataByType<int>(DataType.Scene);
         if (current != null) {
             
         }

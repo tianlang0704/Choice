@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Jace;
+using Random = UnityEngine.Random;
 
 public class FormulaSystem : SingletonBehaviour<FormulaSystem>
 {
@@ -20,6 +21,8 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         calcEngine.AddFunction("IsHaveItem", IsHaveItem);
         calcEngine.AddFunction("TurnCardType", TurnCardType);
         calcEngine.AddFunction("TurnCardQuality", TurnCardQuality);
+        calcEngine.AddFunction("RandInt", RandInt);
+        calcEngine.AddFunction("RandFloat", RandFloat);
     }
     // Start is called before the first frame update
     void Start()
@@ -40,7 +43,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
             {
                 if (type >= (int)DataType._ValueTypeMax) break;
                 var name = Enum.GetName(typeof(DataType), type);
-                var value = DataSystem.I.GetAttrDataByType<float>(type);
+                var value = DataSystem.I.GetDataByType<float>(type);
                 v[name] = value;
                 var nameWithInfluence = name + "_i";
                 var valueWithInfluence = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(type);
@@ -100,5 +103,15 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         var turnCard = CardPoolLogic.I.GetTurnCard();
         if (turnCard == null) return -1;
         return (double)turnCard.Quality;
+    }
+
+    private double RandInt(double min, double max)
+    {
+        return (double)Random.Range((int)min, (int)max);
+    }
+
+    private double RandFloat(double min, double max)
+    {
+        return (double)Random.Range((float)min, (float)max);
     }
 }

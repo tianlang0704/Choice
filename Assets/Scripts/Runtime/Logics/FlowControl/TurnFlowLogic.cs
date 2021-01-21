@@ -62,26 +62,21 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     // 增加回合数
     public void IncreaseTurn(int turnNum = 1)
     {
-        var curTurn = DataSystem.I.GetAttrDataByType<int>(DataType.CurrentTurn);
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
         DataSystem.I.SetDataByType(DataType.CurrentTurn, curTurn + turnNum);
     }
 
     // 显示回合提问
     public void ShowTurnDialog() {
         // 抽卡
-        var card = CardPoolLogic.I.RerollTurnCard();
+        var card = CardPoolLogic.I.RerollTurnCard() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 通用提示卡
         // 处理没有卡用了
         if (card == null) {
-            // 先找有没有通用提示卡
-            card = CardPoolLogic.I.GetCardById(GameUtil.CardId(10002)); 
-            // 如果没有提示卡, 就跳过今天
-            if (card == null) {
-                // 更新界面
-                GameUILogic.I.UpdateView();
-                // 下一回合
-                NextTurn();
-                return;
-            }
+            // 更新界面
+            GameUILogic.I.UpdateView();
+            // 下一回合
+            NextTurn();
+            return;
         }
         // 显示卡片
         CommonFlowLogic.I.ShowDialog(

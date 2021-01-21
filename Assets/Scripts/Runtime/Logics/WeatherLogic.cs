@@ -51,7 +51,7 @@ public class WeatherLogic : SingletonBehaviour<WeatherLogic>
 
     public void SyncWeatherData()
     {
-        var weatherId = DataSystem.I.GetAttrDataByType<int>(DataType.Weather);
+        var weatherId = DataSystem.I.GetDataByType<int>(DataType.Weather);
         curWeather = allWeatherIdIndex[weatherId];
     }
 
