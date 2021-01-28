@@ -90,12 +90,6 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         
     }
 
-    public bool IsAttrTypeDeadly(DataType type)
-    {
-        if (DeadlyAttrTypes.Contains(type)) return true;
-        return false;
-    }
-
     public void Init()
     {
         // 初始化显示属性
@@ -118,26 +112,15 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         maxValueDic[DataType.Stamina] = 10;
         // maxValueDic[DataType.Gold] = 10;
         DataSystem.I.SetDataByType(DataType.AttrMaxTable, maxValueDic);
-        // 初始化质量影响卡牌
-        Dictionary<CardQuality, float> qualityWeight = new Dictionary<CardQuality, float>(){
-            {CardQuality.Red, 15f},
-            {CardQuality.White, 30f},
-            {CardQuality.Green, 25f},
-            {CardQuality.Blue, 15f},
-            {CardQuality.Purple, 10f},
-            {CardQuality.Gold, 5f},
-        };
-        DataSystem.I.SetDataByType(DataType.CardQualityWeight, qualityWeight);
-        // 初始化幸运影响卡牌
-        UpdateCardWeightFromLuck();
-        // 幸运变化回调
-        DataSystem.I.AddCallback(DataType.Luck, () => {
-            UpdateCardWeightFromLuck();
-        });
         // 心情变化回调
         DataSystem.I.AddCallback(DataType.Mood, () => {
             RollMoodBuff();
         });
+    }
+    public bool IsAttrTypeDeadly(DataType type)
+    {
+        if (DeadlyAttrTypes.Contains(type)) return true;
+        return false;
     }
     public void ApplyInfluence(AttrInfluence influ, float factor = 1f)
     {
@@ -206,17 +189,6 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
             if (IsAttrTypeDeadly((DataType)type) && attrData <= 0) return true;
         }
         return false;
-    }
-
-    // 从幸运中获取卡牌质量偏重
-    public void UpdateCardWeightFromLuck()
-    {
-        var luck = DataSystem.I.GetDataByType<float>(DataType.Luck);
-        var variWeight = Mathf.Lerp(0, 80, luck/40f);
-        Dictionary<LuckQualityGroup, float> luckWeight = new Dictionary<LuckQualityGroup, float>();
-        luckWeight[LuckQualityGroup.Low] = 80 - variWeight;
-        luckWeight[LuckQualityGroup.High] = 20 + variWeight;
-        DataSystem.I.SetDataByType(DataType.CardLuckWeight, luckWeight);
     }
 
     // 随机心情BUFF

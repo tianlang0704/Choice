@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DIS = DataInfluenceSystem;
 
 public enum Logic {
     AttrChange = 0,     // 永久改变数值
@@ -10,6 +11,7 @@ public enum Logic {
     AttrChangeIncome,   // 永久改变数值, 受收益因数影响
     AttrChangeCost,     // 永久改变数值, 费用
     AttrInfluence,      // 暂时影响数值
+    _ATTR_MAX_ = 99,     // 属性改变分割值
     AddItem,            // 添加道具
     AddItemWithDuration,// 添加道具
     UseItem,            // 使用道具
@@ -37,6 +39,16 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     void Update()
     {
         
+    }
+
+    public List<LogicExecution> GetAttrIncome(List<AttrInfluence> influ, Condition c = null)
+    {
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeIncome, influ, c)});
+    }
+
+    public List<LogicExecution> GetAttrHurt(List<AttrInfluence> influ, Condition c = null)
+    {
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurt, influ, c)});
     }
 
     public List<LogicExecution> GetLogicList(List<(Logic l, object p, Condition c)> exeList)

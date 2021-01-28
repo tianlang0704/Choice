@@ -79,9 +79,36 @@ public static class GameUtil {
         }
         return resKey;
     }
-    static public void ApplyInfluListDicAttr<K>(Attr baseAttr, AttrInfluence influence)
+
+    static public V RandomRemoveFromList<V>(List<V> list)
     {
-        ApplyDicAttr<K, List<AttrInfluence>>(baseAttr, influence, (a, b) => { a.AddRange(b); return a; });
+        if (list.Count <= 0) return default;
+        var v = list[Random.Range(0, list.Count)];
+        list.Remove(v);
+        return v;
+    }
+    
+    static public List<V> RandomRemoveFromList<V>(List<V> list, int num, Func<V,V> modifier = null)
+    {
+        var res = new List<V>();
+        for (int i = 0; i < num; i++) {
+            if (list.Count <= 0) break;
+            var v = RandomRemoveFromList(list);
+            if (modifier != null) {
+                v = modifier(v);
+            }
+            res.Add(v);
+        }
+        return res;
+    }
+
+    static public void ApplyListDicAttr<K,V>(Attr baseAttr, AttrInfluence influence)
+    {
+        ApplyDicAttr<K, List<V>>(baseAttr, influence, (a, b) => {
+            if (a == null) a = new List<V>();
+            a.AddRange(b); 
+            return a; 
+        });
     }
     static public void ApplyFloatDicAttr<K>(Attr baseAttr, AttrInfluence influence)
     {

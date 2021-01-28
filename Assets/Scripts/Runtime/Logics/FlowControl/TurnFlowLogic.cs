@@ -85,8 +85,11 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
                 // 获取答案
                 Answer answer = card.answers[ansNum];
                 // 执行逻辑列表
-                if (answer.logicListFunc != null) {
-                    var logicList = answer.logicListFunc();
+                if (answer.logicListFuncList != null) {
+                    var logicList = answer.logicListFuncList
+                        .Select((func)=>func())
+                        .SelectMany((logicExeutionList)=>logicExeutionList)
+                        .ToList();
                     CommonLogicSystem.I.ExecuteCommonLogic(logicList);
                 }
                 // 更新界面

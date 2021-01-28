@@ -101,8 +101,12 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     {
         return attrList.Select((f) => GetAttrInfluence(f.type, f.value, turn, isSet, priority, condition)).ToList();
     }
+    public List<AttrInfluence> GetAttrInfluenceList(DataType type, string formula, int turn = 0,bool isSet = false, int priority = 0, Condition condition = null)
+    {
+        return new List<AttrInfluence>() {GetAttrInfluence(type, formula, turn, isSet, priority, condition)};
+    }
     // 取单个影响属性
-    public AttrInfluence GetAttrInfluence(DataType type, string formula, int turn = 0,bool isSet = false, int priority = 0, Condition condition = null)
+    public AttrInfluence GetAttrInfluence(DataType type, string formula, int turn = 0, bool isSet = false, int priority = 0, Condition condition = null)
     {
         return new AttrInfluence() {
             IsSet = isSet,
@@ -113,7 +117,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             Condition = condition,
         };
     }
-    public AttrInfluence GetAttrInfluence(DataType type, float value, int turn = 0,bool isSet = false, int priority = 0, Condition condition = null)
+    public AttrInfluence GetAttrInfluence(DataType type, float value, int turn = 0, bool isSet = false, int priority = 0, Condition condition = null)
     {
         return new AttrInfluence() {
             IsSet = isSet,
@@ -124,7 +128,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             Condition = condition,
         };
     }
-    public AttrInfluence GetAttrInfluence<T>(DataType type, T value, int turn = 0,bool isSet = false, int priority = 0, Condition condition = null)
+    public AttrInfluence GetAttrInfluence<T>(DataType type, T value, int turn = 0, bool isSet = false, int priority = 0, Condition condition = null)
     {
         var attr = new Attr();
         attr.SetValue<T>(value);
@@ -323,27 +327,6 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             ApplyInfluence(baseAttr, influence);
         }
     }
-    Dictionary<string, double> GetAdditionalParams(Attr baseAttr, AttrInfluence influence)
-    {
-        return new Dictionary<string, double>() {
-            { "Value", DataSystem.I.GetDataByType<float>(influence.AttributeType) },
-            { "Target", baseAttr.GetValue<float>() },
-        };
-    }
-    // 应用影响
-    public void ApplyInfluence(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.Condition != null && !ConditionSystem.I.IsConditionMet(influence.Condition, false, GetAdditionalParams(baseAttr, influence))) {
-            return;
-        }
-        ApplyChangeToAttr(baseAttr, influence);
-        ApplyChangeToCardWeight(baseAttr, influence);
-        ApplyChangeToCardLuckWeight(baseAttr, influence);
-        ApplyChangeToCardQualityWeight(baseAttr, influence);
-        ApplyChangeToCardTypeFilter(baseAttr, influence);
-        ApplyChangeToIncomeHurtModifier(baseAttr, influence);
-        ApplyChangeToItemNumModifier(baseAttr, influence);
-    }
     public AttrInfluence ModifyAndCopyInfluence(AttrInfluence baseInflu, List<AttrInfluence> newInfluList)
     {
         if (newInfluList == null || newInfluList.Count <= 0) return null;
@@ -357,6 +340,42 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         resInflu.Attr = newAttr;
         return resInflu;
     }
+    public AttrInfluence ConvertFormulaToAttr(AttrInfluence influ)
+    {
+        if (influ.Formula == null) return influ;
+        var value = FormulaSystem.I.CalcFormula(influ.Formula, GetAdditionalParams(influ));
+        if (influ.Attr == null) {
+            influ.Attr = new Attr();
+        }
+        influ.Attr.SetValue<float>(value);
+        return influ;
+    }
+    Dictionary<string, double> GetAdditionalParams(AttrInfluence influence, Attr baseAttr = null)
+    {
+        var p = new Dictionary<string, double>() {
+            { "Value", DataSystem.I.GetDataByType<float>(influence.AttributeType) }
+        };
+        if (baseAttr != null) {
+            p["Target"] =  baseAttr.GetValue<float>();
+        }
+        return p;
+    }
+    // 应用影响
+    public void ApplyInfluence(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.Condition != null && !ConditionSystem.I.IsConditionMet(influence.Condition, false, GetAdditionalParams(influence, baseAttr))) {
+            return;
+        }
+        ApplyChangeToAttr(baseAttr, influence);
+        ApplyChangeToCardWeight(baseAttr, influence);
+        ApplyChangeToCardLuckWeight(baseAttr, influence);
+        ApplyChangeToCardQualityWeight(baseAttr, influence);
+        ApplyChangeToCardAttrWeight(baseAttr, influence);
+        ApplyChangeToCardAttrList(baseAttr, influence);
+        ApplyChangeToCardTypeFilter(baseAttr, influence);
+        ApplyChangeToIncomeHurtModifier(baseAttr, influence);
+        ApplyChangeToItemNumModifier(baseAttr, influence);
+    }
     // 应用属性影响列表
     public void ApplyChangeToAttr(Attr baseAttr, AttrInfluence influence) 
     {
@@ -364,7 +383,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         if(typeInt >= (int)DataType._ValueTypeMax) return;
         float changeAmount = 0f;
         if (influence.Formula != null) {
-            changeAmount = FormulaSystem.I.CalcFormula(influence.Formula, GetAdditionalParams(baseAttr, influence));
+            changeAmount = FormulaSystem.I.CalcFormula(influence.Formula, GetAdditionalParams(influence, baseAttr));
         } else {
             changeAmount = influence.Attr;
         }
@@ -399,6 +418,21 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         GameUtil.ApplyFloatDicAttr<CardQuality>(baseAttr, influence);
     }
 
+    // 应用卡片属性偏重
+    public void ApplyChangeToCardAttrWeight(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.AttributeType != DataType.CardAttributeWeight) return;
+        // 应用数值
+        GameUtil.ApplyListDicAttr<CardQuality, List<LogicExecution>>(baseAttr, influence);
+    }
+
+    // 应用卡片属性随机结果
+    public void ApplyChangeToCardAttrList(Attr baseAttr, AttrInfluence influence)
+    {
+        if (influence.AttributeType != DataType.CardAnswerLogicList) return;
+        GameUtil.ApplyListAttr<List<LogicExecution>>(baseAttr, influence);
+    }
+
     // 应用卡片类型过滤
     public void ApplyChangeToCardTypeFilter(Attr baseAttr, AttrInfluence influence)
     {
@@ -413,6 +447,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         if (influence.AttributeType != DataType.HurtModifier && influence.AttributeType != DataType.IncomeModifier) return;
         GameUtil.ApplyListAttr<AttrInfluence>(baseAttr, influence);
     }
+
     // 应用道具添加数量修正
     public void ApplyChangeToItemNumModifier(Attr baseAttr, AttrInfluence influence)
     {

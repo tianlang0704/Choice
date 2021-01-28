@@ -37,6 +37,7 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         FormulaSystem.I.Init();         // 初始化公式系统
         ConditionSystem.I.Init();       // 初始化条件系统
         GameScenesLogic.I.Init();       // 初始化场景
+        CardLogic.I.Init();             // 初始化卡牌
         CardPoolLogic.I.Init();         // 初始化卡牌池
         ItemLogic.I.Init();             // 初始化道具
         DayFlowLogic.I.Init();          // 初始化日循环

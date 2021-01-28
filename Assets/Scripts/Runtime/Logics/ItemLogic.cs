@@ -181,7 +181,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Name = "提不起兴趣",
                 Desc = "减少一个选项",
                 HaveInfluenceList = new List<AttrInfluence>() {
-                    DIS.I.GetAttrInfluence(DataType.AnswerNumOffset, -1, 999),
+                    DIS.I.GetAttrInfluence(DataType.AnswerNum, -1, 999),
                 },
             },
             new Item() {

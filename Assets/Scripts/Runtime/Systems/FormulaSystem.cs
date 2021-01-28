@@ -21,8 +21,8 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         calcEngine.AddFunction("IsHaveItem", IsHaveItem);
         calcEngine.AddFunction("TurnCardType", TurnCardType);
         calcEngine.AddFunction("TurnCardQuality", TurnCardQuality);
-        calcEngine.AddFunction("RandInt", RandInt);
-        calcEngine.AddFunction("RandFloat", RandFloat);
+        calcEngine.AddFunction("RandomInt", RandomInt);
+        calcEngine.AddFunction("RandomFloat", RandomFloat);
     }
     // Start is called before the first frame update
     void Start()
@@ -105,12 +105,12 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         return (double)turnCard.Quality;
     }
 
-    private double RandInt(double min, double max)
+    private double RandomInt(double min, double max)
     {
         return (double)Random.Range((int)min, (int)max);
     }
 
-    private double RandFloat(double min, double max)
+    private double RandomFloat(double min, double max)
     {
         return (double)Random.Range((float)min, (float)max);
     }

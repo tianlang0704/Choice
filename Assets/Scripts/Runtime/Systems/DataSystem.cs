@@ -22,12 +22,14 @@ public enum DataType {
     IncomeFactor,       // 收益因数
     HurtFactor,         // 伤害因数
     CostFactor,         // 费用因数
-    AnswerNumOffset,    // 答案数量加减
+    AnswerNum,          // 答案数量加减
     _ValueTypeMax = 10000, // 数值类型最大值
     AttrMaxTable,       // 数值最大表
-    CardWeight,         // 卡片附加几率
+    CardWeight,         // 卡牌附加几率
     CardLuckWeight,     // 卡牌幸运权重
     CardQualityWeight,  // 卡牌质量权
+    CardAttributeWeight,// 卡牌资源权重
+    CardAnswerLogicList,  // 卡牌资源和数值(从权重中随机出来的结果)
     CardTypeFilter,     // 类型过滤器
     HurtModifier,       // 伤害修改
     IncomeModifier,     // 收入修改
@@ -167,6 +169,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
             ApplyInfluence(influence);
         }
     }
+    // 重置数据变化
     public void RestDataChange()
     {
         dataChange.Clear();

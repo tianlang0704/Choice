@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AIS = DataInfluenceSystem;
+using DIS = DataInfluenceSystem;
 using CLS = CommonLogicSystem;
 using CS = ConditionSystem;
-using LEList = System.Collections.Generic.List<(Logic, object, Condition)>;
 
 public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
 {
@@ -31,9 +30,112 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
 
     public void Init()
     {
+        // 一天的卡牌ID
         DataSystem.I.SetDataByType<List<int>>(DataType.DayCards, null);
+        // 初始化质量影响卡牌
+        var qualityWeight = new Dictionary<CardQuality, float>(){
+            {CardQuality.Red, 15f},
+            {CardQuality.White, 30f},
+            {CardQuality.Green, 25f},
+            {CardQuality.Blue, 15f},
+            {CardQuality.Purple, 10f},
+            {CardQuality.Gold, 5f},
+        };
+        DataSystem.I.SetDataByType(DataType.CardQualityWeight, qualityWeight);
+        // 初始化属性影响卡牌
+        var cardAttrWeight = new Dictionary<CardQuality, List<List<LogicExecution>>>() {
+            {CardQuality.Red, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.White, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.Green, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.Blue, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.Purple, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.Gold, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+            {CardQuality.Any, new List<List<LogicExecution>>(){
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,0)")),
+                CLS.I.GetAttrIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(0,3)")),
+                CLS.I.GetAttrHurt(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,0)")),
+            }},
+        };
+        DataSystem.I.SetDataByType(DataType.CardAttributeWeight, cardAttrWeight);
+        // 初始化幸运影响卡牌
+        UpdateCardWeightFromLuck();
+        // 幸运变化回调
+        DataSystem.I.AddCallback(DataType.Luck, () => {
+            UpdateCardWeightFromLuck();
+        });
     }
 
+    // 从幸运中获取卡牌质量偏重
+    public void UpdateCardWeightFromLuck()
+    {
+        var luck = DataSystem.I.GetDataByType<float>(DataType.Luck);
+        var variWeight = Mathf.Lerp(0, 80, luck/40f);
+        Dictionary<LuckQualityGroup, float> luckWeight = new Dictionary<LuckQualityGroup, float>();
+        luckWeight[LuckQualityGroup.Low] = 80 - variWeight;
+        luckWeight[LuckQualityGroup.High] = 20 + variWeight;
+        DataSystem.I.SetDataByType(DataType.CardLuckWeight, luckWeight);
+    }
+
+    // 通过卡牌填充条件
     public void ShuffleDayCards()
     {
         var allCardsIdList = CardLogic.I.AllCards
@@ -44,6 +146,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         SyncDayCardsToData();
     }
 
+    // 从数据中初始化日卡牌
     public void SyncDayCardsToData()
     {
         dayCards.Clear();
@@ -56,6 +159,19 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         }
     }
 
+    // 重新从答案列表中随机出
+    List<List<LogicExecution>> RerollCardAnswerAttr(CardQuality quality)
+    {
+        // 计算答案属性类型和数值
+        var cardAnswerLogicListList = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<CardQuality, List<List<LogicExecution>>>>(DataType.CardAttributeWeight);
+        var cardAnswerLogicList = new List<List<LogicExecution>>(cardAnswerLogicListList[quality]);
+        var answerNum = DataSystem.I.CopyAttrDataWithInfluenceByType<int>(DataType.AnswerNum);
+        var validLogicList = GameUtil.RandomRemoveFromList(cardAnswerLogicList, answerNum);
+        DataSystem.I.SetDataByType(DataType.CardAnswerLogicList, validLogicList);
+        return validLogicList;
+    }
+
+    // 从日卡牌中选取一个列表
     (List<Card>, List<CardQuality>) GetCardListFromWeights()
     {
         // 计算幸运比重
@@ -76,28 +192,35 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             .Where((q)=>qualityWeight.ContainsKey(q))
             .ToDictionary((q)=>q, (q)=>qualityWeight[q])
             ?? qualityWeight;
-        CardQuality? randQuality = validQualityWeight != null ? GameUtil.RandomWeightKey(validQualityWeight) : (CardQuality?)null;
+        CardQuality randQuality = validQualityWeight != null ? GameUtil.RandomWeightKey(validQualityWeight) : CardQuality.Any;
+        // 计算答案属性类型和数值
+        var validLogicListList = RerollCardAnswerAttr(randQuality);
         // 计算类型
         var typeFilter = DataSystem.I.CopyAttrDataWithInfluenceByType<List<CardType>>(DataType.CardTypeFilter);
         // 筛选条件
         var validCards = dayCards
             .Where((c) => 
-                randQuality == null ||
                 randQuality == CardQuality.Any || 
                 c.Quality == randQuality || 
                 c.Quality == CardQuality.Any)                                               // 筛选质量
             .Where((c) => 
                 typeFilter == null || 
                 typeFilter.Contains(c.Type) || 
-                c.Type == CardType.Any)                                                     // 筛选类型
-            .Where((c) => ConditionSystem.I.IsConditionMet(c.DrawCondition))                // 筛选满足条件的卡
+                c.Type == CardType.Any)                                                     // 筛选卡牌类型
+            .Where((c) => { 
+                var answersToTest = c.answers.Where((a)=>a.typeList != null).ToList();
+                if (answersToTest.Count <= 0) return true;
+                return CardLogic.I.FilterAnswerByDataTypeList(answersToTest, validLogicListList).Any();
+            })                                                                              // 筛选答案类型
+            .Where((c) => ConditionSystem.I.IsConditionMet(c.DrawCondition))                // 筛选卡牌抽取条件
             .GroupBy((c) => c.DrawPriority)                                                 // 优先度分组
             .OrderBy((g) => g.FirstOrDefault().DrawPriority)                                // 优先度分组排序
-            .LastOrDefault()                                                                // 选优先度最高的组
-            ?.ToList();
+            .LastOrDefault()?                                                               // 选优先度最高的组
+            .ToList();
         return (validCards, qualityList);
     }
 
+    // 从卡牌列表中选一张卡牌
     Card PickCard()
     {
         // 获取卡牌
@@ -112,6 +235,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                 cardWeightSum += weightTable.FirstOrDefault((kvp)=>kvp.Key == card.Id).Value;
             }
         });
+        // 选一张卡牌
         Card resCard = null;
         float random = Random.Range(0, cardWeightSum);
         foreach (var card in validCards) {
@@ -121,7 +245,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             }
             random -= cardWeight;
             if (random <= 0) {
-                resCard = card.ShallowCopy();
+                resCard = card;
                 break;
             }
         }
@@ -200,20 +324,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
     {
         // 选本局的卡
         turnCard = PickCard();
-        if (turnCard == null) return null;
-        // 处理看不见
-        if (turnCard.IsMaskable && !ConditionSystem.I.IsConditionMet(turnCard.SeeCondition)) {
-            CardLogic.I.MaskCard(turnCard);
-        }
-        // 处理答案数量
-        var answerNumOffset = DataSystem.I.CopyAttrDataWithInfluenceByType<int>(DataType.AnswerNumOffset);
-        var offsetAbs = Mathf.Abs(answerNumOffset);
-        var answers = turnCard.answers;
-        if (answers.Count >= offsetAbs + 1) {
-            var index = answers.Count - offsetAbs - 1;
-            answers.RemoveRange(index, offsetAbs);
-        }
-        return turnCard;
+        return CardLogic.I.InstantiateTurnCard(turnCard);
     }
 
     public Card GetTurnCard()
