@@ -152,7 +152,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         attr.SetValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
             Priority = priority,
-            AttributeType = DataType.CardWeight,
+            AttributeType = DataType.TurnCardWeight,
             Attr = attr,
             DurFre = new DurationAndFrequency() { Turn = turn },
         };
@@ -170,7 +170,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         attr.SetValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
             Priority = priority,
-            AttributeType = DataType.CardQualityWeight,
+            AttributeType = DataType.TurnCardQualityWeight,
             Attr = attr,
             IsSet = isSet,
             DurFre = new DurationAndFrequency() { Turn = turn },
@@ -190,7 +190,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         attr.SetValue(weightChangeDic);
         var attrInfluence = new AttrInfluence(){
             Priority = priority,
-            AttributeType = DataType.CardLuckWeight,
+            AttributeType = DataType.TurnCardLuckWeight,
             Attr = attr,
             IsSet = isSet,
             DurFre = new DurationAndFrequency() { Turn = turn },
@@ -209,7 +209,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         attr.SetValue(paramList);
         var attrInfluence = new AttrInfluence(){
             Priority = priority,
-            AttributeType = DataType.CardTypeFilter,
+            AttributeType = DataType.TurnCardTypeFilter,
             Attr = attr,
             IsSet = isSet,
             DurFre = new DurationAndFrequency() { Turn = turn },
@@ -366,21 +366,35 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         if (influence.Condition != null && !ConditionSystem.I.IsConditionMet(influence.Condition, false, GetAdditionalParams(influence, baseAttr))) {
             return;
         }
-        ApplyChangeToAttr(baseAttr, influence);
-        ApplyChangeToCardWeight(baseAttr, influence);
-        ApplyChangeToCardLuckWeight(baseAttr, influence);
-        ApplyChangeToCardQualityWeight(baseAttr, influence);
-        ApplyChangeToCardAttrWeight(baseAttr, influence);
-        ApplyChangeToCardAttrList(baseAttr, influence);
-        ApplyChangeToCardTypeFilter(baseAttr, influence);
-        ApplyChangeToIncomeHurtModifier(baseAttr, influence);
-        ApplyChangeToItemNumModifier(baseAttr, influence);
+        if((int)influence.AttributeType < (int)DataType._ValueTypeMax) {
+            ApplyChangeToAttr(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.AttrMaxTable) {
+            GameUtil.ApplyFloatDicAttr<DataType>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardWeight) {
+            GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardLuckWeight) {
+            GameUtil.ApplyFloatDicAttr<LuckQualityGroup>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardQualityList) {
+            GameUtil.ApplyListAttr<CardQuality>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardQualityWeight) { 
+            GameUtil.ApplyFloatDicAttr<CardQuality>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnAnswerLogicWeight) {
+            GameUtil.ApplyListDicAttr<CardQuality, List<LogicExecution>>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnAnswerLogicList) {
+            GameUtil.ApplyListAttr<List<LogicExecution>>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardTypeFilter) {
+            GameUtil.ApplyListAttr<CardType>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.TurnCardValidIdList) {
+            GameUtil.ApplyListAttr<int>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.HurtModifier || influence.AttributeType == DataType.IncomeModifier) {
+            GameUtil.ApplyListAttr<AttrInfluence>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.ItemNumModifier) {
+            GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
+        }
     }
     // 应用属性影响列表
     public void ApplyChangeToAttr(Attr baseAttr, AttrInfluence influence) 
     {
-        var typeInt = (int)influence.AttributeType;
-        if(typeInt >= (int)DataType._ValueTypeMax) return;
         float changeAmount = 0f;
         if (influence.Formula != null) {
             changeAmount = FormulaSystem.I.CalcFormula(influence.Formula, GetAdditionalParams(influence, baseAttr));
@@ -392,66 +406,5 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         } else {
             baseAttr.SetValue(baseAttr.GetValue<float>() + changeAmount);
         }
-    }
-
-    // 应用卡片偏重
-    public void ApplyChangeToCardWeight(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardWeight) return;
-        // 应用数值
-        GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
-    }
-
-    // 应用卡片幸运偏重
-    public void ApplyChangeToCardLuckWeight(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardLuckWeight) return;
-        // 应用数值
-        GameUtil.ApplyFloatDicAttr<LuckQualityGroup>(baseAttr, influence);
-    }
-
-    // 应用卡片质量偏重
-    public void ApplyChangeToCardQualityWeight(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardQualityWeight) return;
-        // 应用数值
-        GameUtil.ApplyFloatDicAttr<CardQuality>(baseAttr, influence);
-    }
-
-    // 应用卡片属性偏重
-    public void ApplyChangeToCardAttrWeight(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardAttributeWeight) return;
-        // 应用数值
-        GameUtil.ApplyListDicAttr<CardQuality, List<LogicExecution>>(baseAttr, influence);
-    }
-
-    // 应用卡片属性随机结果
-    public void ApplyChangeToCardAttrList(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardAnswerLogicList) return;
-        GameUtil.ApplyListAttr<List<LogicExecution>>(baseAttr, influence);
-    }
-
-    // 应用卡片类型过滤
-    public void ApplyChangeToCardTypeFilter(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.CardTypeFilter) return;
-        // 应用数值
-        GameUtil.ApplyListAttr<CardType>(baseAttr, influence);
-    }
-
-    // 应用伤害和收入修正
-    public void ApplyChangeToIncomeHurtModifier(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.HurtModifier && influence.AttributeType != DataType.IncomeModifier) return;
-        GameUtil.ApplyListAttr<AttrInfluence>(baseAttr, influence);
-    }
-
-    // 应用道具添加数量修正
-    public void ApplyChangeToItemNumModifier(Attr baseAttr, AttrInfluence influence)
-    {
-        if (influence.AttributeType != DataType.ItemNumModifier) return;
-        GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
     }
 }

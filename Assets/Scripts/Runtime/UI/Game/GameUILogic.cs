@@ -146,7 +146,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
         foreach (var item in goods) {
             var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
             itemButton.transform.SetParent(itemBox, false);
-            itemButton.SetText($"{item.Name}\n{item.Desc}");
+            itemButton.SetText($"{item.Name}\n{item.Desc}*{item.Num}");
             itemButton.SetTextColor(GameUtil.ItemQualityToColor(item.Quality));
             itemButton.SetColor(ItemLogic.I.IsItemConsumable(item.Id) ? Color.green : Color.black);
             itemButton.SetCB(() => {

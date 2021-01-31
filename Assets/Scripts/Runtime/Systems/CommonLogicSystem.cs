@@ -6,19 +6,20 @@ using UnityEngine;
 using DIS = DataInfluenceSystem;
 
 public enum Logic {
-    AttrChange = 0,     // 永久改变数值
-    AttrChangeHurt,     // 永久改变数值, 但是先检查护身符, 受伤害因数影响
-    AttrChangeIncome,   // 永久改变数值, 受收益因数影响
-    AttrChangeCost,     // 永久改变数值, 费用
-    AttrInfluence,      // 暂时影响数值
-    _ATTR_MAX_ = 99,     // 属性改变分割值
-    AddItem,            // 添加道具
-    AddItemWithDuration,// 添加道具
-    UseItem,            // 使用道具
-    RemoveItem,         // 移除道具
-    SkipTurn,           // 跳过回合
-    SetScene,           // 设置场景
-    ShowSelectScene,    // 显示选择场景
+    AttrChange = 0,         // 永久改变数值
+    AttrChangeHurtIncome,   // 自动伤害收益, 如果是负数就是伤害, 如果是0或正数就是收益
+    AttrChangeHurt,         // 永久改变数值, 但是先检查护身符, 受伤害因数影响
+    AttrChangeIncome,       // 永久改变数值, 受收益因数影响
+    AttrChangeCost,         // 永久改变数值, 费用
+    AttrInfluence,          // 暂时影响数值
+    _ATTR_MAX_ = 99,         // 属性改变分割值
+    AddItem,                // 添加道具
+    AddItemWithDuration,    // 添加道具
+    UseItem,                // 使用道具
+    RemoveItem,             // 移除道具
+    SkipTurn,               // 跳过回合
+    SetScene,               // 设置场景
+    ShowSelectScene,        // 显示选择场景
 }
 
 public class LogicExecution {
@@ -39,6 +40,11 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     void Update()
     {
         
+    }
+
+    public List<LogicExecution> GetAttrHurtIncome(List<AttrInfluence> influ, Condition c = null)
+    {
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurtIncome, influ, c)});
     }
 
     public List<LogicExecution> GetAttrIncome(List<AttrInfluence> influ, Condition c = null)
@@ -87,6 +93,8 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     {
         if (logic == Logic.AttrChange) {
             AttrChange(param);
+        } else if (logic == Logic.AttrChangeHurtIncome) {
+            AttrChangeHurtIncome(param);
         } else if (logic == Logic.AttrChangeHurt) {
             AttrChangeHurt(param);
         } else if (logic == Logic.AttrChangeIncome) {
@@ -124,6 +132,30 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         if (param == null) return;
         var influenceList = param as List<AttrInfluence>;
         AttributesLogic.I.ApplyInfluence(influenceList);
+    }
+
+    public void AttrChangeHurtIncome(object param)
+    {
+        if (param == null) return;
+        var influenceList = param as List<AttrInfluence>;
+        var hurtList = new List<AttrInfluence>();
+        var incomeList = new List<AttrInfluence>();
+        foreach (var influ in influenceList) {
+            if (influ.AttributeType > DataType._ValueTypeMax) continue;
+            var valueInflu = DataInfluenceSystem.I.ConvertFormulaToAttr(influ);
+            var value = valueInflu.Attr.GetValue<float>();
+            if (value < 0) {
+                hurtList.Add(valueInflu);
+            } else {
+                incomeList.Add(valueInflu);
+            }
+        }
+        if (hurtList.Count > 0) {
+            AttrChangeHurt(hurtList);
+        }
+        if (incomeList.Count > 0) {
+            AttrChangeIncome(incomeList);
+        }
     }
 
     public void AttrChangeHurt(object param)

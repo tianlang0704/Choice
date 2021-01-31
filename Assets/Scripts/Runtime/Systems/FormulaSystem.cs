@@ -19,8 +19,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     protected void Awake()
     {
         calcEngine.AddFunction("IsHaveItem", IsHaveItem);
-        calcEngine.AddFunction("TurnCardType", TurnCardType);
-        calcEngine.AddFunction("TurnCardQuality", TurnCardQuality);
+        calcEngine.AddFunction("GetTurnCardType", GetTurnCardType);
         calcEngine.AddFunction("RandomInt", RandomInt);
         calcEngine.AddFunction("RandomFloat", RandomFloat);
     }
@@ -91,20 +90,12 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         }
     }
 
-    private double TurnCardType()
+    private double GetTurnCardType()
     {
-        var turnCard = CardPoolLogic.I.GetTurnCard();
+        var turnCard = CardPoolLogic.I.GetTurnCardRaw();
         if (turnCard == null) return -1;
         return (double)turnCard.Type;
     }
-
-    private double TurnCardQuality()
-    {
-        var turnCard = CardPoolLogic.I.GetTurnCard();
-        if (turnCard == null) return -1;
-        return (double)turnCard.Quality;
-    }
-
     private double RandomInt(double min, double max)
     {
         return (double)Random.Range((int)min, (int)max);

@@ -117,15 +117,16 @@ public static class GameUtil {
     static public void ApplyDicAttr<K, V>(Attr baseAttr, AttrInfluence influence, Func<V,V,V> addFunc = null)
     {
         if (influence.Attr.Type != Attr.DataType.CUSTOM) return;
+        // 获取新表
+        var newAttr = influence.Attr;
+        var newWeights = newAttr.GetValue<Dictionary<K, V>>();
+        if (newWeights == null) return;
         // 从属性中获取现在表
         var curWeights = baseAttr.GetValue<Dictionary<K, V>>();
         if (curWeights == null) {
             curWeights = new Dictionary<K, V>();
             baseAttr.SetValue(curWeights);
         }
-        // 获取新表
-        var newAttr = influence.Attr;
-        var newWeights = newAttr.GetValue<Dictionary<K, V>>();
         // 循环加值
         foreach (var newKvp in newWeights)
         {
@@ -155,15 +156,16 @@ public static class GameUtil {
         if (influence.IsSet) {
             baseAttr.SetValue(influence.Attr.GetValue<List<V>>());
         } else {
+            // 获取新表
+            var newAttr = influence.Attr;
+            var newList = newAttr.GetValue<List<V>>();
+            if (newList == null || newList.Count <= 0) return;
             // 从属性中获取现在表
             var baseList = baseAttr.GetValue<List<V>>();
             if (baseList == null) {
                 baseList = new List<V>();
                 baseAttr.SetValue(baseList);
             }
-            // 获取新表
-            var newAttr = influence.Attr;
-            var newList = newAttr.GetValue<List<V>>();
             baseList.AddRange(newList);
         }
     }

@@ -27,14 +27,13 @@ public class Card
     public List<Answer> answers;
     public Card ShallowCopy()
     {
-        Card res = (Card)this.MemberwiseClone();
-        var oriAnswers = res.answers;
-        res.answers = new List<Answer>();
-        for (int i = 0; i < oriAnswers.Count; i++) {
-            var a = oriAnswers[i].ShallowCopy();
-            res.answers.Add(a);
+        Card copy = (Card)this.MemberwiseClone();
+        copy.answers = new List<Answer>();
+        for (int i = 0; i < answers.Count; i++) {
+            var a = answers[i].ShallowCopy();
+            copy.answers.Add(a);
         }
-        return res;
+        return copy;
     }
 }
 
@@ -42,11 +41,19 @@ public class Answer
 {
     public string content;
     public Condition condition;
-    public List<DataType> typeList; 
+    public List<Logic> fillLogicList;
+    public List<DataType> fillTypeList; 
     public List<Func<List<LogicExecution>>> logicListFuncList;
     public Answer ShallowCopy()
     {
-        return (Answer)this.MemberwiseClone();
+        var copy = (Answer)this.MemberwiseClone();
+        if (fillTypeList != null) {
+            copy.fillTypeList = new List<DataType>(fillTypeList);
+        }
+        if (logicListFuncList != null) {
+            copy.logicListFuncList = new List<Func<List<LogicExecution>>>(logicListFuncList);
+        }
+        return copy;
     }
 }
 
@@ -95,24 +102,10 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "金钱{0:+#;-#;0}",
-                        typeList = new List<DataType>() {DataType.Gold},
+                        fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
                             // (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,1,0,0,0,0), null),
                             (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
-                        });}},
-                    },
-                    new Answer() {
-                        content = "金钱{0:+#;-#;0}",
-                        typeList = new List<DataType>() {DataType.Gold},
-                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            // (Logic.AttrChangeHurt, DIS.I.GetAttrInfluenceList(0,0,0,-1,0,0,0,0), null),
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
-                        });}},
-                    },
-                    new Answer() {
-                        content = "获取护符",
-                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AddItem, (GameUtil.ItemId(2), 1), null),
                         });}},
                     },
                 }
@@ -125,15 +118,23 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "心情{0:+#;-#;0}",
-                        typeList = new List<DataType>() {DataType.Mood},
+                        fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            // (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,1,0,0,0,0,0), null),
+                            // (Logic.AttrChangeHurt, DIS.I.GetAttrInfluenceList(0,0,-1,0,0,0,0,0), null),
                             (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
                         });}},
                     },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(2),
+                Quality = CardQuality.Any,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "心情+-",
+                answers = new List<Answer>() {
                     new Answer() {
                         content = "心情{0:+#;-#;0}",
-                        typeList = new List<DataType>() {DataType.Mood},
+                        fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
                             // (Logic.AttrChangeHurt, DIS.I.GetAttrInfluenceList(0,0,-1,0,0,0,0,0), null),
                             (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,1,0), null),
@@ -186,13 +187,36 @@ public class CardLogic : SingletonBehaviour<CardLogic>
             a.content = "????";
         }
     }
-    public Dictionary<Answer, List<LogicExecution>> FilterAnswerByDataTypeList(List<Answer> answers, List<List<LogicExecution>> leListList)
-    {
+    // 从答案列表中根据填充类型和填充列表选出可用的答案
+    public Dictionary<Answer, List<LogicExecution>> FilterAnswerByLogicCombiList(
+        List<Answer> answers, 
+        List<List<LogicExecution>> leListList, 
+        bool isIncludeNull = true
+    ){
+        // 目标列表为空则直接返回所有答案
+        if (leListList == null) {
+            return answers.ToDictionary((a)=>a, (a)=>(List<LogicExecution>)null);
+        }
         // 从逻辑列表中获取所有属性改变逻辑
-        var validLEListList = leListList.Where((lewList)=>lewList.Where((le)=>le.Logic < Logic._ATTR_MAX_).Any()).ToList();
-        var validLEListListTemp = new List<List<LogicExecution>>(validLEListList);
-        var answersTemp = new List<Answer>(answers);
         var res = new Dictionary<Answer, List<LogicExecution>>();
+        var validLEListList = leListList.Where((lewList)=>lewList.Where((le)=>le.Logic < Logic._ATTR_MAX_).Any()).ToList();
+        if (validLEListList.Count <= 0) {
+            // 有列表但是列表为空, 返回所有不可填属性值卡牌
+            res = answers.Where((a)=>a.fillTypeList == null).ToDictionary((a)=>a, (a)=>(List<LogicExecution>)null);
+        } else {
+            // 有列表也有内容, 就过滤对应的可填属性值卡牌
+            res = FilterMatchAnswer(answers, leListList, isIncludeNull);
+        }
+        return res;
+    }
+    public Dictionary<Answer, List<LogicExecution>> FilterMatchAnswer(
+        List<Answer> answers, 
+        List<List<LogicExecution>> leListList, 
+        bool isIncludeNull = true
+    ){
+        var res = new Dictionary<Answer, List<LogicExecution>>();
+        var validLEListListTemp = new List<List<LogicExecution>>(leListList);
+        var answersTemp = new List<Answer>(answers);
         // 为每个属性改变寻找配对的答案
         for (int i = validLEListListTemp.Count - 1; i >= 0; i--) {
             // 检查答案数量
@@ -205,46 +229,56 @@ public class CardLogic : SingletonBehaviour<CardLogic>
             var targetTypeList = (leToUse.Param as List<AttrInfluence>)?.Select((influ)=>influ.AttributeType).ToList();
             if (targetTypeList == null || targetTypeList.Count <= 0) continue;
             // 获取答案对应的属性和逻辑
-            var filterResList = FilterAnswerByDataTypeList(answersTemp, targetTypeList);
+            var filterAnswerList = FilterAnswerByDataTypeList(answersTemp, targetTypeList, isIncludeNull);
             // 从合适的答案中随机一个
-            var filterRes = filterResList.Count > 0 ? 
-                filterResList[Random.Range(0, filterResList.Count)] : 
+            var filterResAnswer = filterAnswerList.Count > 0 ? 
+                filterAnswerList[Random.Range(0, filterAnswerList.Count)] : 
                 null;
             // 如果找到对应的属性, 就设置记录
-            if (filterRes != null) {
-                validLEListListTemp.RemoveAt(i);
-                answersTemp.Remove(filterRes);
-                res[filterRes] = leList;
+            if (filterResAnswer != null) {
+                if (filterResAnswer.fillTypeList == null || filterResAnswer.fillTypeList.Count <= 0) {
+                    res[filterResAnswer] = null;
+                } else {
+                    validLEListListTemp.RemoveAt(i);
+                    answersTemp.Remove(filterResAnswer);
+                    res[filterResAnswer] = leList;
+                }
             }
         }
         return res;
     }
-    public List<Answer> FilterAnswerByDataTypeList(List<Answer> answers, List<DataType> types)
+    public List<Answer> FilterAnswerByDataTypeList(List<Answer> answers, List<DataType> types, bool isIncludeNull = true)
     {
-        return answers.Where((a)=>a.typeList == null || a.typeList.All(types.Contains) && a.typeList.Count == types.Count).ToList();
+        return answers
+            .Where((a)=>(
+                isIncludeNull && a.fillTypeList == null) || 
+                (a.fillTypeList != null && a.fillTypeList.All(types.Contains) && a.fillTypeList.Count == types.Count))
+            .ToList();
     }
 
-    public Card InstantiateTurnCard(Card rawCard)
+    public Card InstantiateTurnCard(int id)
     {
-        if (rawCard == null) return null;
+        // 实例化一张卡
+        if (!AllCardsIdIndex.ContainsKey(id)) return null;
+        var rawCard = AllCardsIdIndex[id];
         var cardInstance = rawCard.ShallowCopy();
-        
         // 处理答案和数值
-        var answerLogicList = DataSystem.I.CopyAttrDataWithInfluenceByType<List<List<LogicExecution>>>(DataType.CardAnswerLogicList);
-        var answersToLogicListTable = FilterAnswerByDataTypeList(cardInstance.answers, answerLogicList);
+        var answerLogicList = DataSystem.I.CopyAttrDataWithInfluenceByType<List<List<LogicExecution>>>(DataType.TurnAnswerLogicList);
+        var answersToLogicListTable = FilterAnswerByLogicCombiList(cardInstance.answers, answerLogicList);
         var answerNum = DataSystem.I.CopyAttrDataWithInfluenceByType<int>(DataType.AnswerNum);
         var chosenAnswerList = GameUtil.RandomRemoveFromList(answersToLogicListTable.Keys.ToList(), answerNum, (answer) => {
+            if (answer.fillTypeList == null || answer.fillTypeList.Count <= 0) return answer;
             var logicList = answersToLogicListTable[answer];
+            if (logicList == null) return answer;
             answer.logicListFuncList.Add(() => {
                 return logicList;
             });
             return answer;
         });
         cardInstance.answers = chosenAnswerList;
-
         // 处理答案上的数字显示
         foreach (var answer in cardInstance.answers) {
-            if (answer.typeList == null || answer.typeList.Count <= 0) continue;
+            if (answer.fillTypeList == null || answer.fillTypeList.Count <= 0) continue;
             // if (!answer.content.Contains("%v")) continue;
             if (answer.logicListFuncList == null) continue;
             // 如果要显示就要在这里做计算
@@ -262,7 +296,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 })
                 .ToList();
             // 显示计算数值
-            var valueList = answer.typeList
+            var valueList = answer.fillTypeList
                 .Select((t)=>{
                     var typeInflueList = attrInfluList.Where((i)=>i.AttributeType == t).ToList();
                     var resAttr = new Attr();
@@ -271,7 +305,6 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 }).ToList();
             answer.content = string.Format(answer.content, valueList.ToArray());
         }
-
         // 处理看不见
         if (cardInstance.IsMaskable && !ConditionSystem.I.IsConditionMet(cardInstance.SeeCondition)) {
             MaskCard(cardInstance);

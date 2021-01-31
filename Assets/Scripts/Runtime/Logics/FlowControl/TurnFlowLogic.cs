@@ -69,7 +69,9 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     // 显示回合提问
     public void ShowTurnDialog() {
         // 抽卡
-        var card = CardPoolLogic.I.RerollTurnCard() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 通用提示卡
+         CardPoolLogic.I.RerollTurnCard();
+        var card = CardPoolLogic.I.GetTurnCardInstance() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 通用提示卡
+        
         // 处理没有卡用了
         if (card == null) {
             // 更新界面

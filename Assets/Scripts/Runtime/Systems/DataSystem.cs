@@ -5,38 +5,43 @@ using System.Linq;
 using UnityEngine;
 
 public enum DataType {
-    Any = -1,           // 用在一些需要匹配所有属性的地方
-    HP = 0,             // 生命
-    Stamina,            // 体力
-    Mood,               // 心情
-    Gold,               // 金币
-    Luck,               // 幸运
-    Bag,                // 负重
-    _AttrTypeMax = 1000,// 属性类型最大值 
-    Distance,           // 距离
-    CurrentDay,         // 天数
-    Scene,              // 场景
-    Weather,            // 天气
-    CurrentTurn,        // 现在回合数
-    MaxTurn,            // 总回合数
-    IncomeFactor,       // 收益因数
-    HurtFactor,         // 伤害因数
-    CostFactor,         // 费用因数
-    AnswerNum,          // 答案数量加减
-    _ValueTypeMax = 10000, // 数值类型最大值
-    AttrMaxTable,       // 数值最大表
-    CardWeight,         // 卡牌附加几率
-    CardLuckWeight,     // 卡牌幸运权重
-    CardQualityWeight,  // 卡牌质量权
-    CardAttributeWeight,// 卡牌资源权重
-    CardAnswerLogicList,  // 卡牌资源和数值(从权重中随机出来的结果)
-    CardTypeFilter,     // 类型过滤器
-    HurtModifier,       // 伤害修改
-    IncomeModifier,     // 收入修改
-    CostModifier,       // 费用修改
-    ItemNumModifier,    // 道具数量修改
-    DayCards,           // 一天卡池ID
-    Items,              // 物品(包括 道具, 装备, 遗物, BUFF)
+    Any = -1,                   // 用在一些需要匹配所有属性的地方
+    HP = 0,                     // 生命
+    Stamina,                    // 体力
+    Mood,                       // 心情
+    Gold,                       // 金币
+    Luck,                       // 幸运
+    Bag,                        // 负重
+    _AttrTypeMax = 1000,        // 属性类型最大值 
+    Distance,                   // 距离
+    CurrentDay,                 // 天数
+    Scene,                      // 场景
+    Weather,                    // 天气
+    CurrentTurn,                // 现在回合数
+    MaxTurn,                    // 总回合数
+    IncomeFactor,               // 收益因数
+    HurtFactor,                 // 伤害因数
+    CostFactor,                 // 费用因数
+    AnswerNum,                  // 答案数量加减
+    TempRandom1,                // 暂时使用的随机数
+    TurnCardQuality,            // 卡牌质量(从权重中随机出来的结果)
+    TurnCardId,                 // 回合卡牌ID
+    _ValueTypeMax = 10000,      // 数值类型最大值
+    AttrMaxTable,               // 数值最大表
+    TurnCardWeight,             // 卡牌附加几率
+    TurnCardLuckWeight,         // 卡牌幸运权重
+    TurnCardQualityList,        // 卡牌质量列表(从权重中随机出来的结果)
+    TurnCardQualityWeight,      // 卡牌质量权
+    TurnAnswerLogicWeight,      // 卡牌资源权重
+    TurnAnswerLogicList,        // 卡牌资源和数值(从权重中随机出来的结果)
+    TurnCardTypeFilter,         // 类型过滤器
+    TurnCardValidIdList,        // 卡牌可用列表(从权重中随机出来的结果)
+    HurtModifier,               // 伤害修改
+    IncomeModifier,             // 收入修改
+    CostModifier,               // 费用修改
+    ItemNumModifier,            // 道具数量修改
+    DayCards,                   // 一天卡池ID
+    Items,                      // 物品(包括 道具, 装备, 遗物, BUFF)
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>
