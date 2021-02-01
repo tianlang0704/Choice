@@ -57,13 +57,11 @@ public class Attr
                 value = FormulaSystem.I.CalcFormula((string)_value);
             } else if (typeof(T) == typeof(int) && _value is string) {
                 value = (int)FormulaSystem.I.CalcFormula((string)_value); 
-            } else if (typeof(T).IsEnum){
-                try {
-                    var intVal = Convert.ToInt32(_value);
+            } else if (typeof(T).IsEnum && (_value is int || _value is float)){
+                var intVal = Convert.ToInt32(_value);
+                if (Enum.IsDefined(typeof(T), intVal)) {
                     value = Enum.ToObject(typeof(T), intVal);
-                } catch {}
-            } else {
-                try { value = (T)_value; } catch {}
+                }
             }
         } else {
             value = _value;

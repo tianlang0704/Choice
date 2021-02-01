@@ -33,13 +33,13 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         ItemLogic.I.UpdateTurn();
         // 更新界面
         GameUILogic.I.UpdateView();
-        DataSystem.I.RestDataChange();
         // 检查是否继续
         if (!IsTurnContinue()) yield break;
         // 问答
         ShowTurnDialog();
         GameUILogic.I.UpdateView();
         // 等待进入下一回合
+        DataSystem.I.RestDataChange();
         yield return new WaitUntil(() => nextTurn);
         nextTurn = false;
         // 检查是否继续
