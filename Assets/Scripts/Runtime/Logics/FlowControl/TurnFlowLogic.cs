@@ -38,6 +38,7 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         if (!IsTurnContinue()) yield break;
         // 问答
         ShowTurnDialog();
+        GameUILogic.I.UpdateView();
         // 等待进入下一回合
         yield return new WaitUntil(() => nextTurn);
         nextTurn = false;

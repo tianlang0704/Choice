@@ -22,6 +22,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         calcEngine.AddFunction("GetTurnCardType", GetTurnCardType);
         calcEngine.AddFunction("RandomInt", RandomInt);
         calcEngine.AddFunction("RandomFloat", RandomFloat);
+        calcEngine.AddFunction("RandomGoodsId", RandomGoodsId);
     }
     // Start is called before the first frame update
     void Start()
@@ -100,9 +101,15 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     {
         return (double)Random.Range((int)min, (int)max);
     }
-
     private double RandomFloat(double min, double max)
     {
         return (double)Random.Range((float)min, (float)max);
+    }
+    private double RandomGoodsId()
+    {
+        var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Goods});
+        if (allList == null || allList.Count <= 0) return 0;
+        var randomIdx = Random.Range(0, allList.Count);
+        return (double)allList[randomIdx].Id;
     }
 }

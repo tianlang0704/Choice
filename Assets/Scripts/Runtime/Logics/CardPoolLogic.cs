@@ -86,12 +86,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             {CardQuality.Blue, new List<List<LogicExecution>>(){}},
             {CardQuality.Purple, new List<List<LogicExecution>>(){}},
             {CardQuality.Gold, new List<List<LogicExecution>>(){}},
-            {CardQuality.Any, new List<List<LogicExecution>>(){
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(-3,3)")),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(-3,3)")),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "RandomInt(-3,3)")),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-3,3)")),
-            }},
+            {CardQuality.Any, new List<List<LogicExecution>>(){}},
         };
         DataSystem.I.SetDataByType(DataType.TurnAnswerLogicWeight, answerLogicWeight);
         // 初始化幸运影响卡牌
@@ -197,12 +192,12 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
                 typeFilter == null || 
                 typeFilter.Contains(c.Type) || 
                 c.Type == CardType.Any)                                                     // 筛选卡牌类型
-            .Where((c) => { 
-                return CardLogic.I.FilterAnswerByLogicCombiList(c.answers, validLogicCombiList, false).Any();
-            })                                                                              // 筛选答案类型
+            .Where((c) =>
+                c.DrawPriority > 10000 ||
+                CardLogic.I.FilterAnswerByLogicCombiList(c.answers, validLogicCombiList, false).Any()) // 筛选答案类型
             .Where((c) => ConditionSystem.I.IsConditionMet(c.DrawCondition))                // 筛选卡牌抽取条件
             .GroupBy((c) => c.DrawPriority)                                                 // 优先度分组
-            .OrderBy((g) => g.FirstOrDefault().DrawPriority)                                // 优先度分组排序
+            .OrderBy((g) => g.Key)                                                          // 优先度分组排序
             .LastOrDefault()?                                                               // 选优先度最高的组
             .Select((c)=>c.Id)
             .ToList();
@@ -314,7 +309,7 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         DataInfluenceSystem.I.RemoveInfluence(CardQualityInfluenceIdentifier);
     }
 
-    public Card RerollTurnCard()
+    public void RerollTurnCard()
     {
         // 从幸运计算可用质量列表
         RerollQualityList();
@@ -326,9 +321,6 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
         RerollValidCardList();
         // 选本局的卡
         PickTurnCard();
-        // 实例化卡
-        var cardId = DataSystem.I.CopyAttrDataWithInfluenceByType<int>(DataType.TurnCardId);
-        return CardLogic.I.InstantiateTurnCard(cardId);
     }
 
     public Card GetTurnCardRaw()

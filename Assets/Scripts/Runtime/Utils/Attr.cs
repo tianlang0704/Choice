@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 public class Attr
 {
+    public Attr ShallowCopy() {
+        Attr copy = (Attr)this.MemberwiseClone();
+        return copy;
+    }
     public enum DataType {
         FLOAT = 0,
         INT,
@@ -53,6 +57,13 @@ public class Attr
                 value = FormulaSystem.I.CalcFormula((string)_value);
             } else if (typeof(T) == typeof(int) && _value is string) {
                 value = (int)FormulaSystem.I.CalcFormula((string)_value); 
+            } else if (typeof(T).IsEnum){
+                try {
+                    var intVal = Convert.ToInt32(_value);
+                    value = Enum.ToObject(typeof(T), intVal);
+                } catch {}
+            } else {
+                try { value = (T)_value; } catch {}
             }
         } else {
             value = _value;

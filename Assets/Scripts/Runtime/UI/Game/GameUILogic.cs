@@ -62,11 +62,13 @@ public class GameUILogic : UILogicBase<GameUILogic>
         var sceneName = GameScenesLogic.I.GetCurrentSceneName();
         outStr += "场景:" + sceneName;
         // 更新天数
-        outStr += "\n天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
+        outStr += ", 天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
         // 更新路程
-        outStr += "\n路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance);
+        outStr += ", 路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance);
         // 更新天气
-        outStr += "\n天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
+        outStr += ", 天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
+        // 更新卡牌质量
+        outStr += "\n质量: " + Enum.GetName(typeof(CardQuality), DataSystem.I.GetDataByType<CardQuality>(DataType.TurnCardQuality));
         // 输出信息
         uiRoot.i<TextMeshProUGUI>("Ex_场景").text = outStr;
         // 更新道具栏

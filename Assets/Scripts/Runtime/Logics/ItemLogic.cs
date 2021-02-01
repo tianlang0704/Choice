@@ -521,6 +521,15 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         }
     }
 
+    // 获取道具列表
+    public List<Item> GetAllItemListByType(List<ItemType> typeList = null)
+    {
+        var goods = allItemList
+            .Where((i)=>(typeList == null || typeList.Contains(i.Type)) && i.Num > 0)
+            .ToList();
+        return goods;
+    }
+
     // 获取列表
     public List<Item> GetHaveItemListByType(List<ItemType> typeList = null)
     {

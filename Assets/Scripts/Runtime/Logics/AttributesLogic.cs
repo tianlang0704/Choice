@@ -2,14 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
     public List<DataType> DisplayAttrTypes = new List<DataType>() {
-        DataType.Mood,
         DataType.HP,
         DataType.Stamina,
+        DataType.Mood,
         DataType.Gold,
+    };
+
+    public Dictionary<DataType, string> AttrLabel = new Dictionary<DataType, string>() {
+        {DataType.HP, "生命"},
+        {DataType.Stamina, "体力"},
+        {DataType.Mood, "心情"},
+        {DataType.Gold, "金币"},
     };
 
     public List<DataType> DeadlyAttrTypes = new List<DataType>() {
@@ -207,7 +215,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         var buffDic = moodToBuff[floorMood];
         // 通过Buff组几率来取一个BUFF组
         List<int> buffList = null;
-        float random = Random.Range(0f, 1f);
+        float random = UnityEngine.Random.Range(0f, 1f);
         var keys = buffDic.Keys.ToList();
         foreach (var key in keys) {
             random -= key;
@@ -217,7 +225,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         }
         if (buffList == null || buffList.Count <= 0) return;
         // 平均从BUFF组中随机一个BUFF出来
-        var buffRandom = Random.Range(0, buffList.Count);
+        var buffRandom = UnityEngine.Random.Range(0, buffList.Count);
         var buff = buffList[buffRandom];
         // 算时长
         var turnMultiplier = 3;
@@ -225,5 +233,14 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         var durFre = new DurationAndFrequency() { Turn = buffDuration };
         // 添加
         ItemLogic.I.AddItem(buff, 1, durFre);
+    }
+
+    // 获取属性的标签
+    public string GetLabelFromAttr(DataType type)
+    {
+        if (!AttrLabel.Keys.Contains(type)) {
+            return Enum.GetName(typeof(DataType), type);
+        }
+        return AttrLabel[type];
     }
 }

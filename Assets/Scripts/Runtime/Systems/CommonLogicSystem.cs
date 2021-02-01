@@ -26,6 +26,11 @@ public class LogicExecution {
     public Logic Logic;
     public object Param;
     public Condition Condition;
+    public LogicExecution ShallowCopy()
+    {
+        var copy = (LogicExecution)this.MemberwiseClone();
+        return copy;
+    }
 }
 
 public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
@@ -142,7 +147,7 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         var incomeList = new List<AttrInfluence>();
         foreach (var influ in influenceList) {
             if (influ.AttributeType > DataType._ValueTypeMax) continue;
-            var valueInflu = DataInfluenceSystem.I.ConvertFormulaToAttr(influ);
+            var valueInflu = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(influ);
             var value = valueInflu.Attr.GetValue<float>();
             if (value < 0) {
                 hurtList.Add(valueInflu);

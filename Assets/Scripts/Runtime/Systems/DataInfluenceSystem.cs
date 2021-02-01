@@ -16,7 +16,11 @@ public class AttrInfluence
     public Condition Condition = null;
     public AttrInfluence ShallowCopy()
     {
-        return (AttrInfluence)this.MemberwiseClone();
+        var influCopy = (AttrInfluence)this.MemberwiseClone();
+        if (Attr != null) {
+            influCopy.Attr = Attr.ShallowCopy();
+        }
+        return influCopy;
     }
 }
 
@@ -38,6 +42,13 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     public void Init()
     {
         influDic.Clear();
+        var attr = new Attr();
+        // attr.SetValue(CardQuality.White);
+        // AddInfluence(new AttrInfluence() {
+        //     AttributeType = DataType.TurnCardQuality,
+        //     Attr = attr,
+        //     IsSet = true,
+        // });
     }
 
     float GetRandomAttr(int [] randArr)
@@ -139,6 +150,12 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             Attr = attr,
             DurFre = new DurationAndFrequency() { Turn = turn },
             Condition = condition,
+        };
+    }
+    public AttrInfluence GetAttrInfluence(string formula)
+    {
+        return new AttrInfluence() {
+            Formula = formula,
         };
     }
     // 卡牌偏重
@@ -340,6 +357,12 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         resInflu.Attr = newAttr;
         return resInflu;
     }
+    public AttrInfluence ConvertFormulaToAttrCopy(AttrInfluence influ)
+    {
+        if (influ.Formula == null) return influ;
+        var influCopy = influ.ShallowCopy();
+        return ConvertFormulaToAttr(influCopy);
+    }
     public AttrInfluence ConvertFormulaToAttr(AttrInfluence influ)
     {
         if (influ.Formula == null) return influ;
@@ -348,6 +371,7 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             influ.Attr = new Attr();
         }
         influ.Attr.SetValue<float>(value);
+        influ.Formula = null;
         return influ;
     }
     Dictionary<string, double> GetAdditionalParams(AttrInfluence influence, Attr baseAttr = null)
