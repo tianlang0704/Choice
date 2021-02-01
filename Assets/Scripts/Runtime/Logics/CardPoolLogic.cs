@@ -52,36 +52,36 @@ public class CardPoolLogic : SingletonBehaviour<CardPoolLogic>
             }},
             {CardQuality.White, new List<List<LogicExecution>>(){
                 CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
-                    (DataType.Stamina, "RandomInt(-5,-3)"),
-                    (DataType.Distance, "RandomInt(5,10)"),
+                    (DataType.Stamina, "RandomInt(-5,-2)"),
+                    (DataType.Distance, "RandomInt(5,11)"),
                 })),
                 CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
                     (DataType.Stamina, "-3"),
                     (DataType.Mood, "1"),
                 })),
                 CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
-                    (DataType.TempRandom1,"RandomInt(1,4)"),
+                    (DataType.TempRandom1,"RandomInt(1,5)"),
                     (DataType.Stamina, "TempRandom1-4"),
                     (DataType.Gold, "TempRandom1+1"),
                 })),
                 CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
+                    (DataType.Gold, "RandomInt(-6,-1)"),
+                    (DataType.HP, "RandomInt(1,4)"),
+                })),
+                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
+                    (DataType.Gold, "RandomInt(-5,-1)"),
+                    (DataType.Stamina, "RandomInt(3,9)"),
+                })),
+                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
                     (DataType.Gold, "RandomInt(-6,-2)"),
-                    (DataType.HP, "RandomInt(1,3)"),
-                })),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
-                    (DataType.Gold, "RandomInt(-5,-2)"),
-                    (DataType.Stamina, "RandomInt(3,8)"),
-                })),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(new List<(DataType type, string formula)>(){
-                    (DataType.Gold, "RandomInt(-6,-3)"),
-                    (DataType.Mood, "RandomInt(1,2)"),
+                    (DataType.Mood, "RandomInt(1,3)"),
                 }))
             }},
             {CardQuality.Green, new List<List<LogicExecution>>(){
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(1,3)")),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(2,6)")),
+                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.HP, "RandomInt(1,4)")),
+                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Stamina, "RandomInt(2,7)")),
                 CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Mood, "1")),
-                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(1,5)")),
+                CLS.I.GetAttrHurtIncome(DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(1,6)")),
             }},
             {CardQuality.Blue, new List<List<LogicExecution>>(){}},
             {CardQuality.Purple, new List<List<LogicExecution>>(){}},

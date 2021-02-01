@@ -57,7 +57,12 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     // 下一回合
     public void NextTurn()
     {
-        nextTurn = true;
+        var isPreventNextTurnOnce = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(DataType.IsPreventNextTurnOnce);
+        if (isPreventNextTurnOnce == 0) {
+            nextTurn = true;
+        } else {
+            DataSystem.I.SetDataByType(DataType.IsPreventNextTurnOnce, 0f);
+        }
     }
 
     // 增加回合数

@@ -23,6 +23,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         calcEngine.AddFunction("RandomInt", RandomInt);
         calcEngine.AddFunction("RandomFloat", RandomFloat);
         calcEngine.AddFunction("RandomGoodsId", RandomGoodsId);
+        calcEngine.AddFunction("RandomRelicsId", RandomRelicsId);
     }
     // Start is called before the first frame update
     void Start()
@@ -45,11 +46,17 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
                 var name = Enum.GetName(typeof(DataType), type);
                 var value = DataSystem.I.GetDataByType<float>(type);
                 v[name] = value;
+            }
+            // 影响属性
+            foreach (int type in Enum.GetValues(typeof(DataType)))
+            {
+                if (type >= (int)DataType._ValueTypeMax) break;
                 var nameWithInfluence = name + "_i";
                 var valueWithInfluence = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(type);
                 v[nameWithInfluence] = valueWithInfluence;
-            }
+            }            
         });
+        UpdateVariable();
     }
     // 添加更新变量回调
     public void SetUpdateCallback(object o, Action<CalculationEngine, Dictionary<string, double>> cb, bool updateNow = false)
@@ -108,6 +115,13 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     private double RandomGoodsId()
     {
         var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Goods});
+        if (allList == null || allList.Count <= 0) return 0;
+        var randomIdx = Random.Range(0, allList.Count);
+        return (double)allList[randomIdx].Id;
+    }
+    private double RandomRelicsId()
+    {
+        var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Relics});
         if (allList == null || allList.Count <= 0) return 0;
         var randomIdx = Random.Range(0, allList.Count);
         return (double)allList[randomIdx].Id;

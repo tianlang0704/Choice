@@ -41,8 +41,8 @@ public class Answer
 {
     public string content;
     public Condition condition;
-    public List<Logic> fillLogicList;
-    public List<DataType> fillTypeList; 
+    public List<DataType> fillTypeList;
+    public List<DataType> showTypeList;
     public List<Func<List<LogicExecution>>> logicListFuncList;
     public Answer ShallowCopy()
     {
@@ -81,7 +81,9 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                     new Answer() {
                         content = "休息一下",
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null)
+                            (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.HP, "Value*0.2"), null),
                         });}},
                     },
                 }
@@ -1388,20 +1390,65 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                     },
                 }
             },
-            // new Card() {
-            //     Id = GameUtil.CardId(35),
-            //     Quality = CardQuality.Purple,
-            //     FillCondition = new Condition() {Formula = "Scene == 1"},
-            //     content = "路上捡到了个",
-            //     answers = new List<Answer>() {
-            //         new Answer() {
-            //             content = "哇～",
-            //             logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-            //                 (Logic.AddItem, DIS.I.GetAttrInfluence("RandomGoodsId()"), null),
-            //             });}},
-            //         },
-            //     }
-            // },
+            new Card() {
+                Id = GameUtil.CardId(38),
+                Quality = CardQuality.Blue,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "路上捡到了个",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "哇～",
+                        showTypeList = new List<DataType>() {DataType.Gold},
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChangeHurtIncome, DIS.I.GetAttrInfluenceList(DataType.Gold, "RandomInt(-6,-2)"), null),
+                            (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomGoodsId()"), DIS.I.GetAttrInfluence("1")), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(39),
+                Quality = CardQuality.Blue,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "走街货郎，看看他卖的是什么",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "买点",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomGoodsId()"), DIS.I.GetAttrInfluence("1")), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(40),
+                Quality = CardQuality.Blue,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "前面有个岔路。",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "接着直走",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.ShowSelectScene, null, null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(43),
+                Quality = CardQuality.Gold,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "前面是谁呀～追上去",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "买点",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomRelicsId()"), DIS.I.GetAttrInfluence("1")), null),
+                        });}},
+                    },
+                }
+            },
         };
         foreach (var card in AllCards) {
             AllCardsIdIndex[card.Id] = card;
@@ -1538,7 +1585,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
         cardInstance.answers = chosenAnswerList;
         // 处理答案上的数字显示
         foreach (var answer in cardInstance.answers) {
-            if (answer.fillTypeList == null || answer.fillTypeList.Count <= 0) continue;
+            // if (answer.fillTypeList == null || answer.fillTypeList.Count <= 0) continue;
             if (answer.logicListFuncList == null) continue;
             // 如果要显示就要在这里做合并计算
             var leGroup = answer.logicListFuncList
@@ -1555,34 +1602,29 @@ public class CardLogic : SingletonBehaviour<CardLogic>
             var logicList = leGroup
                 .Where((k)=>k.Key > Logic._ATTR_MAX_)
                 .SelectMany((k)=>k.Value)
+                .Select((le)=>{
+                    if (le.Logic == Logic.AddItem) {
+                        le = le.ShallowCopy();
+                        var param = ((AttrInfluence itemId, AttrInfluence itemNum))le.Param;
+                        le.Param = (DataInfluenceSystem.I.ConvertFormulaToAttrCopy(param.itemId), DataInfluenceSystem.I.ConvertFormulaToAttrCopy(param.itemNum));
+                    }
+                    return le;
+                })
                 .ToList();
             answer.logicListFuncList = new List<Func<List<LogicExecution>>>() {
                 () => attrList,
                 () => logicList,
             };
             // 显示计算数值
-            var attrInfluList = attrList.SelectMany((l)=>((List<AttrInfluence>)l.Param));
-            var valueDic = answer.fillTypeList
-                .Select((t)=>{
-                    var typeInflueList = attrInfluList.Where((i)=>i.AttributeType == t).ToList();
-                    var resAttr = new Attr();
-                    DIS.I.ApplyInfluenceList(resAttr, typeInflueList);
-                    return new KeyValuePair<DataType,float>(t, resAttr.GetValue<float>());
-                })
-                .ToDictionary((k)=>k.Key, (k)=>k.Value);
-            // 组装显示字符串
-            var format = answer.content + "\n";
-            var keyList = valueDic.Keys.ToList();
-            for (int i = 0; i < keyList.Count; i++) {
-                var type = keyList[i];
-                format = $"{format}{AttributesLogic.I.GetLabelFromAttr(type)}:{{{i}:+#;-#;0}}";
-                if (i < keyList.Count - 1) {
-                    format = format + ",";
-                }
+            var attrStr = AttributesLogic.I.BuildAttrString(attrList, answer.showTypeList ?? answer.fillTypeList);
+            if (attrStr != null) {
+                answer.content += "\n" + attrStr;
             }
-            // 填入显示数值
-            var valueList = valueDic.Values.Select((v)=>(object)v).ToList();
-            answer.content = string.Format(format, valueList.ToArray());
+            // 显示逻辑表示
+            var logicStr = CLS.I.BuildLogicString(logicList);
+            if (logicStr != null) {
+                answer.content += "\n" + logicStr;
+            }
         }
         // 处理看不见
         if (cardInstance.IsMaskable && !ConditionSystem.I.IsConditionMet(cardInstance.SeeCondition)) {
@@ -1590,4 +1632,5 @@ public class CardLogic : SingletonBehaviour<CardLogic>
         }
         return cardInstance;
     }
+
 }

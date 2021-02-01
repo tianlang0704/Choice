@@ -68,7 +68,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
         // 更新天气
         outStr += ", 天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
         // 更新卡牌质量
-        outStr += "\n质量: " + Enum.GetName(typeof(CardQuality), DataSystem.I.GetDataByType<CardQuality>(DataType.TurnCardQuality));
+        var quality = DataSystem.I.CopyAttrDataWithInfluenceByType<CardQuality>(DataType.TurnCardQuality);
+        outStr += "\n质量: " + Enum.GetName(typeof(CardQuality), quality);
         // 输出信息
         uiRoot.i<TextMeshProUGUI>("Ex_场景").text = outStr;
         // 更新道具栏

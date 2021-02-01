@@ -38,12 +38,11 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
     {
         
     }
-
     public void Init()
     {
         influDic.Clear();
-        var attr = new Attr();
-        // attr.SetValue(CardQuality.White);
+        // var attr = new Attr();
+        // attr.SetValue(CardQuality.Blue);
         // AddInfluence(new AttrInfluence() {
         //     AttributeType = DataType.TurnCardQuality,
         //     Attr = attr,

@@ -47,19 +47,19 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         
     }
 
-    public List<LogicExecution> GetAttrHurtIncome(List<AttrInfluence> influ, Condition c = null)
+    public List<LogicExecution> GetAttrHurtIncome(List<AttrInfluence> influList, Condition c = null)
     {
-        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurtIncome, influ, c)});
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurtIncome, influList, c)});
     }
 
-    public List<LogicExecution> GetAttrIncome(List<AttrInfluence> influ, Condition c = null)
+    public List<LogicExecution> GetAttrIncome(List<AttrInfluence> influList, Condition c = null)
     {
-        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeIncome, influ, c)});
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeIncome, influList, c)});
     }
 
-    public List<LogicExecution> GetAttrHurt(List<AttrInfluence> influ, Condition c = null)
+    public List<LogicExecution> GetAttrHurt(List<AttrInfluence> influList, Condition c = null)
     {
-        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurt, influ, c)});
+        return GetLogicList(new List<(Logic l, object p, Condition c)>(){(Logic.AttrChangeHurt, influList, c)});
     }
 
     public List<LogicExecution> GetLogicList(List<(Logic l, object p, Condition c)> exeList)
@@ -121,7 +121,7 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         } else if (logic == Logic.SetScene) {
             SetScene(param);
         } else if (logic == Logic.ShowSelectScene) {
-            ShowSelectSceneDialog(param);
+            ShowSelectScene(param);
         }
     }
 
@@ -195,8 +195,12 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     public void AddItem(object param)
     {
         if (param == null) return;
-        (int itemID, int num) = ((int, int))param;
-        ItemLogic.I.AddItem(itemID, num);
+        (AttrInfluence itemId, AttrInfluence itemNum) = ((AttrInfluence, AttrInfluence))param;
+        itemId = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(itemId);
+        var id = itemId.Attr.GetValue<int>();
+        itemNum = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(itemNum);
+        var num = itemNum.Attr.GetValue<int>();
+        ItemLogic.I.AddItem(id, num);
     }
 
     public void AddItemWithDuration(object param)
@@ -235,8 +239,49 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
         GameScenesLogic.I.SetSceneById(id);
     }
 
-    public void ShowSelectSceneDialog(object param)
+    public void ShowSelectScene(object param)
     {
         CommonFlowLogic.I.ShowSelectSceneDialog();
+    }
+
+    private Dictionary<Logic, string> LogicLabel = new Dictionary<Logic, string>() {
+        {Logic.AddItem, "获得道具"}
+    };
+    public string GetLabelFromLogic(Logic l)
+    {
+        if (LogicLabel.ContainsKey(l)) {
+            return LogicLabel[l];
+        } else {
+            return Enum.GetName(typeof(Logic), l);
+        }
+    }
+    public string BuildLogicString(List<LogicExecution> leList)
+    {
+        if (leList == null || leList.Count <= 0) return null;
+        string res = "";
+        var leLogicTable = leList
+            .GroupBy((le)=>le.Logic)
+            .ToDictionary((g)=>g.Key, (g)=>g.ToList());
+        if (leLogicTable.ContainsKey(Logic.AddItem)) {
+            var label = GetLabelFromLogic(Logic.AddItem) + ": ";
+            var itemString = "";
+            var addItemLEList = leLogicTable[Logic.AddItem];
+            for (int i = 0; i < addItemLEList.Count; i++) {
+                var le = addItemLEList[i];
+                (AttrInfluence itemId, AttrInfluence itemNum) = ((AttrInfluence, AttrInfluence))le.Param;
+                itemId = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(itemId);
+                var id = itemId.Attr.GetValue<int>();
+                itemNum = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(itemNum);
+                var num = itemNum.Attr.GetValue<int>();
+                var item = ItemLogic.I.GetItemById(id);
+                if (item == null) continue;
+                itemString += $"{item.Name}*{num}";
+                if (i < addItemLEList.Count - 1) {
+                    itemString += ", ";
+                }
+            }
+            res = $"{res}{label}{itemString}";
+        }
+        return string.IsNullOrEmpty(res) ? null : res;
     }
 }

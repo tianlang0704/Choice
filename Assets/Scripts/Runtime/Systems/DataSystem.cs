@@ -26,6 +26,7 @@ public enum DataType {
     TempRandom1,                // 暂时使用的随机数
     TurnCardQuality,            // 卡牌质量(从权重中随机出来的结果)
     TurnCardId,                 // 回合卡牌ID
+    IsPreventNextTurnOnce,     // 是否阻止进入下一回合一次
     _ValueTypeMax = 10000,      // 数值类型最大值
     AttrMaxTable,               // 数值最大表
     TurnCardWeight,             // 卡牌附加几率

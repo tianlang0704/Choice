@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using DIS = DataInfluenceSystem;
 
 public class AttributesLogic : SingletonBehaviour<AttributesLogic>
 {
@@ -242,5 +243,34 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
             return Enum.GetName(typeof(DataType), type);
         }
         return AttrLabel[type];
+    }
+    public string BuildAttrString(List<LogicExecution> leList, List<DataType> showTypes = null)
+    {
+        if (leList == null || leList.Count <= 0) return null;
+        // 显示计算数值
+        var attrInfluList = leList.SelectMany((l)=>((List<AttrInfluence>)l.Param));
+        var valueDic = attrInfluList
+            .GroupBy((a)=>a.AttributeType)
+            .Where((g)=>showTypes != null && showTypes.Contains(g.Key))
+            .Select((g)=>{
+                var typeInflueList = g.Select((a)=>a).ToList();
+                var resAttr = new Attr();
+                DIS.I.ApplyInfluenceList(resAttr, typeInflueList);
+                return new KeyValuePair<DataType,float>(g.Key, resAttr.GetValue<float>());
+            })
+            .ToDictionary((k)=>k.Key, (k)=>k.Value);
+        // 组装显示字符串
+        var format = "";
+        var keyList = valueDic.Keys.ToList();
+        for (int i = 0; i < keyList.Count; i++) {
+            var type = keyList[i];
+            format = $"{format}{GetLabelFromAttr(type)}:{{{i}:+#;-#;0}}";
+            if (i < keyList.Count - 1) {
+                format = format + ",";
+            }
+        }
+        // 填入显示数值
+        var valueList = valueDic.Values.Select((v)=>(object)v).ToList();
+        return string.Format(format, valueList.ToArray());
     }
 }

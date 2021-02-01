@@ -27,6 +27,7 @@ public class Item
     public string Name;
     public string Desc;
     public string Icon;
+    public Condition Condition;
     public DurationAndFrequency DurFre;
     public List<AttrInfluence> HaveInfluenceList;
     public Func<List<LogicExecution>> HaveLogicListFunc;
@@ -271,7 +272,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 Desc = "金色+10概率, 费用为0",
                 HaveInfluenceList = new List<AttrInfluence>() {
                     DIS.I.GetQualityWeightInfluence(new List<(CardQuality, float)>(){(CardQuality.Gold, 15)}, 999, false),
-                    DIS.I.GetAttrInfluence(DataType.CostFactor, 0, 999, true, 0, new Condition() { Formula = "TurnCardQuality() == 5" }),
+                    DIS.I.GetAttrInfluence(DataType.CostFactor, 0, 999, true, 0, new Condition() { Formula = "TurnCardQuality == 5" }),
                 },
             },
             new Item() {
@@ -340,7 +341,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
         DataSystem.I.SetDataByType<Dictionary<int, int>>(DataType.Items, itemData);
         SyncItemToData();
-        // AddItem(GameUtil.ItemId(10021), 1, new DurationAndFrequency() { Turn = 3});
+        // AddItem(GameUtil.ItemId(10016), 1, new DurationAndFrequency() { Turn = 3});
         GameUILogic.I.UpdateItems();
     }
     // 同步数据
@@ -522,10 +523,11 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     }
 
     // 获取道具列表
-    public List<Item> GetAllItemListByType(List<ItemType> typeList = null)
+    public List<Item> GetAllItemListByType(List<ItemType> typeList = null, bool testCondition = true)
     {
         var goods = allItemList
-            .Where((i)=>(typeList == null || typeList.Contains(i.Type)) && i.Num > 0)
+            .Where((i)=>(typeList == null || typeList.Contains(i.Type)))
+            .Where((i)=>testCondition == false || ConditionSystem.I.IsConditionMet(i.Condition))
             .ToList();
         return goods;
     }
@@ -559,5 +561,11 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public bool IsItemConsumable(int id)
     {
         return allItemDic.ContainsKey(id) && allItemDic[id].UseLogicListFunc != null;
+    }
+
+    public Item GetItemById(int id)
+    {
+        if (!allItemDic.ContainsKey(id)) return null;
+        return allItemDic[id];
     }
 }
