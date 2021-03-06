@@ -106,4 +106,95 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             dialog.ShowAnsw(arg);
         }
     }
+
+    private Shop shop = null;
+    public void ShowSellShop(List<Item> itemList, Action<int> cb = null, Action closeCb = null)
+    {
+        // 创建
+        if (shop == null) {
+            shop = ObjectPoolManager.Instance.GetGameObject<Shop>("Prefabs/商店");
+        }
+        // 加入场景
+        var root = FindObjectOfType<Canvas>();
+        shop.gameObject.SetActive(true);
+        shop.transform.SetParent(root.transform, false);
+        // 设置回调
+        shop.SetCB((idx) => {
+            var item = itemList[idx];
+            // 更新道具
+            ItemLogic.I.SellItem(item.Id, 1);
+            item.Num--;
+            // 更新显示
+            GameUILogic.I.UpdateView();
+            shop.UpdateItem();
+            if (cb != null) cb(idx);
+        });
+        shop.SetQuitCB(() => {
+            shop.gameObject.SetActive(false);
+            TurnFLowLogic.I.NextTurn();
+            if (closeCb != null) closeCb();
+        });
+        // 展示物品
+        shop.ShowItem(itemList);
+    }
+    public void ShowBuyShop(List<Item> itemList, Action<int> cb = null, Action closeCb = null)
+    {
+        // 创建
+        if (shop == null) {
+            shop = ObjectPoolManager.Instance.GetGameObject<Shop>("Prefabs/商店");
+        }
+        // 加入场景
+        var root = FindObjectOfType<Canvas>();
+        shop.gameObject.SetActive(true);
+        shop.transform.SetParent(root.transform, false);
+        // 设置回调
+        shop.SetCB((idx) => {
+            var item = itemList[idx];
+            // 更新道具
+            if (ItemLogic.I.IsCanBuy(item.Id, 1)) {
+                ItemLogic.I.BuyItem(item.Id, 1);
+                item.Num--;
+            } else {
+                // TODO: 显示买不起
+            }
+            // 更新显示
+            GameUILogic.I.UpdateView();
+            shop.UpdateItem();
+            if (cb != null) cb(idx);
+        });
+        shop.SetQuitCB(() => {
+            shop.gameObject.SetActive(false);
+            TurnFLowLogic.I.NextTurn();
+            if (closeCb != null) closeCb();
+        });
+        // 展示物品
+        shop.ShowItem(itemList);
+    }
+
+    public void ShowShop(List<ItemType> typeList = null, bool isBuy = true)
+    {
+        // 检查参数
+        if (typeList == null) {
+            typeList = new List<ItemType>(){ItemType.Goods};
+        }
+        // 获取列表
+        List<Item> itemList = null;
+        if (isBuy) {
+            itemList = ItemLogic.I.GetAllItemListByType(typeList);
+        } else {
+            itemList = ItemLogic.I.GetHaveItemListByType(typeList);
+        }
+        // 实例化列表数据
+        itemList = itemList.Select((i)=>{
+            i = ItemLogic.I.InstantiateItem(i);
+            i.Num = i.Num <= 0 ? 1 : i.Num;
+            return i;
+        }).ToList();
+        // 展示商店
+        if (isBuy) {
+            ShowBuyShop(itemList);
+        } else {
+            ShowSellShop(itemList);
+        }
+    }
 }

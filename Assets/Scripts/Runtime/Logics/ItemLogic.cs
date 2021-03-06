@@ -65,33 +65,6 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
             new Item() {
                 Id = GameUtil.ItemId(2),
                 Type = ItemType.Goods,
-                Name = "护身符",
-                Desc = "抵御消耗1次",
-                CostType = DataType.Gold,
-                CostNum = 3,
-            },
-            new Item() {
-                Id = GameUtil.ItemId(3),
-                Type = ItemType.Goods,
-                Name = "万能钥匙",
-                Desc = "开锁",
-                CostType = DataType.Gold,
-                CostNum = 3,
-            },
-            new Item() {
-                Id = GameUtil.ItemId(4),
-                Type = ItemType.Goods,
-                Name = "万能车票",
-                Desc = "重新选择入口",
-                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                    (Logic.ShowSelectScene, null, null)
-                }),
-                CostType = DataType.Gold,
-                CostNum = 3,
-            },
-            new Item() {
-                Id = GameUtil.ItemId(5),
-                Type = ItemType.Goods,
                 Name = "尿遁符",
                 Desc = "跳过本回合",
                 UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
@@ -101,7 +74,161 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                 CostNum = 3,
             },
             new Item() {
+                Id = GameUtil.ItemId(3),
+                Type = ItemType.Goods,
+                Name = "大力丸",
+                Desc = "回满体力",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null)
+                }),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(4),
+                Type = ItemType.Goods,
+                Name = "人力车",
+                Desc = "+20旅程",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,20,0), null)
+                }),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(5),
+                Type = ItemType.Goods,
+                Name = "兴奋剂",
+                Desc = "1生命交换5体力",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(-1,5,0,0,0,0,0,0), null)
+                }),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
                 Id = GameUtil.ItemId(6),
+                Type = ItemType.Goods,
+                Name = "皇后苹果",
+                Desc = "50%几率增减6生命",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, DIS.I.GetAttrInfluence(DataType.TempRandom1, "random()"), null),
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(6,0,0,0,0,0,0,0), new Condition(){Formula = "TempRandom1 >= 0.5"}),
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(-6,0,0,0,0,0,0,0), new Condition(){Formula = "TempRandom1 < 0.5"}),
+                }),
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(7),
+                Type = ItemType.Goods,
+                Name = "护身符",
+                Desc = "抵御消耗1次",
+                CostType = DataType.Gold,
+                CostNum = 3,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(8),
+                Type = ItemType.Goods,
+                Name = "寻宝地图",
+                Desc = "下一回合是装备牌",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrInfluence, DIS.I.GetAttrInfluence(DataType.TurnCardId, GameUtil.CardId(10001), 1), null),
+                }),
+                CostType = DataType.Gold,
+                CostNum = 5,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(9),
+                Type = ItemType.Goods,
+                Name = "护心镜",
+                Desc = "地狱受伤 2次(目前有问题)",
+                CostType = DataType.Gold,
+                CostNum = 5,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(10),
+                Type = ItemType.Goods,
+                Name = "万能钥匙",
+                Desc = "开锁???",
+                CostType = DataType.Gold,
+                CostNum = 5,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(11),
+                Type = ItemType.Goods,
+                Name = "万能车票",
+                Desc = "重新选择入口(岛屿除外)",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.ShowSelectScene, null, null)
+                }),
+                CostType = DataType.Gold,
+                CostNum = 5,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(12),
+                Type = ItemType.Goods,
+                Name = "古龙金币",
+                Desc = "直接获得两个道具",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomGoodsId()"), DIS.I.GetAttrInfluence("1")), null),
+                    (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomGoodsId()"), DIS.I.GetAttrInfluence("1")), null),
+                }),
+                CostType = DataType.Gold,
+                CostNum = 5,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(13),
+                Type = ItemType.Goods,
+                Name = "肥宅快乐水",
+                Desc = "+3心情",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,0,3,0,0,0,0,0), null)
+                }),
+                CostType = DataType.Gold,
+                CostNum = 8,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(14),
+                Type = ItemType.Goods,
+                Name = "JD白条",
+                Desc = "直接获得装备",
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomEquipsId()"), DIS.I.GetAttrInfluence("1")), null),
+                }),
+                CostType = DataType.Gold,
+                CostNum = 8,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(15),
+                Type = ItemType.Goods,
+                Name = "红绣球",
+                Desc = "遇到爱情(什么是爱情?)",
+                CostNum = 8,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(16),
+                Type = ItemType.Goods,
+                Name = "爸爸的线索",
+                Desc = "解锁地狱(还没做好)",
+                CostNum = 8,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(17),
+                Type = ItemType.Goods,
+                UseLogicListFunc = () => CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                    (Logic.AttrChange, 
+                    DIS.I.GetAttrInfluenceList(new List<(DataType type, Dictionary<DataType, float> value)>() {
+                        (DataType.AttrMaxTable, new Dictionary<DataType, float>() {{DataType.Stamina, 2}})
+                    }), 
+                    null),
+                }),
+                Name = "十全大补丸",
+                Desc = "体力上限+2",
+                CostNum = 8,
+            },
+            new Item() {
+                Id = GameUtil.ItemId(999),
                 Type = ItemType.Goods,
                 Name = "衣服",
                 Desc = "好像可以穿?",
@@ -320,6 +447,12 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
                     (DataType.IncomeModifier, new List<AttrInfluence>() { DIS.I.GetAttrInfluence(DataType.Distance, "Target") })
                 }, 999),
             },
+            new Item() {
+                Id = GameUtil.ItemId(20001),
+                Type = ItemType.Relics,
+                Name = "旺财",
+                Desc = "汪汪",
+            },
         };
         allItemList.ForEach((i) => allItemDic[i.Id] = i);
     }
@@ -338,9 +471,9 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public void Init()
     {
         // 测试满道具
-        var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
-        DataSystem.I.SetDataByType<Dictionary<int, int>>(DataType.Items, itemData);
-        SyncItemToData();
+        // var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
+        // DataSystem.I.SetDataByType<Dictionary<int, int>>(DataType.Items, itemData);
+        // SyncItemToData();
         // AddItem(GameUtil.ItemId(10016), 1, new DurationAndFrequency() { Turn = 3});
         GameUILogic.I.UpdateItems();
     }
@@ -359,7 +492,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     public bool IsHaveItem(int id)
     {
         var itemDic = DataSystem.I.GetDataByType<Dictionary<int, int>>(DataType.Items);
-        return itemDic.ContainsKey(id) && itemDic[id] > 0;
+        return itemDic != null && itemDic.ContainsKey(id) && itemDic[id] > 0;
     }
     // 更新回合
     public void UpdateTurn()
@@ -387,6 +520,27 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
             }
         }
     }
+    // 购买道具
+    public void BuyItem(int id, int num, DurationAndFrequency durFreOverride = null)
+    {
+        // 道具信息
+        var item = GetItemById(id);
+        // 消耗
+        DataSystem.I.ApplyInfluence(DataInfluenceSystem.I.GetAttrInfluence(item.CostType, -item.CostNum * num));
+        // 添加
+        AddToData(id, num);
+        AddToHave(id, num, false, durFreOverride);
+    }
+    // 出售道具
+    public void SellItem(int id, int num)
+    {
+        // 道具信息
+        var item = GetItemById(id);
+        // 消耗
+        DataSystem.I.ApplyInfluence(DataInfluenceSystem.I.GetAttrInfluence(item.CostType, item.CostNum * num));
+        // 添加
+        RemoveItem(id, num);
+    }
     // 添加道具
     public void AddItem(int id, int num, DurationAndFrequency durFreOverride = null)
     {
@@ -409,7 +563,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         if (haveItemDic.ContainsKey(id)) {
             haveItem = haveItemDic[id];
         } else if (allItemDic.ContainsKey(id)) {
-            haveItem = allItemDic[id].ShallowCopy();
+            haveItem = InstantiateItem(allItemDic[id]);
         }
         if (haveItem == null) {
             return;
@@ -567,5 +721,17 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
     {
         if (!allItemDic.ContainsKey(id)) return null;
         return allItemDic[id];
+    }
+
+    public Item InstantiateItem(Item item)
+    {
+        return item.ShallowCopy();
+    }
+
+    public bool IsCanBuy(int id, int num)
+    {
+        var item = GetItemById(id);
+        var haveAmount = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(item.CostType);
+        return haveAmount >= item.CostNum * num;
     }
 }

@@ -50,6 +50,7 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         }
         // 检查和提示死亡
         CommonFlowLogic.I.CheckAndNotifyDead();
+        yield break;
     }
 
     // Update is called once per frame

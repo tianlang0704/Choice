@@ -1436,15 +1436,73 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 }
             },
             new Card() {
+                Id = GameUtil.CardId(41),
+                Quality = CardQuality.Gold,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "当铺, 看看设么可卖的",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "卖",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.ShowShopType, (new List<ItemType>() {ItemType.Goods, ItemType.Equips}, false), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+                        });}},
+                    },
+                    new Answer() {
+                        content = "买装备",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.ShowShopType, (new List<ItemType>() {ItemType.Equips}, true), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+                        });}},
+                    },
+                    new Answer() {
+                        content = "买道具",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.ShowShopType, (new List<ItemType>() {ItemType.Goods}, true), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(42),
+                Quality = CardQuality.Gold,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "前面霞光异彩，必有好物",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "哇～",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.ShowShopType, (new List<ItemType>() {ItemType.Goods, ItemType.Equips}, true), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
                 Id = GameUtil.CardId(43),
                 Quality = CardQuality.Gold,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "前面是谁呀～追上去",
                 answers = new List<Answer>() {
                     new Answer() {
-                        content = "买点",
+                        content = "遇到人物",
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
                             (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomRelicsId()"), DIS.I.GetAttrInfluence("1")), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(10001),
+                Quality = CardQuality.Gold,
+                FillCondition = new Condition() {Formula = "Scene == 1"},
+                content = "寻宝地图",
+                answers = new List<Answer>() {
+                    new Answer() {
+                        content = "",
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomEquipsId()"), DIS.I.GetAttrInfluence("1")), null),
                         });}},
                     },
                 }

@@ -139,9 +139,9 @@ public class GameUILogic : UILogicBase<GameUILogic>
             var child = itemBox.GetChild(i);
             ObjectPoolManager.I.RecycleGameObject(child.gameObject);
         }
-        foreach (Transform item in itemBox) {
-            ObjectPoolManager.I.RecycleGameObject(item.gameObject);
-        }
+        // foreach (Transform item in itemBox) {
+        //     ObjectPoolManager.I.RecycleGameObject(item.gameObject);
+        // }
         var goods = ItemLogic.I.GetHaveItemListByType();
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);

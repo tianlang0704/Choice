@@ -24,6 +24,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
         calcEngine.AddFunction("RandomFloat", RandomFloat);
         calcEngine.AddFunction("RandomGoodsId", RandomGoodsId);
         calcEngine.AddFunction("RandomRelicsId", RandomRelicsId);
+        calcEngine.AddFunction("RandomEquipsId", RandomEquipsId);   
     }
     // Start is called before the first frame update
     void Start()
@@ -122,6 +123,14 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
     private double RandomRelicsId()
     {
         var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Relics});
+        if (allList == null || allList.Count <= 0) return 0;
+        var randomIdx = Random.Range(0, allList.Count);
+        return (double)allList[randomIdx].Id;
+    }
+
+    private double RandomEquipsId()
+    {
+        var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Equips});
         if (allList == null || allList.Count <= 0) return 0;
         var randomIdx = Random.Range(0, allList.Count);
         return (double)allList[randomIdx].Id;

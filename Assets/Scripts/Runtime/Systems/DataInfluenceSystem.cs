@@ -48,6 +48,14 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
         //     Attr = attr,
         //     IsSet = true,
         // });
+
+        // var attr = new Attr();
+        // attr.SetValue(GameUtil.CardId(43));
+        // AddInfluence(new AttrInfluence() {
+        //     AttributeType = DataType.TurnCardId,
+        //     Attr = attr,
+        //     IsSet = true,
+        // });
     }
 
     float GetRandomAttr(int [] randArr)

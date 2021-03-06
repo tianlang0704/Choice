@@ -20,6 +20,7 @@ public enum Logic {
     SkipTurn,               // 跳过回合
     SetScene,               // 设置场景
     ShowSelectScene,        // 显示选择场景
+    ShowShopType,           // 显示某个类型商店
 }
 
 public class LogicExecution {
@@ -122,7 +123,10 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
             SetScene(param);
         } else if (logic == Logic.ShowSelectScene) {
             ShowSelectScene(param);
+        } else if (logic == Logic.ShowShopType) {
+            ShowShopType(param);
         }
+        
     }
 
     public void AttrInfluence(object param)
@@ -243,9 +247,14 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
     {
         CommonFlowLogic.I.ShowSelectSceneDialog();
     }
-
+    public void ShowShopType(object param)
+    {
+        if (param == null) return;
+        (List<ItemType> typeList, bool isBuy) = ((List<ItemType>, bool))param;
+        CommonFlowLogic.I.ShowShop(typeList, isBuy);   
+    }
     private Dictionary<Logic, string> LogicLabel = new Dictionary<Logic, string>() {
-        {Logic.AddItem, "获得道具"}
+        {Logic.AddItem, "获得"}
     };
     public string GetLabelFromLogic(Logic l)
     {
