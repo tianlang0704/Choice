@@ -76,16 +76,15 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
     public void ShowTurnDialog() {
         // 抽卡
          CardPoolLogic.I.RerollTurnCard();
-        var card = CardPoolLogic.I.GetTurnCardInstance() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 通用提示卡
-        
-        // 处理没有卡用了
-        if (card == null) {
-            // 更新界面
-            GameUILogic.I.UpdateView();
-            // 下一回合
-            NextTurn();
-            return;
-        }
+        var card = CardPoolLogic.I.GetTurnCardInstance() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 抽到卡或者通用提示卡
+        // // 处理没有卡用了
+        // if (card == null) {
+        //     // 更新界面
+        //     GameUILogic.I.UpdateView();
+        //     // 下一回合
+        //     NextTurn();
+        //     return;
+        // }
         // 显示卡片
         CommonFlowLogic.I.ShowDialog(
             card.content, 

@@ -54,9 +54,9 @@ public class Attr
             } else if (typeof(T) == typeof(float) && _value is int) {
                 value = Convert.ToSingle(_value);
             } else if (typeof(T) == typeof(float) && _value is string) {
-                value = FormulaSystem.I.CalcFormula((string)_value);
+                value = EvaluateFormula();
             } else if (typeof(T) == typeof(int) && _value is string) {
-                value = (int)FormulaSystem.I.CalcFormula((string)_value); 
+                value = (int)EvaluateFormula(); 
             } else if (typeof(T).IsEnum && (_value is int || _value is float)){
                 var intVal = Convert.ToInt32(_value);
                 if (Enum.IsDefined(typeof(T), intVal)) {
@@ -68,6 +68,19 @@ public class Attr
         }
         if (value == null) return default;
         return (T)value;
+    }
+
+    public float EvaluateFormula() 
+    {
+        if (_type != DataType.FORMULA) return GetValue<float>();
+        return FormulaSystem.I.CalcFormula((string)_value);
+    }
+
+    public Attr EvaluateAndCopy()
+    {
+        var value = EvaluateFormula();
+        var newAttr = new Attr(value);
+        return value;
     }
     
     public static implicit operator int(Attr value)

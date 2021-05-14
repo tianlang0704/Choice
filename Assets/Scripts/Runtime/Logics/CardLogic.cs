@@ -1500,7 +1500,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 content = "寻宝地图",
                 answers = new List<Answer>() {
                     new Answer() {
-                        content = "",
+                        content = "随机获取装备",
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
                             (Logic.AddItem, (DIS.I.GetAttrInfluence("RandomEquipsId()"), DIS.I.GetAttrInfluence("1")), null),
                         });}},
@@ -1643,20 +1643,29 @@ public class CardLogic : SingletonBehaviour<CardLogic>
         cardInstance.answers = chosenAnswerList;
         // 处理答案上的数字显示
         foreach (var answer in cardInstance.answers) {
-            // if (answer.fillTypeList == null || answer.fillTypeList.Count <= 0) continue;
             if (answer.logicListFuncList == null) continue;
-            // 如果要显示就要在这里做合并计算
+            // 区分属性影响逻辑和其他逻辑
             var leGroup = answer.logicListFuncList
                 .Select((f)=>new KeyValuePair<Func<List<LogicExecution>>, List<LogicExecution>>(f, f()))
                 .SelectMany((k)=>k.Value)
                 .GroupBy((le)=>le.Logic)
                 .ToDictionary((g)=>g.Key,(g)=>g.ToList());
+            // 属性影响逻辑
             var attrList = leGroup
                 .Where((k)=>k.Key < Logic._ATTR_MAX_)
                 .SelectMany((k)=>(k.Value))
                 .Select((le)=>le.ShallowCopy())
-                .Select((l)=>{((List<AttrInfluence>)l.Param).ForEach((a)=>DataInfluenceSystem.I.ConvertFormulaToAttrCopy(a)); return l;})
+                .Select((l)=>{
+                    var changeList = (List<AttrInfluence>)l.Param;
+                    for (int i = 0; i < changeList.Count; i++) {
+                        var change = changeList[i];
+                        change = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(change);
+                        changeList[i] = change;
+                    }
+                    return l;
+                })
                 .ToList();
+            // 其他逻辑
             var logicList = leGroup
                 .Where((k)=>k.Key > Logic._ATTR_MAX_)
                 .SelectMany((k)=>k.Value)
@@ -1669,6 +1678,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                     return le;
                 })
                 .ToList();
+            // 把计算好的逻辑列表再设置回去
             answer.logicListFuncList = new List<Func<List<LogicExecution>>>() {
                 () => attrList,
                 () => logicList,

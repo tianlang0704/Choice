@@ -36,7 +36,7 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
     {
         // 刷新一天
         DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
-        DayFlowLogic.I.IncreaseDay();
+        IncreaseDay();
         DurFreSystem.I.UpdateDay();
         ItemLogic.I.UpdateDay();
         CardPoolLogic.I.ResetQualityWeight();
