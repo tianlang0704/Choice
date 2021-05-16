@@ -55,11 +55,37 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             if (cb == null) return;
             cb(b);
         });
+        // 设置答案
         dialog.ResetAllAnsws();
         for (int i = 0; i < list.Length; i++) {
             var arg = list[i];
             dialog.ShowAnsw(arg);
         }
+        // 设置颜色
+        dialog.SetColor(Color.white);
+    }
+
+    public void ShowDialogWithColor(string content, Color color, Action<int> cb = null, params string[] list)
+    {
+        if (dialog == null) {
+            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
+        }
+        var root = FindObjectOfType<Canvas>();
+        dialog.gameObject.SetActive(true);
+        dialog.transform.SetParent(root.transform, false);
+        dialog.SetContent(content);
+        dialog.SetCB((b) => {
+            if (cb == null) return;
+            cb(b);
+        });
+        // 设置答案
+        dialog.ResetAllAnsws();
+        for (int i = 0; i < list.Length; i++) {
+            var arg = list[i];
+            dialog.ShowAnsw(arg);
+        }
+        // 设置颜色
+        dialog.SetColor(color);
     }
 
     public void CloseDialog()

@@ -184,4 +184,34 @@ public static class GameUtil {
     {
         return Color.white;
     }
+
+    static public Color CardQualityToColor(CardQuality quality)
+    {
+        Color res = Color.white;
+        switch (quality)
+        {
+            case CardQuality.Red:
+            res = Color.red;
+            break;
+            case CardQuality.White:
+            res = Color.white;
+            break;
+            case CardQuality.Green:
+            res = Color.green;
+            break;
+            case CardQuality.Blue:
+            // res = Color.blue;
+            res = new Color(0.2f, 0.5f, 1f);
+            break;
+            case CardQuality.Purple:
+            res = new Color(1f, 0.3f, 1f);
+            break;
+            case CardQuality.Gold:
+            res = Color.yellow;
+            break;
+            default:
+            break;
+        }
+        return res;
+    }
  }

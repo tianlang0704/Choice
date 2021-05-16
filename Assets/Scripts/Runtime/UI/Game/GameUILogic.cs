@@ -134,6 +134,10 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
     public void UpdateItems()
     {
+        var goods = ItemLogic.I.GetHaveItemListByType();
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
+        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Equips);
         var itemBox = uiRoot.i<RectTransform>("Ex_道具栏");
         for (int i = itemBox.childCount - 1; i >= 0; i--) {
             var child = itemBox.GetChild(i);
@@ -142,10 +146,6 @@ public class GameUILogic : UILogicBase<GameUILogic>
         // foreach (Transform item in itemBox) {
         //     ObjectPoolManager.I.RecycleGameObject(item.gameObject);
         // }
-        var goods = ItemLogic.I.GetHaveItemListByType();
-        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
-        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
-        // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Equips);
         foreach (var item in goods) {
             var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
             itemButton.transform.SetParent(itemBox, false);

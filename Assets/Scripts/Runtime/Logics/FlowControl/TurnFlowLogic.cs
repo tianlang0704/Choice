@@ -86,8 +86,10 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         //     return;
         // }
         // 显示卡片
-        CommonFlowLogic.I.ShowDialog(
+        var color = GameUtil.CardQualityToColor(card.Quality);
+        CommonFlowLogic.I.ShowDialogWithColor(
             card.content, 
+            color,
             (ansNum) => {
                 // 获取答案
                 Answer answer = card.answers[ansNum];

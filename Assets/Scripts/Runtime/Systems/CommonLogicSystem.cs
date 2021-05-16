@@ -283,8 +283,12 @@ public class CommonLogicSystem : SingletonBehaviour<CommonLogicSystem>
                 itemNum = DataInfluenceSystem.I.ConvertFormulaToAttrCopy(itemNum);
                 var num = itemNum.Attr.GetValue<int>();
                 var item = ItemLogic.I.GetItemById(id);
-                if (item == null) continue;
-                itemString += $"{item.Name}*{num}";
+                if (item != null) {
+                    itemString += $"{item.Name}*{num}";
+                } else {
+                    itemString += "居然莫得?!";
+                }
+                
                 if (i < addItemLEList.Count - 1) {
                     itemString += ", ";
                 }

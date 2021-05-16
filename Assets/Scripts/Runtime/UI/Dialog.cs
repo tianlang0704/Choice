@@ -71,4 +71,11 @@ public class Dialog : UILogicBase<Dialog>
         // 添加到答案列表
         answButtons.Add(answ);
     }
+
+    
+    public void SetColor(Color color)
+    {
+        var frame = uiRoot.GetComponent<Image>();
+        frame.color = color;
+    }
 }

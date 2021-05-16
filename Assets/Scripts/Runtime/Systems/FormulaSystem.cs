@@ -130,7 +130,7 @@ public class FormulaSystem : SingletonBehaviour<FormulaSystem>
 
     private double RandomEquipsId()
     {
-        var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Equips});
+        var allList = ItemLogic.I.GetAllItemListByType(new List<ItemType>() {ItemType.Equips}, false);
         if (allList == null || allList.Count <= 0) return 0;
         var randomIdx = Random.Range(0, allList.Count);
         return (double)allList[randomIdx].Id;
