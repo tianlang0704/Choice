@@ -164,7 +164,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     {
         var type = influ.AttributeType;
         var attrChange = new Attr();
-        DataInfluenceSystem.I.ApplyChangeToAttr(attrChange, influ);
+        DataInfluenceSystem.I.ApplyInfluence(attrChange, influ);
         dataChange[type] += attrChange.GetValue<float>();
         var attr = GetDataByType(type);
         SetDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());

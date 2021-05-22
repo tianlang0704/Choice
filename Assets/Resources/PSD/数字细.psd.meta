@@ -91,7 +91,7 @@ ScriptedImporter:
     parentGroupIndex: -1
     uvTransform: {x: 0, y: 0}
   mosaicSpriteImportData:
-  - name: 0
+  - name: p::0
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -113,7 +113,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: 47, y: -16}
-  - name: 1
+  - name: p::1
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -135,7 +135,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: 48, y: -18}
-  - name: 2
+  - name: p::2
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -157,7 +157,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -72, y: 51}
-  - name: 3
+  - name: p::3
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -179,7 +179,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -63, y: -77}
-  - name: 4
+  - name: p::4
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -201,7 +201,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -148, y: -77}
-  - name: 5
+  - name: p::5
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -223,7 +223,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -191, y: -13}
-  - name: 6
+  - name: p::6
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -245,7 +245,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -151, y: -78}
-  - name: 7
+  - name: p::7
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -267,7 +267,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -277, y: 113}
-  - name: 8
+  - name: p::8
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -289,7 +289,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: -278, y: 45}
-  - name: '-'
+  - name: p::-
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -311,7 +311,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: 77, y: -12}
-  - name: +
+  - name: p::+
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -333,7 +333,7 @@ ScriptedImporter:
     tessellationDetail: 0
     parentGroupIndex: -1
     uvTransform: {x: 128, y: -40}
-  - name: 9
+  - name: p::9
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 0
@@ -601,85 +601,85 @@ ScriptedImporter:
     spriteID: 00000000000000000000000000000000
     layerID: 25
     mosaicPosition: {x: 0, y: 0}
-  - name: 0
-    spriteName: 0
+  - name: p::0
+    spriteName: p::0
     isGroup: 0
     parentIndex: 0
     spriteID: 6646badebdb539645b9927666b68edee
     layerID: 24
     mosaicPosition: {x: 52, y: 68}
-  - name: 1
-    spriteName: 1
+  - name: p::1
+    spriteName: p::1
     isGroup: 0
     parentIndex: 0
     spriteID: 9c14693e34764a44f866a21d99ca6b25
     layerID: 23
     mosaicPosition: {x: 92, y: 65}
-  - name: 2
-    spriteName: 2
+  - name: p::2
+    spriteName: p::2
     isGroup: 0
     parentIndex: 0
     spriteID: d9d1cd9f7957a6f4293bec5308ef5376
     layerID: 22
     mosaicPosition: {x: 4, y: 132}
-  - name: 3
-    spriteName: 3
+  - name: p::3
+    spriteName: p::3
     isGroup: 0
     parentIndex: 0
     spriteID: 19f030cb79aa1a44cb78093bae63477d
     layerID: 21
     mosaicPosition: {x: 52, y: 4}
-  - name: 4
-    spriteName: 4
+  - name: p::4
+    spriteName: p::4
     isGroup: 0
     parentIndex: 0
     spriteID: 9df90a52d433b1945ad1cc709e04257e
     layerID: 20
     mosaicPosition: {x: 4, y: 4}
-  - name: 5
-    spriteName: 5
+  - name: p::5
+    spriteName: p::5
     isGroup: 0
     parentIndex: 0
     spriteID: 0ebc64f5a4d9bcb4ca211afb56e8ad76
     layerID: 19
     mosaicPosition: {x: 4, y: 68}
-  - name: 6
-    spriteName: 6
+  - name: p::6
+    spriteName: p::6
     isGroup: 0
     parentIndex: 0
     spriteID: 8ed4632ea953be04f9e090f6837bfedb
     layerID: 18
     mosaicPosition: {x: 92, y: 4}
-  - name: 7
-    spriteName: 7
+  - name: p::7
+    spriteName: p::7
     isGroup: 0
     parentIndex: 0
     spriteID: a9cd867259eef4d44982689d0e67b4a1
     layerID: 17
     mosaicPosition: {x: 4, y: 196}
-  - name: 8
-    spriteName: 8
+  - name: p::8
+    spriteName: p::8
     isGroup: 0
     parentIndex: 0
     spriteID: 6e744db10b8c10b43ad8765c9ac94677
     layerID: 16
     mosaicPosition: {x: 52, y: 129}
-  - name: '-'
-    spriteName: '-'
+  - name: p::-
+    spriteName: p::-
     isGroup: 0
     parentIndex: 0
     spriteID: 345c602fbdace1c49b610bae120d9dd7
     layerID: 28
     mosaicPosition: {x: 133, y: 44}
-  - name: +
-    spriteName: +
+  - name: p::+
+    spriteName: p::+
     isGroup: 0
     parentIndex: 0
     spriteID: 49a4232cf8554e84ca364c2e2b2caa13
     layerID: 27
     mosaicPosition: {x: 133, y: 4}
-  - name: 9
-    spriteName: 9
+  - name: p::9
+    spriteName: p::9
     isGroup: 0
     parentIndex: 0
     spriteID: 3817346acb04a164eaf148ad586c8097
