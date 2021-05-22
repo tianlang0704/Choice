@@ -30,6 +30,9 @@ public class GameUILogic : UILogicBase<GameUILogic>
                 }
             }, "YES", "NO");
         });
+        uiRoot.i<Button>("Ex_Back").onClick.AddListener(() => {
+            CommonFlowLogic.Instance.Town();
+        });
         // UpdateView(); 
     }
 
