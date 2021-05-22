@@ -474,7 +474,7 @@ public class ItemLogic : SingletonBehaviour<ItemLogic>
         // var itemData = allItemList.Where((i)=>i.Type != ItemType.Buff).ToDictionary((i)=>i.Id, (i)=>1);
         // DataSystem.I.SetDataByType<Dictionary<int, int>>(DataType.Items, itemData);
         // SyncItemToData();
-        // AddItem(GameUtil.ItemId(10016), 1, new DurationAndFrequency() { Turn = 3});
+        // AddItem(GameUtil.ItemId(17), 1);
         GameUILogic.I.UpdateItems();
     }
     // 同步数据
