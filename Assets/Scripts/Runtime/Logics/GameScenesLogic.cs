@@ -32,8 +32,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Road,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 2),
-                    // maxTurn = 48,
-                    maxTurn = 3,
+                    maxTurn = 48,
                     sceneTurnNum = {
                         {CardType.Blank, 10},
                         {CardType.Event, 33},
@@ -46,8 +45,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Grassland,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    // maxTurn = 49,
-                    maxTurn = 3,
+                    maxTurn = 49,
                     sceneTurnNum = {
                         {CardType.Blank, 10},
                         {CardType.Event, 34},
@@ -60,8 +58,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Mountain,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    // maxTurn = 39,
-                    maxTurn = 3,
+                    maxTurn = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 8},
                         {CardType.Event, 27},
@@ -74,8 +71,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Island,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    // maxTurn = 39,
-                    maxTurn = 3,
+                    maxTurn = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 5},
                         {CardType.Event, 27},
@@ -88,8 +84,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Desert,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    // maxTurn = 39,
-                    maxTurn = 3,
+                    maxTurn = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 8},
                         {CardType.Event, 27},
