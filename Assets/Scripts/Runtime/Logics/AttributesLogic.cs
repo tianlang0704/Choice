@@ -106,9 +106,10 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
     public void Init()
     {
         // 初始化显示属性
-        foreach (var type in DisplayAttrTypes) {
-            DataSystem.I.SetDataByType(type, 5);
-        }
+        DataSystem.I.SetDataByType(DataType.HP, 5);
+        DataSystem.I.SetDataByType(DataType.Stamina, 5);
+        DataSystem.I.SetDataByType(DataType.Mood, 50);
+        DataSystem.I.SetDataByType(DataType.Gold, 0);
         // 初始化其他属性
         DataSystem.I.SetDataByType(DataType.Bag, 5);
         DataSystem.I.SetDataByType(DataType.Luck, 5);

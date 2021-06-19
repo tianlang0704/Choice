@@ -23,6 +23,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
     // 更新显示
     public void UpdateView() {
+        // 更新属性显示
+        UpdateAttrDisplay();
         // 更新日程
         UpdateProgress();
         // 更新调试
@@ -34,12 +36,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
     // 更新显示数值
     public void UpdateAttrDisplay()
     {
-        // 更新现在值
-        var curDataDic = AttributesLogic.I.DisplayAttrData;
-        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
-            UpdateResource(kvp.Key, kvp.Value);
-        }
         // 更新最大值
+        var curDataDic = AttributesLogic.I.DisplayAttrData;
         var maxValueDic = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<DataType, float>>(DataType.AttrMaxTable);
         foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
             DataType type = kvp.Key;
@@ -49,6 +47,16 @@ public class GameUILogic : UILogicBase<GameUILogic>
             } else {
                 UpdateResourceMax((DataType)type, 0);
             }
+        }
+        // 更新现在值
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            UpdateResource(kvp.Key, kvp.Value);
+        }
+        // 更新图标
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            var type = kvp.Key;
+            float maxValue = maxValueDic[type];
+            UpdateResourceIcon(type, kvp.Value, maxValue);
         }
     }
 
@@ -100,6 +108,24 @@ public class GameUILogic : UILogicBase<GameUILogic>
         }
         // 数量
         text.text = Mathf.Ceil(amount).ToString();;
+    }
+
+    // 更新图标
+    public void UpdateResourceIcon(DataType type, float amount, float max) {
+        // 获取UI
+        var uppperUI = uiRoot.i<UIViewBase>("Ex_UI");
+        Image image = null;
+        if (type == DataType.HP) {
+            image = uppperUI.i("Ex_资源生命").i<Image>("Ex_图标");
+        }else if (type == DataType.Stamina) {
+            image = uppperUI.i("Ex_资源体力").i<Image>("Ex_图标");
+        }else if (type == DataType.Mood) {
+            image = uppperUI.i("Ex_资源心情").i<Image>("Ex_图标");
+        }else if (type == DataType.Gold) {
+            image = uppperUI.i("Ex_资源金币").i<Image>("Ex_图标");
+        }
+        if (image == null) return;
+        image.fillAmount = amount / max;
     }
 
     // 更新道具栏
