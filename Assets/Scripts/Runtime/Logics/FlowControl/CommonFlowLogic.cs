@@ -173,7 +173,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     }
 
     // 显示打工或者跑路
-    public void ShowWorkOrRun()
+    public void ShowWorkOrRun(Action<int> cb = null)
     {
         if (dialog != null) {
             ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
@@ -184,7 +184,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         card.gameObject.SetActive(true);
         card.transform.SetParent(root.transform, false);
         card.ShowCard(null, (a) => {
-            TurnFLowLogic.I.PassWorkOrRun();
+            if (cb != null) cb(a);
             ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
             dialog = null;
         });

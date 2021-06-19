@@ -42,13 +42,19 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         GameUILogic.I.UpdateView();
         // 检查是否继续
         if (!IsTurnContinue()) yield break;
-        // 打工还是跑路
+        // 增加属性
+        CardPoolLogic.I.UpdateCardType();
+        
+        // 跳过几回合
         if (skipTurn <= 0) {
-            CommonFlowLogic.I.ShowWorkOrRun();
+            // 打工还是跑路
+            CommonFlowLogic.I.ShowWorkOrRun((a) => {
+                workOrRun = true;
+                IncreaseTurnAndDistance();
+            });
             yield return new WaitUntil(() => workOrRun);
             workOrRun = false;
             yield return new WaitForSeconds(0.1f);
-            CardPoolLogic.I.UpdateCardType();
             GameUILogic.I.UpdateView();
             var cardType = (CardType)DataSystem.I.GetDataByType<int>(DataType.TurnCardType);
             if (cardType != CardType.Blank) {
@@ -62,15 +68,22 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
             }
         } else {
             skipTurn -= 1;
+            IncreaseTurnAndDistance();
         }
         // 清除数据改变
         DataSystem.I.RestDataChange();
-        // 增加属性
-        AttributesLogic.I.ChangeTurn(1);
-        AttributesLogic.I.ChangeDistance(1);
         GameUILogic.I.UpdateView();
         // 稍微等下下再结束本回合
         yield return new WaitForSeconds(0.1f);
+    }
+
+    public void IncreaseTurnAndDistance(bool isIncreaseDistance = true)
+    {
+        if (isIncreaseDistance) {
+            AttributesLogic.I.ChangeDistance(1);
+        }
+        AttributesLogic.I.ChangeTurn(1);
+        GameUILogic.I.UpdateView();
     }
 
     // 跳过一回合
