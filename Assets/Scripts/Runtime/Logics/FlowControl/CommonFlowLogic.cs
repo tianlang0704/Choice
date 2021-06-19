@@ -44,9 +44,10 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 
     private Dialog dialog = null;
     public void ShowDialog(string content, Action<int> cb = null, params string[] list) {
-        if (dialog == null) {
-            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
+        if (dialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
         }
+        dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
         var root = FindObjectOfType<Canvas>();
         dialog.gameObject.SetActive(true);
         dialog.transform.SetParent(root.transform, false);
@@ -67,9 +68,10 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 
     public void ShowDialogWithColor(string content, Color color, Action<int> cb = null, params string[] list)
     {
-        if (dialog == null) {
-            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
+        if (dialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
         }
+        dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
         var root = FindObjectOfType<Canvas>();
         dialog.gameObject.SetActive(true);
         dialog.transform.SetParent(root.transform, false);
@@ -88,11 +90,45 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         dialog.SetColor(color);
     }
 
+    public void ShowCardWithColor(Card card, Action<int> cb = null) {
+        // 显示卡片
+        var color = GameUtil.CardQualityToColor(card.Quality);
+        CommonFlowLogic.I.ShowDialogWithColor(
+            card.content, 
+            color,
+            (ansNum) => {
+                // 获取答案
+                Answer answer = card.answers[ansNum];
+                // 执行逻辑列表
+                if (answer.logicListFuncList != null) {
+                    var logicList = answer.logicListFuncList
+                        .Select((func)=>func())
+                        .SelectMany((logicExeutionList)=>logicExeutionList)
+                        .ToList();
+                    CommonLogicSystem.I.ExecuteCommonLogic(logicList);
+                }
+                if (cb != null) cb(ansNum);
+                // 更新界面
+                GameUILogic.I.UpdateView();
+            }, 
+            card.answers
+                .Where((a)=>ConditionSystem.I.IsConditionMet(a.condition))
+                .Select((a)=>a.content)
+                .ToArray()
+        );
+    }
+
+    public void ShowWorkOrRun(Action cb)
+    {
+        ShowDialog("打工还是跑路?", (idx) => {
+            cb();
+        }, "打工", "跑路");
+    }
+
     public void CloseDialog()
     {
         if (dialog == null) return;
         dialog.gameObject.SetActive(false);
-
     }
 
     public bool CheckAndNotifyDead()
@@ -109,10 +145,76 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         return isDead;
     }
 
+    // 显示开始游戏
+    public void ShowStartGame(Action cb = null) {
+        var card = CardLogic.I.GetCardById(GameUtil.CardId(10003));
+        if (card == null) return;
+        // 显示卡片
+        ShowCardWithColor(card, (ansNum) => { if(cb != null) cb(); });
+    }
+
+    public void ShowEndGame(Action cb = null) {
+        var card = CardLogic.I.GetCardById(GameUtil.CardId(10004));
+        if (card == null) return;
+        // 显示卡片
+        ShowCardWithColor(card, (ansNum) => { if(cb != null) cb(); });
+    }
+
+    // 显示事件
+    public void ShowEvent() 
+    {
+        var card = CardPoolLogic.I.GetTurnCardInstance(); // 抽到卡就用, 没抽到卡就用通用提示卡
+        if (card == null) return;
+        // 显示卡片
+        ShowCardWithColor(card, (a) => {
+            // 下一回合
+            TurnFLowLogic.I.NextTurn();
+        });
+    }
+
+    // 显示打工或者跑路
+    public void ShowWorkOrRun()
+    {
+        if (dialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
+        }
+        var card = ObjectPoolManager.Instance.GetGameObject<DialogWhiteCard>(Constants.UIBasePath + Constants.UIWhiteCardPath);
+        dialog = card;
+        var root = FindObjectOfType<Canvas>();
+        card.gameObject.SetActive(true);
+        card.transform.SetParent(root.transform, false);
+        card.ShowCard(null, (a) => {
+            TurnFLowLogic.I.PassWorkOrRun();
+            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
+            dialog = null;
+        });
+    }
+
+    // 显示回合提问
+    public void ShowTurnDialog() {
+        // 处理没有卡牌
+        var cardInfo = CardPoolLogic.I.GetTurnCardRaw();
+        if (cardInfo == null) {
+            var card = CardLogic.I.GetCardCopyById(GameUtil.CardId(10002));
+            ShowCardWithColor(card, (a) => {
+                // 下一回合
+                TurnFLowLogic.I.NextTurn();
+            });
+            return;
+        }
+        // 分类显示卡牌
+        // if (cardInfo.Type == CardType.Event) {
+            ShowEvent();
+        // } else if (cardInfo.Type == CardType.Shop) {
+            
+        // }
+    }
+
+    // 显示选择场景
     public void ShowSelectSceneDialog()
     {
         if (dialog == null) {
-            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>("Prefabs/弹窗");
+            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
         }
         var root = FindObjectOfType<Canvas>();
         dialog.gameObject.SetActive(true);
@@ -120,17 +222,16 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         dialog.SetContent("选择一个新场景");
         dialog.SetCB((b) => {
             // 更新场景
-            GameScenesLogic.I.SetSceneById(1+b);
-            // 重新刷新卡牌
-            CardPoolLogic.I.ShuffleDayCards();
-            TurnFLowLogic.I.NextTurn();
+            GameScenesLogic.I.SetSceneById(1 + b, true);
+            SceneFlowLogic.I.NextScene();
         });
         dialog.ResetAllAnsws();
-        var nameList = GameScenesLogic.I.AllScenes.Select((s)=>s.Value.name).ToList();
+        var nameList = GameScenesLogic.I.AllScenes.Select((s)=>GameScenesLogic.I.SceneTypeToString(s.Value.sceneType)).ToList();
         for (int i = 0; i < nameList.Count; i++) {
             var arg = nameList[i];
             dialog.ShowAnsw(arg);
         }
+        dialog.SetColor(Color.white);
     }
 
     private Shop shop = null;
@@ -138,7 +239,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     {
         // 创建
         if (shop == null) {
-            shop = ObjectPoolManager.Instance.GetGameObject<Shop>("Prefabs/商店");
+            shop = ObjectPoolManager.Instance.GetGameObject<Shop>(Constants.UIBasePath + Constants.UIShopPath);
         }
         // 加入场景
         var root = FindObjectOfType<Canvas>();
@@ -167,7 +268,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     {
         // 创建
         if (shop == null) {
-            shop = ObjectPoolManager.Instance.GetGameObject<Shop>("Prefabs/商店");
+            shop = ObjectPoolManager.Instance.GetGameObject<Shop>(Constants.UIBasePath + Constants.UIShopPath);
         }
         // 加入场景
         var root = FindObjectOfType<Canvas>();

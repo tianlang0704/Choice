@@ -7,6 +7,8 @@ using UnityEngine;
 public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
 {
     private bool nextTurn = false;
+    private bool workOrRun = false;
+    private int skipTurn = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,37 +23,64 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
 
     public void Init()
     {
-        DataSystem.I.SetDataByType(DataType.MaxTurn, 7);
+        
+    }
+
+    // 回合是否继续
+    public bool IsTurnContinue()
+    {
+        return DayFlowLogic.I.IsDayContinue();
     }
 
     // 回合循环
     public IEnumerator TurnLoop()
     {
         // 更新回合
-        IncreaseTurn(1);
         DurFreSystem.I.UpdateTurn();
         ItemLogic.I.UpdateTurn();
         // 更新界面
         GameUILogic.I.UpdateView();
         // 检查是否继续
         if (!IsTurnContinue()) yield break;
-        // 问答
-        ShowTurnDialog();
-        GameUILogic.I.UpdateView();
-        // 等待进入下一回合
+        // 打工还是跑路
+        if (skipTurn <= 0) {
+            CommonFlowLogic.I.ShowWorkOrRun();
+            yield return new WaitUntil(() => workOrRun);
+            workOrRun = false;
+            yield return new WaitForSeconds(0.1f);
+            CardPoolLogic.I.UpdateCardType();
+            GameUILogic.I.UpdateView();
+            var cardType = (CardType)DataSystem.I.GetDataByType<int>(DataType.TurnCardType);
+            if (cardType != CardType.Blank) {
+                // 不是白卡就抽接下来的卡
+                CardPoolLogic.I.RerollTurnCard();
+                GameUILogic.I.UpdateView();
+                CommonFlowLogic.I.ShowTurnDialog();
+                // 等待进入下一回合
+                yield return new WaitUntil(() => nextTurn);
+                nextTurn = false;
+            }
+        } else {
+            skipTurn -= 1;
+        }
+        // 清除数据改变
         DataSystem.I.RestDataChange();
-        yield return new WaitUntil(() => nextTurn);
-        nextTurn = false;
-        // 检查是否继续
-        if (!IsTurnContinue()) yield break;
+        // 增加属性
+        AttributesLogic.I.ChangeTurn(1);
+        AttributesLogic.I.ChangeDistance(1);
+        GameUILogic.I.UpdateView();
         // 稍微等下下再结束本回合
         yield return new WaitForSeconds(0.1f);
     }
 
-    // 回合是否继续
-    public bool IsTurnContinue()
+    // 跳过一回合
+    public void SkipTurn(int num = 1)
     {
-        return !AttributesLogic.I.IsDead();
+        CommonFlowLogic.I.CloseDialog();
+        if (num > 1) {
+            AttributesLogic.I.ChangeTurn(num - 1); // 会自增1回合
+        }
+        NextTurn();
     }
 
     // 下一回合
@@ -65,60 +94,8 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         }
     }
 
-    // 增加回合数
-    public void IncreaseTurn(int turnNum = 1)
+    public void PassWorkOrRun()
     {
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        DataSystem.I.SetDataByType(DataType.CurrentTurn, curTurn + turnNum);
-    }
-
-    // 显示回合提问
-    public void ShowTurnDialog() {
-        // 抽卡
-         CardPoolLogic.I.RerollTurnCard();
-        var card = CardPoolLogic.I.GetTurnCardInstance() ?? CardLogic.I.GetCardCopyById(GameUtil.CardId(10002)); // 抽到卡或者通用提示卡
-        // // 处理没有卡用了
-        // if (card == null) {
-        //     // 更新界面
-        //     GameUILogic.I.UpdateView();
-        //     // 下一回合
-        //     NextTurn();
-        //     return;
-        // }
-        // 显示卡片
-        var color = GameUtil.CardQualityToColor(card.Quality);
-        CommonFlowLogic.I.ShowDialogWithColor(
-            card.content, 
-            color,
-            (ansNum) => {
-                // 获取答案
-                Answer answer = card.answers[ansNum];
-                // 执行逻辑列表
-                if (answer.logicListFuncList != null) {
-                    var logicList = answer.logicListFuncList
-                        .Select((func)=>func())
-                        .SelectMany((logicExeutionList)=>logicExeutionList)
-                        .ToList();
-                    CommonLogicSystem.I.ExecuteCommonLogic(logicList);
-                }
-                // 更新界面
-                GameUILogic.I.UpdateView();
-                // 下一回合
-                NextTurn();
-            }, 
-            card.answers
-                .Where((a)=>ConditionSystem.I.IsConditionMet(a.condition))
-                .Select((a)=>a.content)
-                .ToArray()
-        );
-    }
-
-    // 跳过一回合
-    public void SkipTurn(int num = 1)
-    {
-        CommonFlowLogic.I.CloseDialog();
-        if (num > 1)
-            IncreaseTurn(num - 1); // 会自增1回合
-        NextTurn();
+        workOrRun = true;
     }
 }

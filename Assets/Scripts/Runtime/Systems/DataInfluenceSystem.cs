@@ -421,6 +421,10 @@ public class DataInfluenceSystem : SingletonBehaviour<DataInfluenceSystem>
             GameUtil.ApplyListAttr<AttrInfluence>(baseAttr, influence);
         } else if (influence.AttributeType == DataType.ItemNumModifier) {
             GameUtil.ApplyFloatDicAttr<int>(baseAttr, influence);
+        } else if (influence.AttributeType == DataType.SceneMap) {
+            GameUtil.ApplyListAttr<CardType>(baseAttr, influence);
+        } else {
+            Debug.LogWarning($"有个影响没有处理器, 数据类型: {influence.AttributeType.ToString()}");
         }
     }
     // 应用属性影响列表

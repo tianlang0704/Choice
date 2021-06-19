@@ -20,55 +20,32 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
 
     public void Init()
     {
-        TurnFLowLogic.I.Init();
+        
     }
 
     // 一天是否继续
     public bool IsDayContinue()
     {
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        return curTurn < maxTurn && !AttributesLogic.Instance.IsDead();
+        return SceneFlowLogic.I.IsSceneContinue();
     }
 
     // 日循环
     public IEnumerator DayLoop()
     {
+        // 增加一天
+        var curDay = DataSystem.I.GetDataByType(DataType.CurrentDay);
+        DataSystem.I.SetDataByType(DataType.CurrentDay, curDay + 1);
         // 刷新一天
-        DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
-        IncreaseDay();
         DurFreSystem.I.UpdateDay();
         ItemLogic.I.UpdateDay();
-        CardPoolLogic.I.ResetQualityWeight();
         // 更新界面
         GameUILogic.I.UpdateView();
         // 检查是否继续
         if (!IsDayContinue()) yield break;
-        // 重新刷新卡牌
-        CardPoolLogic.I.ShuffleDayCards();
         // 开始日循环
         while(IsDayContinue())
         {
             yield return TurnFLowLogic.I.TurnLoop();
         }
-    }
-
-    // 增加天数
-    public void IncreaseDay(int num = 1)
-    {
-        var curDay = DataSystem.I.GetDataByType(DataType.CurrentDay);
-        DataSystem.I.SetDataByType(DataType.CurrentDay, curDay + num);
-    }
-
-    private bool ShowDayEndDialog()
-    {
-        // 检查是否完成一天
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        if (curTurn >= maxTurn) {
-            CommonFlowLogic.Instance.ShowDialog("一天的旅程安稳地结束了, 下一天会是什么样呢?", (answIdx) => {
-            }, "呼木");
-        }
-        return true;
     }
 }

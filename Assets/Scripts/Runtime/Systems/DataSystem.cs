@@ -14,6 +14,7 @@ public enum DataType {
     Bag,                        // 负重
     _AttrTypeMax = 1000,        // 属性类型最大值 
     Distance,                   // 距离
+    DistanceTotal,              // 总距离
     CurrentDay,                 // 天数
     Scene,                      // 场景
     Weather,                    // 天气
@@ -26,7 +27,8 @@ public enum DataType {
     TempRandom1,                // 暂时使用的随机数
     TurnCardQuality,            // 卡牌质量(从权重中随机出来的结果)
     TurnCardId,                 // 回合卡牌ID
-    IsPreventNextTurnOnce,     // 是否阻止进入下一回合一次
+    IsPreventNextTurnOnce,      // 是否阻止进入下一回合一次
+    TurnCardType,               // 回合类型
     _ValueTypeMax = 10000,      // 数值类型最大值
     AttrMaxTable,               // 数值最大表
     TurnCardWeight,             // 卡牌附加几率
@@ -41,8 +43,8 @@ public enum DataType {
     IncomeModifier,             // 收入修改
     CostModifier,               // 费用修改
     ItemNumModifier,            // 道具数量修改
-    DayCards,                   // 一天卡池ID
     Items,                      // 物品(包括 道具, 装备, 遗物, BUFF)
+    SceneMap,                   // 场景里每一回合类型
 }
 
 public class DataSystem : SingletonBehaviour<DataSystem>

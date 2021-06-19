@@ -8,32 +8,12 @@ using System;
 
 public class GameUILogic : UILogicBase<GameUILogic>
 {
-    const string resStrFormat = "<sprite name=\"{0}\">";
-
     // Start is called before the first frame update
     void Start()
     {
-        uiRoot.i<Button>("Ex_导游").onClick.AddListener(()=>{
-            CommonFlowLogic.I.ShowDialog("这是导游哦? 他问你要不要<color=#FF0000FF>继续</color>旅程?", (ans) => {
-                if (ans == 0) {
-                    var isDead = CommonFlowLogic.I.CheckAndNotifyDead();
-                    if(!isDead) {
-                        TurnFLowLogic.I.ShowTurnDialog();
-                    }
-                }
-            }, "YES", "NO");
-        });
-        uiRoot.i<Button>("Ex_小僧").onClick.AddListener(()=>{
-            CommonFlowLogic.I.ShowDialog("这是一个小僧呢! 他想回<color=#FF0000FF>城镇</color>休息一下, 回去吗?", (ans) => {
-                if (ans == 0) {
-                    CommonFlowLogic.I.Town();
-                }
-            }, "YES", "NO");
-        });
-        uiRoot.i<Button>("Ex_Back").onClick.AddListener(() => {
-            CommonFlowLogic.Instance.Town();
-        });
-        // UpdateView(); 
+        // uiRoot.i<Button>("Ex_Back").onClick.AddListener(() => {
+        //     CommonFlowLogic.Instance.Town();
+        // });
     }
 
     // Update is called once per frame
@@ -41,116 +21,101 @@ public class GameUILogic : UILogicBase<GameUILogic>
     {
     }
 
+    // 更新显示
     public void UpdateView() {
-        // 更新现在值
-        var curDataArr = AttributesLogic.I.DisplayAttrData;
-        foreach (int type in System.Enum.GetValues(typeof(DataType))) {
-            if (type >= curDataArr.Count) break;
-            var curValue = curDataArr[type];
-            UpdateResource((DataType)type, curValue);
-        }
-        // 更新改变值
-        var changeDataArr = AttributesLogic.I.DisplayAttrDataChange;
-        foreach (int type in System.Enum.GetValues(typeof(DataType))) {
-            if (type >= curDataArr.Count) break;
-            var changeValue = changeDataArr[type];
-            UpdateChangeResource((DataType)type, changeValue);
-        }
         // 更新日程
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        uiRoot.i<Slider>("Ex_进度条").value = (float)(curTurn) / (float)maxTurn;
-        // 更新场景
-        string outStr = "";
-        var sceneName = GameScenesLogic.I.GetCurrentSceneName();
-        outStr += "场景:" + sceneName;
-        // 更新天数
-        outStr += ", 天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
-        // 更新路程
-        outStr += ", 路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance);
-        // 更新天气
-        outStr += ", 天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
-        // 更新卡牌质量
-        var quality = DataSystem.I.CopyAttrDataWithInfluenceByType<CardQuality>(DataType.TurnCardQuality);
-        outStr += "\n质量: " + Enum.GetName(typeof(CardQuality), quality);
-        // 输出信息
-        uiRoot.i<TextMeshProUGUI>("Ex_场景").text = outStr;
+        UpdateProgress();
+        // 更新调试
+        UpdateDebug();
         // 更新道具栏
         UpdateItems();
     }
 
-    public void UpdateChangeResource(DataType type, float amount) 
+    // 更新显示数值
+    public void UpdateAttrDisplay()
+    {
+        // 更新现在值
+        var curDataDic = AttributesLogic.I.DisplayAttrData;
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            UpdateResource(kvp.Key, kvp.Value);
+        }
+        // 更新最大值
+        var maxValueDic = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<DataType, float>>(DataType.AttrMaxTable);
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            DataType type = kvp.Key;
+            if (maxValueDic.ContainsKey(type)) {
+                float maxValue = maxValueDic[type];
+                UpdateResourceMax((DataType)type, maxValue);
+            } else {
+                UpdateResourceMax((DataType)type, 0);
+            }
+        }
+    }
+
+    // 更新进度
+    public void UpdateProgress()
+    {
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
+        uiRoot.i<UIViewBase>("Ex_UI").i<Slider>("Ex_现在进度条").value = (float)(curTurn) / (float)maxTurn;
+    }
+
+    // 更新最大数值
+    public void UpdateResourceMax(DataType type, float amount) 
     {
         // 获取UI
         TextMeshProUGUI text = null;
+        var uppperUI = uiRoot.i<UIViewBase>("Ex_UI");
         if (type == DataType.HP) {
-            text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_增减");
+            text = uppperUI.i("Ex_资源生命").i<TextMeshProUGUI>("Ex_最多");
         }else if (type == DataType.Stamina) {
-            text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_增减");
+            text = uppperUI.i("Ex_资源体力").i<TextMeshProUGUI>("Ex_最多");
         }else if (type == DataType.Mood) {
-            text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_增减");
+            text = uppperUI.i("Ex_资源心情").i<TextMeshProUGUI>("Ex_最多");
         }else if (type == DataType.Gold) {
-            text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_增减");
+            text = uppperUI.i("Ex_资源金币").i<TextMeshProUGUI>("Ex_最多");
         }
-
         // 检测空
         if (amount == 0) {
             text.text = " ";
             return;
         }
-
-        // 正负号
-        var outText = "";
-        if (amount > 0) {
-            outText += string.Format(resStrFormat, "+");
-        }
-
         // 数量
-        var amountText = Mathf.Ceil(amount).ToString();
-        foreach (char c in amountText) {
-            outText += string.Format(resStrFormat, c);
-        }
-        text.text = outText;
+        text.text = Mathf.Ceil(amount).ToString();
     }
 
+    // 更新数值
     public void UpdateResource(DataType type, float amount) {
         // 获取UI
+        var uppperUI = uiRoot.i<UIViewBase>("Ex_UI");
         TextMeshProUGUI text = null;
         if (type == DataType.HP) {
-            text = uiRoot.gameObject.i("Ex_资源油").i<TextMeshProUGUI>("Ex_现在");
+            text = uppperUI.i("Ex_资源生命").i<TextMeshProUGUI>("Ex_现在");
         }else if (type == DataType.Stamina) {
-            text = uiRoot.gameObject.i("Ex_资源水").i<TextMeshProUGUI>("Ex_现在");
+            text = uppperUI.i("Ex_资源体力").i<TextMeshProUGUI>("Ex_现在");
         }else if (type == DataType.Mood) {
-            text = uiRoot.gameObject.i("Ex_资源血").i<TextMeshProUGUI>("Ex_现在");
+            text = uppperUI.i("Ex_资源心情").i<TextMeshProUGUI>("Ex_现在");
         }else if (type == DataType.Gold) {
-            text = uiRoot.gameObject.i("Ex_资源知识").i<TextMeshProUGUI>("Ex_现在");
+            text = uppperUI.i("Ex_资源金币").i<TextMeshProUGUI>("Ex_现在");
         }
-
         // 数量
-        var outText = "";
-        var amountText = Mathf.Ceil(amount).ToString();
-        foreach (var c in amountText) {
-            outText += string.Format(resStrFormat, c);
-        }
-        text.text = outText;
+        text.text = Mathf.Ceil(amount).ToString();;
     }
 
+    // 更新道具栏
     public void UpdateItems()
     {
         var goods = ItemLogic.I.GetHaveItemListByType();
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Goods);
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Buff);
         // var goods = ItemLogic.I.GetHaveItemListByType(ItemType.Equips);
-        var itemBox = uiRoot.i<RectTransform>("Ex_道具栏");
+        var itemBox = uiRoot.i<UIViewBase>("Ex_UI").i<RectTransform>("Ex_道具栏");
         for (int i = itemBox.childCount - 1; i >= 0; i--) {
             var child = itemBox.GetChild(i);
             ObjectPoolManager.I.RecycleGameObject(child.gameObject);
         }
-        // foreach (Transform item in itemBox) {
-        //     ObjectPoolManager.I.RecycleGameObject(item.gameObject);
-        // }
         foreach (var item in goods) {
-            var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>("Prefabs/道具");
+            var itemButton = ObjectPoolManager.I.GetGameObject<ItemButton>(Constants.UIBasePath + Constants.UIItemPath);
             itemButton.transform.SetParent(itemBox, false);
             itemButton.SetText($"{item.Name}\n{item.Desc}*{item.Num}");
             itemButton.SetTextColor(GameUtil.ItemQualityToColor(item.Quality));
@@ -160,5 +125,46 @@ public class GameUILogic : UILogicBase<GameUILogic>
                 UpdateView();
             });
         }
+    }
+
+    // 更新调试文字
+    public void UpdateDebug()
+    {
+        string outStr = "";
+        var sceneData = GameScenesLogic.I.GetCurrentSceneData();
+        var sceneName = GameScenesLogic.I.SceneTypeToString(sceneData.sceneType);
+        outStr += "场景:" + sceneName;
+        // 更新天数
+        outStr += ", 天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
+        // 更新路程
+        outStr += ", 路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance) + "," + DataSystem.I.GetDataByType<int>(DataType.DistanceTotal);
+        // 更新天气
+        outStr += ", 天气: " + WeatherLogic.I.GetCurrentWeather(true).Name;
+        // 更新卡牌质量
+        var quality = DataSystem.I.CopyAttrDataWithInfluenceByType<CardQuality>(DataType.TurnCardQuality);
+        outStr += "\n质量: " + Enum.GetName(typeof(CardQuality), quality);
+        // 卡牌类型
+        var cardType = DataSystem.I.CopyAttrDataWithInfluenceByType<int>(DataType.TurnCardType);
+        var cardTypeEnum = (CardType)cardType;
+        outStr += "\n类型: " + Enum.GetName(typeof(CardType), cardTypeEnum);
+        // 地图路径
+        var sceneMap = DataSystem.I.GetDataByType<List<CardType>>(DataType.SceneMap);
+        if (sceneMap != null) {
+            var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+            outStr += "\n地图: ";
+            for (int i = 0; i < sceneMap.Count; i++) {
+                var mapNodeCardType = sceneMap[i];
+                var curTypeStr = Enum.GetName(typeof(CardType), mapNodeCardType);
+                if (i == curTurn) {
+                    curTypeStr = $"<b>{curTypeStr}</b>";
+                }
+                outStr += curTypeStr;
+                if (i < sceneMap.Count - 1) {
+                    outStr += ",";
+                }
+            }
+        }
+        // 输出信息
+        uiRoot.i<UIViewBase>("Ex_UI").i<TextMeshProUGUI>("Ex_调试").text = outStr;
     }
 }

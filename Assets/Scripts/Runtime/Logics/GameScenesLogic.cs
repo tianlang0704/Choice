@@ -1,39 +1,100 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+public enum SceneType {
+    Road = 1,
+    Grassland,
+    Mountain,
+    Island,
+    Desert,
+    End,
+}
+
 public class SceneData {
-    // public string id;
-    public string name;
+    // public string
     public List<AttrInfluence> influence;
+    public int maxTurn;
+    public Dictionary <CardType, int> sceneTurnNum = new Dictionary<CardType, int>();
+    public SceneType sceneType;
 }
 
 public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
 {
-    public Dictionary<int, SceneData> AllScenes;
+    public Dictionary<int, SceneData> AllScenes = new Dictionary<int, SceneData>();
     private SceneData current;
     void Awake()
     {
         AllScenes = new Dictionary<int, SceneData>() {
             {
-                1,
+                (int)SceneType.Road,
                 new SceneData(){
-                    name = "路",
+                    sceneType = SceneType.Road,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 2),
+                    // maxTurn = 48,
+                    maxTurn = 3,
+                    sceneTurnNum = {
+                        {CardType.Blank, 10},
+                        {CardType.Event, 33},
+                        {CardType.Shop, 5},
+                    }
                 }
             },
             {
-                2,
+                (int)SceneType.Grassland,
                 new SceneData(){
-                    name = "草原",
-                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 0),
+                    sceneType = SceneType.Grassland,
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
+                    // maxTurn = 49,
+                    maxTurn = 3,
+                    sceneTurnNum = {
+                        {CardType.Blank, 10},
+                        {CardType.Event, 34},
+                        {CardType.Shop, 5},
+                    }
                 }
             },
             {
-                3,
+                (int)SceneType.Mountain,
                 new SceneData(){
-                    name = "地狱",
-                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, -5),
+                    sceneType = SceneType.Mountain,
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
+                    // maxTurn = 39,
+                    maxTurn = 3,
+                    sceneTurnNum = {
+                        {CardType.Blank, 8},
+                        {CardType.Event, 27},
+                        {CardType.Shop, 4},
+                    }
+                }
+            },
+            {
+                (int)SceneType.Island,
+                new SceneData(){
+                    sceneType = SceneType.Island,
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
+                    // maxTurn = 39,
+                    maxTurn = 3,
+                    sceneTurnNum = {
+                        {CardType.Blank, 5},
+                        {CardType.Event, 27},
+                        {CardType.Shop, 7},
+                    }
+                }
+            },
+            {
+                (int)SceneType.Desert,
+                new SceneData(){
+                    sceneType = SceneType.Desert,
+                    influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
+                    // maxTurn = 39,
+                    maxTurn = 3,
+                    sceneTurnNum = {
+                        {CardType.Blank, 8},
+                        {CardType.Event, 27},
+                        {CardType.Shop, 4},
+                    }
                 }
             },
         };
@@ -50,28 +111,70 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
         
     }
 
+    public string SceneTypeToString(SceneType sceneType)
+    {
+        if (sceneType == SceneType.Road) {
+            return "道路";
+        } else if (sceneType == SceneType.Grassland) {
+            return "草原";
+        } else if (sceneType == SceneType.Island) {
+            return "岛屿";
+        } else if (sceneType == SceneType.Mountain) {
+            return "山脉";
+        } else if (sceneType == SceneType.Desert) {
+            return "沙漠";
+        }
+        var sceneId = ((int)sceneType).ToString();
+        return $"场景{sceneId}";
+    }
+
     public void Init() 
     {
-        SetSceneById(1);
+        
     }
 
     private void SyncData()
     {
         var sceneID = DataSystem.I.GetDataByType<int>(DataType.Scene);
-        if (current != null) {
-            
-        }
         current = AllScenes[sceneID];
     }
 
-    public string GetCurrentSceneName() 
+    public SceneData GetCurrentSceneData()
     {
-        return current.name;
+        return current;
     }
 
-    public void SetSceneById(int id)
+    public void SetSceneById(int id, bool isForce = false)
     {
+        var sceneID = DataSystem.I.GetDataByType<int>(DataType.Scene);
+        if (!isForce && sceneID == id) return;
         DataSystem.I.SetDataByType(DataType.Scene, id);
         SyncData();
+        ResetDataForScene();
+    }
+
+    public void RegenSceneMap()
+    {
+        List<CardType> sceneMap = new List<CardType>();
+        var sceneTurnNum = current.sceneTurnNum.ToDictionary((kvp) => kvp.Key, (kvp) => kvp.Value);
+        for (int i = 0; i < current.maxTurn; i++) {
+            var typeList = sceneTurnNum.Keys.Where((key) => sceneTurnNum[key] > 0).ToList();
+            if (typeList.Count <= 0) break;
+            var cardType = GameUtil.RandomRemoveFromList(typeList);
+            sceneMap.Add(cardType);
+            sceneTurnNum[cardType] -= 1;
+        }
+        DataSystem.I.SetDataByType(DataType.SceneMap, sceneMap);
+    }
+
+    public void ResetDataForScene()
+    {
+        // 重新设置数据
+        DataSystem.I.SetDataByType(DataType.CurrentDay, 0);
+        DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
+        DataSystem.I.SetDataByType(DataType.Distance, 0);
+        DataSystem.I.SetDataByType(DataType.MaxTurn, current.maxTurn);
+        // 重新随机所有回合 
+        RegenSceneMap();
     }
 }

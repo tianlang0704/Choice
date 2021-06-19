@@ -77,7 +77,7 @@ public class Shop : UILogicBase<Shop>
             var itemData = itemList[i];
             if (itemData.Num <= 0) continue;
             // 实例化
-            var itemView = ObjectPoolManager.Instance.GetGameObject<ItemButton>("Prefabs/道具");
+            var itemView = ObjectPoolManager.Instance.GetGameObject<ItemButton>(Constants.UIBasePath + Constants.UIItemPath);
             // 添加进框框    
             itemView.transform.SetParent(parent, false);
             // 添加内容

@@ -28,23 +28,27 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         // DataType.Gold,
     };
 
-    public List<float> DisplayAttrData {
+    public Dictionary<DataType, float> DisplayAttrData {
         get { 
             return DataSystem.I.DataDic
                 .Where((attrKvp) => DisplayAttrTypes.Contains((DataType)attrKvp.Key))
-                .Select((attrKvp) => DataSystem.I.CopyAttrDataWithInfluenceByType<float>(attrKvp.Key))
-                .ToList(); 
+                .Select((attrKvp) => {
+                    var value = DataSystem.I.CopyAttrDataWithInfluenceByType<float>(attrKvp.Key);
+                    var kvp = new KeyValuePair<DataType, float>(attrKvp.Key, value);
+                    return kvp;
+                })
+                .ToDictionary((kvp) => kvp.Key, (kvp) => kvp.Value);
         }
     }
 
-    public List<float> DisplayAttrDataChange {
-        get { 
-            return DataSystem.I.DataChange
-                .Where((attrKvp) => DisplayAttrTypes.Contains((DataType)attrKvp.Key))
-                .Select((attrKvp) => (float)attrKvp.Value)
-                .ToList(); 
-        }
-    }
+    // public List<float> DisplayAttrDataChange {
+    //     get { 
+    //         return DataSystem.I.DataChange
+    //             .Where((attrKvp) => DisplayAttrTypes.Contains((DataType)attrKvp.Key))
+    //             .Select((attrKvp) => (float)attrKvp.Value)
+    //             .ToList(); 
+    //     }
+    // }
     private Dictionary<int, Dictionary<float, List<int>>> moodToBuff;
 
     protected void Awake()
@@ -116,7 +120,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         DataSystem.I.SetDataByType(DataType.CostFactor, 1);
         // 初始化属性最大值
         Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
-        maxValueDic[DataType.Mood] = 10;
+        maxValueDic[DataType.Mood] = 100;
         maxValueDic[DataType.HP] = 10;
         maxValueDic[DataType.Stamina] = 10;
         // maxValueDic[DataType.Gold] = 10;
@@ -198,6 +202,22 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
             if (IsAttrTypeDeadly((DataType)type) && attrData <= 0) return true;
         }
         return false;
+    }
+
+    // 增减距离
+    public void ChangeDistance(int add)
+    {
+        var distance = DataSystem.I.GetDataByType<int>(DataType.Distance);
+        DataSystem.I.SetDataByType(DataType.Distance, distance + add);
+        var distanceTotal = DataSystem.I.GetDataByType<int>(DataType.DistanceTotal);
+        DataSystem.I.SetDataByType(DataType.DistanceTotal, distanceTotal + add);
+    }
+
+    // 增减回合
+    public void ChangeTurn(int add)
+    {
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        DataSystem.I.SetDataByType(DataType.CurrentTurn, curTurn + add);
     }
 
     // 随机心情BUFF
