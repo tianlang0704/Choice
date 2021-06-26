@@ -119,6 +119,7 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         DataSystem.I.SetDataByType(DataType.HurtFactor, 1);
         DataSystem.I.SetDataByType(DataType.IncomeFactor, 1);
         DataSystem.I.SetDataByType(DataType.CostFactor, 1);
+        DataSystem.I.SetDataByType(DataType.MedicineCount, 0);
         // 初始化属性最大值
         Dictionary<DataType, float> maxValueDic = new Dictionary<DataType, float>();
         maxValueDic[DataType.Mood] = 100;

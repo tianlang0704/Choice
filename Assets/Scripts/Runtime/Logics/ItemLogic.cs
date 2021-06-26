@@ -14,6 +14,7 @@ public enum ItemType
     Relics,
     Buff,
     Bro,
+    Weather,
     Unkown = 999,
 }
 

@@ -30,6 +30,7 @@ public enum DataType {
     TurnCardId,                 // 回合卡牌ID
     IsPreventNextTurnOnce,      // 是否阻止进入下一回合一次
     TurnCardType,               // 回合类型
+    MedicineCount,              // 小药丸计数
     _ValueTypeMax = 10000,      // 数值类型最大值
     AttrMaxTable,               // 数值最大表
     TurnCardWeight,             // 卡牌附加几率
