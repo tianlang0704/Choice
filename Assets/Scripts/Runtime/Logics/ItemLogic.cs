@@ -13,6 +13,7 @@ public enum ItemType
     Equips,
     Relics,
     Buff,
+    Bro,
     Unkown = 999,
 }
 
