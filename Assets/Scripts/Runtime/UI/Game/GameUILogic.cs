@@ -55,6 +55,7 @@ public class GameUILogic : UILogicBase<GameUILogic>
         // 更新图标
         foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
             var type = kvp.Key;
+            if (!maxValueDic.ContainsKey(type)) continue;
             float maxValue = maxValueDic[type];
             UpdateResourceIcon(type, kvp.Value, maxValue);
         }
@@ -63,9 +64,9 @@ public class GameUILogic : UILogicBase<GameUILogic>
     // 更新进度
     public void UpdateProgress()
     {
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        uiRoot.i<UIViewBase>("Ex_UI").i<Slider>("Ex_现在进度条").value = (float)(curTurn) / (float)maxTurn;
+        var distance = DataSystem.I.GetDataByType<int>(DataType.Distance);
+        var maxDistance = DataSystem.I.GetDataByType<int>(DataType.SceneMaxDistance);
+        uiRoot.i<UIViewBase>("Ex_UI").i<Slider>("Ex_现在进度条").value = (float)(distance) / (float)maxDistance;
     }
 
     // 更新最大数值
@@ -162,6 +163,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
         outStr += "场景:" + sceneName;
         // 更新天数
         outStr += ", 天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
+        // 回合
+        outStr += ", 回合: " + DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
         // 更新路程
         outStr += ", 路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance) + "," + DataSystem.I.GetDataByType<int>(DataType.DistanceTotal);
         // 更新天气

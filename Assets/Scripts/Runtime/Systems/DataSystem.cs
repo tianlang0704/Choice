@@ -15,11 +15,12 @@ public enum DataType {
     _AttrTypeMax = 1000,        // 属性类型最大值 
     Distance,                   // 距离
     DistanceTotal,              // 总距离
+    SceneMaxDistance,           // 场景距离
     CurrentDay,                 // 天数
     Scene,                      // 场景
     Weather,                    // 天气
     CurrentTurn,                // 现在回合数
-    MaxTurn,                    // 总回合数
+    DayMaxTurn,                 // 一天回合数
     IncomeFactor,               // 收益因数
     HurtFactor,                 // 伤害因数
     CostFactor,                 // 费用因数

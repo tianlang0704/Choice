@@ -29,9 +29,9 @@ public class SceneFlowLogic : SingletonBehaviour<SceneFlowLogic>
     // 一天是否继续
     public bool IsSceneContinue()
     {
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        var isTurnContinue = curTurn < maxTurn;
+        var curDistance = DataSystem.I.GetDataByType<int>(DataType.Distance);
+        var sceneDistance = DataSystem.I.GetDataByType<int>(DataType.SceneMaxDistance);
+        var isTurnContinue = curDistance < sceneDistance;
         var isGameContinue = GameFlowLogic.I.IsGameContinue();
         return isTurnContinue && isGameContinue;
     }
@@ -47,13 +47,13 @@ public class SceneFlowLogic : SingletonBehaviour<SceneFlowLogic>
         while(IsSceneContinue()) {
             yield return DayFlowLogic.I.DayLoop();
         }
+        // 场景束后, 检查是否是最后一个场景, 如果是就直接结束
         if (IsCurrentSceneLastScene()) {
             sceneEnd = true;
             yield break;
         }
-        // 场景循环结束
+        // 选择下一个场景
         CommonFlowLogic.I.ShowSelectSceneDialog();
-        // 等待进入下一场景
         yield return new WaitUntil(() => nextScene);
         nextScene = false;
         // 检查是否继续

@@ -8,6 +8,7 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
 {
     private bool nextTurn = false;
     private bool workOrRun = false;
+    private bool isWork = false;
     private int skipTurn = 0;
     // Start is called before the first frame update
     void Start()
@@ -42,20 +43,29 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         GameUILogic.I.UpdateView();
         // 检查是否继续
         if (!IsTurnContinue()) yield break;
-        // 增加属性
+        // 更新本回合卡牌类型
         CardPoolLogic.I.UpdateCardType();
-        
-        // 跳过几回合
+        // 检查是否跳过
         if (skipTurn <= 0) {
-            // 打工还是跑路
+            // 选择打工还是跑路
+            isWork = false;
             CommonFlowLogic.I.ShowWorkOrRun((a) => {
                 workOrRun = true;
-                IncreaseTurnAndDistance();
+                if (a % 2 == 0) {
+                    isWork = true;
+                }
+                IncreaseTurnAndDistance(!isWork);
             });
             yield return new WaitUntil(() => workOrRun);
             workOrRun = false;
             yield return new WaitForSeconds(0.1f);
             GameUILogic.I.UpdateView();
+        } else {
+            skipTurn -= 1;
+            IncreaseTurnAndDistance(!isWork);
+        }
+        // 如果不是打工, 继续跑路下一个回合
+        if (!isWork) {
             var cardType = (CardType)DataSystem.I.GetDataByType<int>(DataType.TurnCardType);
             if (cardType != CardType.Blank) {
                 // 不是白卡就抽接下来的卡
@@ -66,9 +76,6 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
                 yield return new WaitUntil(() => nextTurn);
                 nextTurn = false;
             }
-        } else {
-            skipTurn -= 1;
-            IncreaseTurnAndDistance();
         }
         // 清除数据改变
         DataSystem.I.RestDataChange();

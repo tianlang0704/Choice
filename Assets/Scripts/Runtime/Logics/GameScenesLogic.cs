@@ -15,7 +15,7 @@ public enum SceneType {
 public class SceneData {
     // public string
     public List<AttrInfluence> influence;
-    public int maxTurn;
+    public int maxDistance;
     public Dictionary <CardType, int> sceneTurnNum = new Dictionary<CardType, int>();
     public SceneType sceneType;
 }
@@ -32,7 +32,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Road,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0, 2),
-                    maxTurn = 48,
+                    maxDistance = 48,
                     sceneTurnNum = {
                         {CardType.Blank, 10},
                         {CardType.Event, 33},
@@ -45,7 +45,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Grassland,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    maxTurn = 49,
+                    maxDistance = 49,
                     sceneTurnNum = {
                         {CardType.Blank, 10},
                         {CardType.Event, 34},
@@ -58,7 +58,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Mountain,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    maxTurn = 39,
+                    maxDistance = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 8},
                         {CardType.Event, 27},
@@ -71,7 +71,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Island,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    maxTurn = 39,
+                    maxDistance = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 5},
                         {CardType.Event, 27},
@@ -84,7 +84,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
                 new SceneData(){
                     sceneType = SceneType.Desert,
                     influence = DataInfluenceSystem.I.GetAttrInfluenceList(0),
-                    maxTurn = 39,
+                    maxDistance = 39,
                     sceneTurnNum = {
                         {CardType.Blank, 8},
                         {CardType.Event, 27},
@@ -152,7 +152,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
     {
         List<CardType> sceneMap = new List<CardType>();
         var sceneTurnNum = current.sceneTurnNum.ToDictionary((kvp) => kvp.Key, (kvp) => kvp.Value);
-        for (int i = 0; i < current.maxTurn; i++) {
+        for (int i = 0; i < current.maxDistance; i++) {
             var typeList = sceneTurnNum.Keys.Where((key) => sceneTurnNum[key] > 0).ToList();
             if (typeList.Count <= 0) break;
             var cardType = GameUtil.RandomRemoveFromList(typeList);
@@ -168,7 +168,7 @@ public class GameScenesLogic : SingletonBehaviour<GameScenesLogic>
         DataSystem.I.SetDataByType(DataType.CurrentDay, 0);
         DataSystem.I.SetDataByType(DataType.CurrentTurn, 0);
         DataSystem.I.SetDataByType(DataType.Distance, 0);
-        DataSystem.I.SetDataByType(DataType.MaxTurn, current.maxTurn);
+        DataSystem.I.SetDataByType(DataType.SceneMaxDistance, current.maxDistance);
         // 重新随机所有回合 
         RegenSceneMap();
     }
