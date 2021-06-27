@@ -49,11 +49,10 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         if (skipTurn <= 0) {
             // 选择打工还是跑路
             isWork = false;
-            CommonFlowLogic.I.ShowWorkOrRun((a) => {
+            CommonFlowLogic.I.ShowWorkOrRun((dialogIsWork, duration) => {
+                skipTurn = duration - 1;
                 workOrRun = true;
-                if (a % 2 == 0) {
-                    isWork = true;
-                }
+                isWork = dialogIsWork;
                 IncreaseTurnAndDistance(!isWork);
             });
             yield return new WaitUntil(() => workOrRun);

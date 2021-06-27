@@ -157,6 +157,12 @@ public class GameUILogic : UILogicBase<GameUILogic>
     // 更新调试文字
     public void UpdateDebug()
     {
+        if (!Application.isEditor) {
+            uiRoot.i<UIViewBase>("Ex_UI").i("Ex_调试").SetActive(false);
+            return;
+        } else {
+            uiRoot.i<UIViewBase>("Ex_UI").i("Ex_调试").SetActive(true);
+        }
         string outStr = "";
         var sceneData = GameScenesLogic.I.GetCurrentSceneData();
         var sceneName = GameScenesLogic.I.SceneTypeToString(sceneData.sceneType);

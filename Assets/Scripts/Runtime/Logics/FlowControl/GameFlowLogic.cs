@@ -49,14 +49,14 @@ public class GameFlowLogic : SingletonBehaviour<GameFlowLogic>
         CardPoolLogic.I.Init();         // 初始化卡牌池
         ItemLogic.I.Init();             // 初始化道具
         WeatherLogic.I.Init();          // 初始化天气
-        Init();
+        Init();                         // 初始化游戏循环
         SceneFlowLogic.I.Init();        // 初始化场景循环
         DayFlowLogic.I.Init();          // 初始化日循环
         TurnFLowLogic.I.Init();         // 初始化回合循环
         GameScenesLogic.I.SetSceneById(1);
         // 显示开始游戏
         GameUILogic.I.UpdateView();
-        CommonFlowLogic.I.ShowStartGame(() => {
+        CommonFlowLogic.I.ShowStartDialog(() => {
             startGame = true;
         });
         yield return new WaitUntil(() => startGame);

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2259120091267207046}
   - component: {fileID: 2259120091267207044}
   - component: {fileID: 2259120091267207047}
+  - component: {fileID: 1256279854329874248}
   m_Layer: 0
   m_Name: "\u4EBA\u7269\u57FA\u7840"
   m_TagString: Untagged
@@ -75,3 +76,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!223 &1256279854329874248
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2259120091267207041}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: -1378723491
+  m_SortingOrder: 0
+  m_TargetDisplay: 0

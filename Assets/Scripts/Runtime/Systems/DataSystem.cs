@@ -52,6 +52,7 @@ public enum DataType {
 public class DataSystem : SingletonBehaviour<DataSystem>
 {
     public delegate void Callback();
+    
     public static float INVALID_ATTR = -99999999f;
     private Dictionary<DataType, Attr> dataDic = new Dictionary<DataType, Attr>();
     public Dictionary<DataType, Attr> DataDic {
@@ -65,6 +66,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     public Dictionary<DataType, Callback> DataChangeCallback {
         get {return dataChangeCallback;}
     }
+    Callback anyDataChangeCallback;
     void Awake()
     {
 

@@ -10,6 +10,8 @@ using System.Linq;
 
 public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 {
+    public GameObject UIHost;
+    private Component commonDialog = null;
     // Start is called before the first frame update
     IEnumerator Start()
     {
@@ -42,15 +44,28 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         Application.Quit();
     }
 
-    private Dialog dialog = null;
-    public void ShowDialog(string content, Action<int> cb = null, params string[] list) {
-        if (dialog != null) {
-            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
+    public void ShowStartDialog(Action cb = null)
+    {
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
         }
-        dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
-        var root = FindObjectOfType<Canvas>();
+        var dialog = ObjectPoolManager.Instance.GetGameObject<DialogSwipe>(Constants.UIBasePath + Constants.UIStartCardPath);
+        commonDialog = dialog;
+        UIManager.I.AddToRoot(dialog);
         dialog.gameObject.SetActive(true);
-        dialog.transform.SetParent(root.transform, false);
+        dialog.SetCallback(() => {
+            if (cb != null) cb();
+        });
+    }
+
+    public void ShowDialog(string content, Action<int> cb = null, params string[] list) {
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+        }
+        var dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
+        commonDialog = dialog;
+        UIManager.I.AddToRoot(dialog);
+        dialog.gameObject.SetActive(true);
         dialog.SetContent(content);
         dialog.SetCB((b) => {
             if (cb == null) return;
@@ -68,13 +83,13 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
 
     public void ShowDialogWithColor(string content, Color color, Action<int> cb = null, params string[] list)
     {
-        if (dialog != null) {
-            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
         }
-        dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
-        var root = FindObjectOfType<Canvas>();
+        var dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
+        commonDialog = dialog;
+        UIManager.I.AddToRoot(dialog);
         dialog.gameObject.SetActive(true);
-        dialog.transform.SetParent(root.transform, false);
         dialog.SetContent(content);
         dialog.SetCB((b) => {
             if (cb == null) return;
@@ -118,17 +133,10 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         );
     }
 
-    public void ShowWorkOrRun(Action cb)
-    {
-        ShowDialog("打工还是跑路?", (idx) => {
-            cb();
-        }, "打工", "跑路");
-    }
-
     public void CloseDialog()
     {
-        if (dialog == null) return;
-        dialog.gameObject.SetActive(false);
+        if (commonDialog == null) return;
+        commonDialog.gameObject.SetActive(false);
     }
 
     public bool CheckAndNotifyDead()
@@ -145,19 +153,12 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         return isDead;
     }
 
-    // 显示开始游戏
-    public void ShowStartGame(Action cb = null) {
-        var card = CardLogic.I.GetCardById(GameUtil.CardId(10003));
-        if (card == null) return;
-        // 显示卡片
-        ShowCardWithColor(card, (ansNum) => { if(cb != null) cb(); });
-    }
-
     public void ShowEndGame(Action cb = null) {
         var card = CardLogic.I.GetCardById(GameUtil.CardId(10004));
         if (card == null) return;
         // 显示卡片
         ShowCardWithColor(card, (ansNum) => { if(cb != null) cb(); });
+        
     }
 
     // 显示事件
@@ -173,20 +174,19 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     }
 
     // 显示打工或者跑路
-    public void ShowWorkOrRun(Action<int> cb = null)
+    public void ShowWorkOrRun(Action<bool, int> cb = null)
     {
-        if (dialog != null) {
-            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
         }
-        var card = ObjectPoolManager.Instance.GetGameObject<DialogWhiteCard>(Constants.UIBasePath + Constants.UIWhiteCardPath);
-        dialog = card;
-        var root = FindObjectOfType<Canvas>();
+        var card = ObjectPoolManager.Instance.GetGameObject<DialogSwipeBlank>(Constants.UIBasePath + Constants.UIWhiteCardPath);
+        commonDialog = card;
+        UIManager.I.AddToRoot(card);
         card.gameObject.SetActive(true);
-        card.transform.SetParent(root.transform, false);
-        card.ShowCard(null, (a) => {
-            if (cb != null) cb(a);
-            ObjectPoolManager.Instance.RecycleGameObject(dialog.gameObject);
-            dialog = null;
+        card.SetCallback(() => {
+            if (cb != null) cb(card.IsWork, card.Duration);
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+            commonDialog = null;
         });
     }
 
@@ -213,12 +213,12 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     // 显示选择场景
     public void ShowSelectSceneDialog()
     {
-        if (dialog == null) {
-            dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
         }
-        var root = FindObjectOfType<Canvas>();
+        var dialog = ObjectPoolManager.Instance.GetGameObject<Dialog>(Constants.UIBasePath + Constants.UICardPath);
         dialog.gameObject.SetActive(true);
-        dialog.transform.SetParent(root.transform, false);
+        UIManager.I.AddToRoot(dialog);
         dialog.SetContent("选择一个新场景");
         dialog.SetCB((b) => {
             // 更新场景
@@ -242,9 +242,8 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             shop = ObjectPoolManager.Instance.GetGameObject<Shop>(Constants.UIBasePath + Constants.UIShopPath);
         }
         // 加入场景
-        var root = FindObjectOfType<Canvas>();
+        UIManager.I.AddToRoot(shop);
         shop.gameObject.SetActive(true);
-        shop.transform.SetParent(root.transform, false);
         // 设置回调
         shop.SetCB((idx) => {
             var item = itemList[idx];
@@ -271,9 +270,8 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
             shop = ObjectPoolManager.Instance.GetGameObject<Shop>(Constants.UIBasePath + Constants.UIShopPath);
         }
         // 加入场景
-        var root = FindObjectOfType<Canvas>();
+        UIManager.I.AddToRoot(shop);
         shop.gameObject.SetActive(true);
-        shop.transform.SetParent(root.transform, false);
         // 设置回调
         shop.SetCB((idx) => {
             var item = itemList[idx];
