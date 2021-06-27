@@ -2710,9 +2710,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -723.7776, y: 260}
+  m_AnchoredPosition: {x: 0, y: 260}
   m_SizeDelta: {x: 75, y: 865}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!224 &1560390400 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 823241887433641826, guid: 6578684b37c1d38429c7e72444542b81,
