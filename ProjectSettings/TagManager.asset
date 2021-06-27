@@ -50,3 +50,6 @@ TagManager:
   - name: UI
     uniqueID: 1033538175
     locked: 0
+  - name: "\u906E\u6321"
+    uniqueID: 1839734461
+    locked: 0
