@@ -1451,21 +1451,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                     },
                 }
             },
-            new Card() {
-                Id = GameUtil.CardId(40),
-                Quality = CardQuality.Blue,
-                FillCondition = new Condition() {Formula = "Scene == 1"},
-                content = "前面有个岔路。",
-                answers = new List<Answer>() {
-                    new Answer() {
-                        content = "接着直走",
-                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.ShowSelectScene, null, null),
-                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
-                        });}},
-                    },
-                }
-            },
+            // new Card() {
+            //     Id = GameUtil.CardId(40),
+            //     Quality = CardQuality.Blue,
+            //     FillCondition = new Condition() {Formula = "Scene == 1"},
+            //     content = "前面有个岔路。",
+            //     answers = new List<Answer>() {
+            //         new Answer() {
+            //             content = "接着直走",
+            //             logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+            //                 (Logic.ShowSelectScene, null, null),
+            //                 (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.IsPreventNextTurnOnce, "1"), null),
+            //             });}},
+            //         },
+            //     }
+            // },
             new Card() {
                 Id = GameUtil.CardId(41),
                 Quality = CardQuality.Gold,

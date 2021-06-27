@@ -7,6 +7,36 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1627482417881859239, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7978508558707418150, guid: 5ac5fef89ac2ae044aae3a0de1bd5002,
         type: 3}
       propertyPath: m_Sprite

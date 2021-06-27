@@ -23,6 +23,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
 
     // 更新显示
     public void UpdateView() {
+        // 更新属性显示
+        UpdateAttrDisplay();
         // 更新日程
         UpdateProgress();
         // 更新调试
@@ -34,12 +36,8 @@ public class GameUILogic : UILogicBase<GameUILogic>
     // 更新显示数值
     public void UpdateAttrDisplay()
     {
-        // 更新现在值
-        var curDataDic = AttributesLogic.I.DisplayAttrData;
-        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
-            UpdateResource(kvp.Key, kvp.Value);
-        }
         // 更新最大值
+        var curDataDic = AttributesLogic.I.DisplayAttrData;
         var maxValueDic = DataSystem.I.CopyAttrDataWithInfluenceByType<Dictionary<DataType, float>>(DataType.AttrMaxTable);
         foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
             DataType type = kvp.Key;
@@ -50,14 +48,25 @@ public class GameUILogic : UILogicBase<GameUILogic>
                 UpdateResourceMax((DataType)type, 0);
             }
         }
+        // 更新现在值
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            UpdateResource(kvp.Key, kvp.Value);
+        }
+        // 更新图标
+        foreach (KeyValuePair<DataType, float> kvp in curDataDic) {
+            var type = kvp.Key;
+            if (!maxValueDic.ContainsKey(type)) continue;
+            float maxValue = maxValueDic[type];
+            UpdateResourceIcon(type, kvp.Value, maxValue);
+        }
     }
 
     // 更新进度
     public void UpdateProgress()
     {
-        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var maxTurn = DataSystem.I.GetDataByType<int>(DataType.MaxTurn);
-        uiRoot.i<UIViewBase>("Ex_UI").i<Slider>("Ex_现在进度条").value = (float)(curTurn) / (float)maxTurn;
+        var distance = DataSystem.I.GetDataByType<int>(DataType.Distance);
+        var maxDistance = DataSystem.I.GetDataByType<int>(DataType.SceneMaxDistance);
+        uiRoot.i<UIViewBase>("Ex_UI").i<Slider>("Ex_现在进度条").value = (float)(distance) / (float)maxDistance;
     }
 
     // 更新最大数值
@@ -102,6 +111,24 @@ public class GameUILogic : UILogicBase<GameUILogic>
         text.text = Mathf.Ceil(amount).ToString();;
     }
 
+    // 更新图标
+    public void UpdateResourceIcon(DataType type, float amount, float max) {
+        // 获取UI
+        var uppperUI = uiRoot.i<UIViewBase>("Ex_UI");
+        Image image = null;
+        if (type == DataType.HP) {
+            image = uppperUI.i("Ex_资源生命").i<Image>("Ex_图标");
+        }else if (type == DataType.Stamina) {
+            image = uppperUI.i("Ex_资源体力").i<Image>("Ex_图标");
+        }else if (type == DataType.Mood) {
+            image = uppperUI.i("Ex_资源心情").i<Image>("Ex_图标");
+        }else if (type == DataType.Gold) {
+            image = uppperUI.i("Ex_资源金币").i<Image>("Ex_图标");
+        }
+        if (image == null) return;
+        image.fillAmount = amount / max;
+    }
+
     // 更新道具栏
     public void UpdateItems()
     {
@@ -130,12 +157,20 @@ public class GameUILogic : UILogicBase<GameUILogic>
     // 更新调试文字
     public void UpdateDebug()
     {
+        if (!Application.isEditor) {
+            uiRoot.i<UIViewBase>("Ex_UI").i("Ex_调试").SetActive(false);
+            return;
+        } else {
+            uiRoot.i<UIViewBase>("Ex_UI").i("Ex_调试").SetActive(true);
+        }
         string outStr = "";
         var sceneData = GameScenesLogic.I.GetCurrentSceneData();
         var sceneName = GameScenesLogic.I.SceneTypeToString(sceneData.sceneType);
         outStr += "场景:" + sceneName;
         // 更新天数
         outStr += ", 天: " + DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
+        // 回合
+        outStr += ", 回合: " + DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
         // 更新路程
         outStr += ", 路程: " + DataSystem.I.GetDataByType<int>(DataType.Distance) + "," + DataSystem.I.GetDataByType<int>(DataType.DistanceTotal);
         // 更新天气

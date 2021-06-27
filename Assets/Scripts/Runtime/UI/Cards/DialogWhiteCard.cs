@@ -20,8 +20,10 @@ public class DialogWhiteCard : Dialog
 
     void OnDisable()
     {
-        var mask = gameObject.i<Button>("Ex_底板按钮");
-        mask.onClick.RemoveAllListeners();
+        var work = gameObject.i<Button>("Ex_打工");
+        work.onClick.RemoveAllListeners();
+        var walk = gameObject.i<Button>("Ex_走路");
+        walk.onClick.RemoveAllListeners();
     }
     
     public override void SetContent(string content)
@@ -36,10 +38,16 @@ public class DialogWhiteCard : Dialog
 
     public void ShowCard(Card c, Action<int> cb = null)
     {
-        var mask = gameObject.i<Button>("Ex_底板按钮");
-        mask.onClick.AddListener(() => {
+        var work = gameObject.i<Button>("Ex_打工");
+        work.onClick.AddListener(() => {
             if (cb != null) {
                 cb(0);
+            }
+        });
+        var walk = gameObject.i<Button>("Ex_走路");
+        walk.onClick.AddListener(() => {
+            if (cb != null) {
+                cb(1);
             }
         });
     }

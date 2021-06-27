@@ -15,11 +15,12 @@ public enum DataType {
     _AttrTypeMax = 1000,        // 属性类型最大值 
     Distance,                   // 距离
     DistanceTotal,              // 总距离
+    SceneMaxDistance,           // 场景距离
     CurrentDay,                 // 天数
     Scene,                      // 场景
     Weather,                    // 天气
     CurrentTurn,                // 现在回合数
-    MaxTurn,                    // 总回合数
+    DayMaxTurn,                 // 一天回合数
     IncomeFactor,               // 收益因数
     HurtFactor,                 // 伤害因数
     CostFactor,                 // 费用因数
@@ -29,6 +30,7 @@ public enum DataType {
     TurnCardId,                 // 回合卡牌ID
     IsPreventNextTurnOnce,      // 是否阻止进入下一回合一次
     TurnCardType,               // 回合类型
+    MedicineCount,              // 小药丸计数
     _ValueTypeMax = 10000,      // 数值类型最大值
     AttrMaxTable,               // 数值最大表
     TurnCardWeight,             // 卡牌附加几率
@@ -50,6 +52,7 @@ public enum DataType {
 public class DataSystem : SingletonBehaviour<DataSystem>
 {
     public delegate void Callback();
+    
     public static float INVALID_ATTR = -99999999f;
     private Dictionary<DataType, Attr> dataDic = new Dictionary<DataType, Attr>();
     public Dictionary<DataType, Attr> DataDic {
@@ -63,6 +66,7 @@ public class DataSystem : SingletonBehaviour<DataSystem>
     public Dictionary<DataType, Callback> DataChangeCallback {
         get {return dataChangeCallback;}
     }
+    Callback anyDataChangeCallback;
     void Awake()
     {
 

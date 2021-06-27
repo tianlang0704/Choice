@@ -20,13 +20,19 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
 
     public void Init()
     {
-        
+        DataSystem.I.SetDataByType(DataType.DayMaxTurn, 7);
     }
 
     // 一天是否继续
     public bool IsDayContinue()
     {
-        return SceneFlowLogic.I.IsSceneContinue();
+        var curTurn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
+        var dayMaxTurn = DataSystem.I.GetDataByType<int>(DataType.DayMaxTurn);
+        curTurn = curTurn == 0 ? 1 : curTurn;
+        var curDay = DataSystem.I.GetDataByType<int>(DataType.CurrentDay);
+        var inDayTime = (float)((float)curTurn / dayMaxTurn) - curDay;
+        var isDayContinue = inDayTime < 0;
+        return SceneFlowLogic.I.IsSceneContinue() && isDayContinue;
     }
 
     // 日循环

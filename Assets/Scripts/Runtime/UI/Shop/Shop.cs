@@ -70,7 +70,6 @@ public class Shop : UILogicBase<Shop>
         this.itemList = itemList;
         ClearContent();
         if (itemList == null || itemList.Count <= 0) return;
-        
         // 添加
         var parent = uiRoot.i<RectTransform>("Ex_商品内容");
         for (int i = 0; i < itemList.Count; i++) {

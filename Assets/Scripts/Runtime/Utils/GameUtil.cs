@@ -214,4 +214,11 @@ public static class GameUtil {
         }
         return res;
     }
+
+    static public Vector2 ScreenToDesignFactor()
+    {
+        var designRes = new Vector2(1334, 750);
+        var factor = new Vector2(designRes.x / Screen.width, designRes.y / Screen.height);
+        return factor;
+    }
  }
