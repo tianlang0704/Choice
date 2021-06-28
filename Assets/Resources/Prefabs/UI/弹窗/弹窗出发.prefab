@@ -88,8 +88,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiRoot: {fileID: 0}
-  horizontalThreshhold: 200
-  verticalThreashhold: 50
 --- !u!1001 &8570395501793502148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -195,7 +193,7 @@ PrefabInstance:
     - target: {fileID: 4453543466434232903, guid: ecc69d6ed5c37544bbff48de7210936a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4453543466434232903, guid: ecc69d6ed5c37544bbff48de7210936a,
         type: 3}

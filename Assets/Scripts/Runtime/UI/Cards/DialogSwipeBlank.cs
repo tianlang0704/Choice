@@ -52,7 +52,7 @@ public class DialogSwipeBlank : DialogSwipe
 
     void UpdateResult()
     {
-        if (dragPosDelta.x < 0) {
+        if (dragger.dragPosDelta.x < 0) {
             IsWork = false;
         } else {
             IsWork = true;
@@ -65,14 +65,14 @@ public class DialogSwipeBlank : DialogSwipe
     public int curIndex = 0;
     void UpdateTimePos()
     {
-        if (!isDragging) return;
-        if (Mathf.Abs(dragPosDelta.x) > 40) {
+        if (!dragger.isDragging) return;
+        if (Mathf.Abs(dragger.dragPosDelta.x) > 40) {
             SnapToWholeNumber();
             return;
         }
         // 更新滚动位置
         var scroll = gameObject.i<ScrollRect>("Ex_时长滚动");
-        var normalizedDeltaY = -dragPosDeltaFrame.y / scroll.content.rect.height;
+        var normalizedDeltaY = -dragger.dragPosDeltaFrame.y / scroll.content.rect.height;
         scroll.verticalNormalizedPosition += normalizedDeltaY;
         curIndex = NormalYToIdx(scroll.verticalNormalizedPosition);
     }
