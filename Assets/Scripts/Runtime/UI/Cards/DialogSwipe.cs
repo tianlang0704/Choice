@@ -9,8 +9,7 @@ using UnityEngine.Playables;
 
 public class DialogSwipe : UILogicBase<DialogSwipe>
 {
-    public delegate void DragEndHandler();
-    public DragEndHandler dragEndHandler;
+    protected Dragger dragger = new Dragger();
     protected Action callback = null;
     // Start is called before the first frame update
     override protected void Awake()
@@ -27,55 +26,20 @@ public class DialogSwipe : UILogicBase<DialogSwipe>
     // Update is called once per frame
     virtual protected void Update()
     {
-        UpdateDrag();
+        dragger.UpdateDrag();
         UpdateDragChoose();
         UpdateReset();
     }
 
     virtual protected void OnEnable()
     {
-        dragEndHandler += DragEndCallback;
+        dragger.dragEndHandler += DragEndCallback;
         ResetDialog();
     }
 
     virtual protected void OnDisable()
     {
-        dragEndHandler -= DragEndCallback;
-    }
-
-    [NonSerialized]
-    public Vector3 startPos = Vector3.zero;
-    [NonSerialized]
-    public bool isDragging = false;
-    [NonSerialized]
-    public Vector3 dragPosDelta = Vector3.zero;
-    [NonSerialized]
-    public Vector3 dragPosDeltaFrame = Vector3.zero;
-    private Vector3 dragLastFramePos = Vector3.zero;
-    void UpdateDrag()
-    {
-        dragPosDeltaFrame = Vector3.zero;
-        var isDown = Input.GetMouseButtonDown(0);
-        if (isDown) {
-            isDragging = true;
-            startPos = Input.mousePosition * GameUtil.ScreenToDesignFactor().x;
-            dragLastFramePos = startPos;
-        }
-        var isMouseHold = Input.GetMouseButton(0);
-        if (isMouseHold) {
-            var curMousePosDesign = Input.mousePosition * GameUtil.ScreenToDesignFactor().x;
-            dragPosDeltaFrame = curMousePosDesign - dragLastFramePos;
-            dragPosDelta = curMousePosDesign - startPos;
-            dragLastFramePos = curMousePosDesign;
-        }
-        var isMouseUp = Input.GetMouseButtonUp(0);
-        if (isMouseUp) {
-            isDragging = false;
-            dragEndHandler.Invoke();
-            dragPosDelta = Vector3.zero;
-            startPos = Vector3.zero;
-            dragLastFramePos = Vector3.zero;
-        }
+        dragger.dragEndHandler -= DragEndCallback;
     }
 
     virtual public void SetCallback(Action a)
@@ -121,13 +85,13 @@ public class DialogSwipe : UILogicBase<DialogSwipe>
     PlayableDirector swipeAni = null;
     void UpdateDragChoose()
     {
-        if (dragPosDelta.x == 0) return;
+        if (dragger.dragPosDelta.x == 0) return;
         if (
             swipeAniState != SwipeAniState.Idle && 
             swipeAniState != SwipeAniState.Dragging && 
             swipeAniState != SwipeAniState.Resettting
         ) return;
-        var rawXDelta = dragPosDelta.x / swipeFullRange;
+        var rawXDelta = dragger.dragPosDelta.x / swipeFullRange;
         var normalizedXDragDelta = Mathf.Clamp(rawXDelta, -swipeLimiter, swipeLimiter);
         if (normalizedXDragDelta < 0) {
             swipeAni = left;
@@ -169,7 +133,7 @@ public class DialogSwipe : UILogicBase<DialogSwipe>
     bool MarkReset()
     {
         isReset = false;
-        var absDragDesignX = Mathf.Abs(dragPosDelta.x);
+        var absDragDesignX = Mathf.Abs(dragger.dragPosDelta.x);
         if (absDragDesignX < swipeFullRange * swipeGoodLimiter) {
             isReset = true;
         }
