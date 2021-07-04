@@ -83,12 +83,23 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
     {
         var card = CardPoolLogic.I.GetTurnCardInstance(); // 抽到卡就用, 没抽到卡就用通用提示卡
         if (card == null) return;
-        // 显示卡片
-        ShowCardWithColor(card, (a) => {
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+        }
+        var cardView = ObjectPoolManager.Instance.GetGameObject<DialogSwipeEvent>(Constants.UIBasePath + Constants.UIEventCardPath);
+        commonDialog = cardView;
+        UIManager.I.AddToRoot(cardView);
+        cardView.gameObject.SetActive(true);
+        cardView.SetCard(card);
+        cardView.SetCallback(() => {
             // 下一回合
             TurnFLowLogic.I.NextTurn();
         });
-        
+        // // 显示卡片
+        // ShowCardWithColor(card, (a) => {
+        //     // 下一回合
+        //     TurnFLowLogic.I.NextTurn();
+        // });
     }
 
     public void ShowRest(Action cb = null)

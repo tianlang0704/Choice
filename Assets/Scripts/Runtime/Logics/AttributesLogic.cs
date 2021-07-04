@@ -295,4 +295,18 @@ public class AttributesLogic : SingletonBehaviour<AttributesLogic>
         var valueList = valueDic.Values.Select((v)=>(object)v).ToList();
         return string.Format(format, valueList.ToArray());
     }
+
+    public string DataTypeToUnitString(DataType dataType)
+    {
+        if (dataType == DataType.HP) {
+            return "HP";
+        } else if (dataType == DataType.Stamina) {
+            return "PP";
+        } else if (dataType == DataType.Gold) {
+            return "$";
+        } else if (dataType == DataType.Mood) {
+            return "MP";
+        }
+        return "";
+    }
 }
