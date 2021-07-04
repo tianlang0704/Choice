@@ -33,6 +33,10 @@ public class DialogSwipeBlank : DialogSwipe, ICardDialog
         base.OnEnable();
 
         UpdateIndexCount();
+        var scroll = gameObject.i<ScrollRect>("Ex_时长滚动");
+        scroll.verticalNormalizedPosition = 0;
+        UpdateTimePos(true);
+        UpdateTimeLabelVisual();
     }
 
     void UpdateIndexCount()
@@ -45,6 +49,11 @@ public class DialogSwipeBlank : DialogSwipe, ICardDialog
         IndexCount = Mathf.Clamp(IndexCount, 0, MaxIndexCount);
 
         var hourContent = gameObject.i<Transform>("Ex_Content");
+        for (int i = curIndex; i < MaxIndexCount; i++) {
+            var curItem = hourContent.GetChild(i);
+            var tmpGUI = curItem.gameObject.i<TextMeshProUGUI>("Ex_文字");
+            tmpGUI.enabled = true;
+        }
         for (int i = 0; i <= curIndex; i++) {
             var curItem = hourContent.GetChild(i);
             var tmpGUI = curItem.gameObject.i<TextMeshProUGUI>("Ex_文字");
@@ -133,9 +142,9 @@ public class DialogSwipeBlank : DialogSwipe, ICardDialog
     public int CurIndex = 0;
     [NonSerialized]
     public float CurFactor = 1f;
-    void UpdateTimePos()
+    void UpdateTimePos(bool isForce = false)
     {
-        if (!dragger.isDragging) return;
+        if (!isForce && !dragger.isDragging) return;
         if (Mathf.Abs(dragger.dragPosDelta.x) > 40) {
             SnapToWholeNumber();
             return;
