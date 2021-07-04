@@ -84,11 +84,11 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "休息一下",
-                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null),
-                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null),
-                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.HP, "Value*0.2"), null),
-                        });}},
+                        // logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                        //     (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null),
+                        //     (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null),
+                        //     (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.HP, "Value*0.2"), null),
+                        // });}},
                     },
                 }
             },
@@ -128,6 +128,27 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "THE END",
+                    },
+                }
+            },
+            new Card() {
+                Id = GameUtil.CardId(10005),
+                Type = CardType.Blank,
+                Quality = CardQuality.Any,
+                DrawPriority = 10001,
+                IsMaskable = false,
+                answers = new List<Answer>() {
+                    new Answer() {
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Gold, "1"), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Stamina, "-2"), null),
+                        });}},
+                    },
+                    new Answer() {
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Distance, "3"), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Stamina, "-4"), null),
+                        });}},
                     },
                 }
             },
@@ -1526,7 +1547,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 }
             },
             new Card() {
-                Id = GameUtil.CardId(10001),
+                Id = GameUtil.CardId(44),
                 Quality = CardQuality.Gold,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "寻宝地图",
