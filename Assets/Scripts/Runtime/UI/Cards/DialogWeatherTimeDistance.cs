@@ -46,7 +46,9 @@ public class DialogWeatherTimeDistance : UILogicBase<DialogWeatherTimeDistance>
 
         // 时间
         var turn = DataSystem.I.GetDataByType<int>(DataType.CurrentTurn);
-        var hourInt = turn + 8;
+        var dayMaxTurn = DataSystem.I.GetDataByType<int>(DataType.DayMaxTurn);
+        var dayTurn = turn % dayMaxTurn;
+        var hourInt = dayTurn + 8;
         var isPM = false;
         if (hourInt >= 12) {
             hourInt -= 12;

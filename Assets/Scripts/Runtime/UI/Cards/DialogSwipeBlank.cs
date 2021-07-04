@@ -49,7 +49,7 @@ public class DialogSwipeBlank : DialogSwipe, ICardDialog
         IndexCount = Mathf.Clamp(IndexCount, 0, MaxIndexCount);
 
         var hourContent = gameObject.i<Transform>("Ex_Content");
-        for (int i = curIndex; i < MaxIndexCount; i++) {
+        for (int i = 0; i < MaxIndexCount + 2; i++) {
             var curItem = hourContent.GetChild(i);
             var tmpGUI = curItem.gameObject.i<TextMeshProUGUI>("Ex_文字");
             tmpGUI.enabled = true;
