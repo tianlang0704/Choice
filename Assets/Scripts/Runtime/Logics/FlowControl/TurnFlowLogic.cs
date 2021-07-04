@@ -54,6 +54,7 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
                 workOrRun = true;
                 isWork = dialogIsWork;
                 IncreaseTurnAndDistance(!isWork);
+                DoWorkOrRunChange(isWork, duration);
             });
             yield return new WaitUntil(() => workOrRun);
             workOrRun = false;
@@ -90,6 +91,20 @@ public class TurnFLowLogic : SingletonBehaviour<TurnFLowLogic>
         }
         AttributesLogic.I.ChangeTurn(1);
         GameUILogic.I.UpdateView();
+    }
+    
+    // 应用消耗
+    void DoWorkOrRunChange(bool isWork, int duration)
+    {
+        var card = CardLogic.I.GetCardById(GameUtil.CardId(10005));
+        List<AttrInfluence> infList = null;
+        if (isWork) {
+            infList = card.answers[0].logicListFuncList.SelectMany((leFunc) => leFunc().SelectMany((le) => (List<AttrInfluence>)le.Param)).ToList();
+        } else {
+            infList = card.answers[1].logicListFuncList.SelectMany((leFunc) => leFunc().SelectMany((le) => (List<AttrInfluence>)le.Param)).ToList();
+        }
+        var factor = 1f + (duration - 1) * 0.3f;
+        DataSystem.I.ApplyInfluence(infList, factor);
     }
 
     // 跳过一回合

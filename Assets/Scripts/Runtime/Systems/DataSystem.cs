@@ -166,19 +166,20 @@ public class DataSystem : SingletonBehaviour<DataSystem>
         }
     }
     // 直接应用影响
-    public void ApplyInfluence(AttrInfluence influ)
+    public void ApplyInfluence(AttrInfluence influ, float factor = 1f)
     {
         var type = influ.AttributeType;
         var attrChange = new Attr();
         DataInfluenceSystem.I.ApplyInfluence(attrChange, influ);
-        dataChange[type] += attrChange.GetValue<float>();
+        var changeValue = attrChange.GetValue<float>() * factor;
+        dataChange[type] += changeValue;
         var attr = GetDataByType(type);
-        SetDataByType(type, attr.GetValue<float>() + attrChange.GetValue<float>());
+        SetDataByType(type, attr.GetValue<float>() + changeValue);
     }
-    public void ApplyInfluence(List<AttrInfluence> list)
+    public void ApplyInfluence(List<AttrInfluence> list, float factor = 1f)
     {
         foreach (var influence in list) {
-            ApplyInfluence(influence);
+            ApplyInfluence(influence, factor);
         }
     }
     // 重置数据变化

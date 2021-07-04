@@ -617,6 +617,8 @@ MonoBehaviour:
     value: {fileID: 666453420135608070}
   - name: "Ex_\u53F3\u6ED1"
     value: {fileID: 6447833281784647046}
+  - name: "Ex_\u5929\u6C14"
+    value: {fileID: 1436239648000735651}
 --- !u!114 &1683797588265948626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1347,7 +1349,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AM 17:30
+  m_text: PM 05:30
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 829a63697fe991d41b33add2a26558e7, type: 2}
   m_sharedMaterial: {fileID: -6612219322731607202, guid: 829a63697fe991d41b33add2a26558e7,

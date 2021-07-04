@@ -7,7 +7,7 @@ using TMPro;
 using System;
 using UnityEngine.Playables;
 
-public class DialogSwipe : UILogicBase<DialogSwipe>
+public class DialogSwipe : DialogWeatherTimeDistance
 {
     protected Dragger dragger = new Dragger();
     protected Action callback = null;
@@ -24,21 +24,24 @@ public class DialogSwipe : UILogicBase<DialogSwipe>
     }
 
     // Update is called once per frame
-    virtual protected void Update()
+    override protected void Update()
     {
+        base.Update();
         dragger.UpdateDrag();
         UpdateDragChoose();
         UpdateReset();
     }
 
-    virtual protected void OnEnable()
+    override protected void OnEnable()
     {
+        base.OnEnable();
         dragger.dragEndHandler += DragEndCallback;
         ResetDialog();
     }
 
-    virtual protected void OnDisable()
+    override protected void OnDisable()
     {
+        base.OnDisable();
         dragger.dragEndHandler -= DragEndCallback;
     }
 

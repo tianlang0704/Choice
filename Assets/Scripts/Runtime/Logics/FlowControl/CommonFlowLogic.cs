@@ -44,6 +44,7 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         Application.Quit();
     }
 
+    // 开始框
     public void ShowStartDialog(Action cb = null)
     {
         if (commonDialog != null) {
@@ -54,6 +55,58 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         UIManager.I.AddToRoot(dialog);
         dialog.gameObject.SetActive(true);
         dialog.SetCallback(() => {
+            if (cb != null) cb();
+        });
+    }
+
+    // 显示打工或者跑路
+    public void ShowWorkOrRun(Action<bool, int> cb = null)
+    {
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+        }
+        var cardView = ObjectPoolManager.Instance.GetGameObject<DialogSwipeBlank>(Constants.UIBasePath + Constants.UIWhiteCardPath);
+        commonDialog = cardView;
+        UIManager.I.AddToRoot(cardView);
+        cardView.gameObject.SetActive(true);
+        var blankCard = CardLogic.I.GetCardById(GameUtil.CardId(10005));
+        cardView.SetCard(blankCard);
+        cardView.SetCallback(() => {
+            if (cb != null) cb(cardView.IsWork, cardView.Duration);
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+            commonDialog = null;
+        });
+    }
+
+    // 显示事件
+    public void ShowEvent() 
+    {
+        var card = CardPoolLogic.I.GetTurnCardInstance(); // 抽到卡就用, 没抽到卡就用通用提示卡
+        if (card == null) return;
+        if (commonDialog != null) {
+            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
+        }
+        var cardView = ObjectPoolManager.Instance.GetGameObject<DialogSwipeEvent>(Constants.UIBasePath + Constants.UIEventCardPath);
+        commonDialog = cardView;
+        UIManager.I.AddToRoot(cardView);
+        cardView.gameObject.SetActive(true);
+        cardView.SetCard(card);
+        cardView.SetCallback(() => {
+            // 下一回合
+            TurnFLowLogic.I.NextTurn();
+        });
+        // // 显示卡片
+        // ShowCardWithColor(card, (a) => {
+        //     // 下一回合
+        //     TurnFLowLogic.I.NextTurn();
+        // });
+    }
+
+    public void ShowRest(Action cb = null)
+    {
+        var card = CardLogic.I.GetCardById(GameUtil.CardId(10001));
+        // 显示卡片
+        ShowCardWithColor(card, (a) => {
             if (cb != null) cb();
         });
     }
@@ -159,35 +212,6 @@ public class CommonFlowLogic : SingletonBehaviour<CommonFlowLogic>
         // 显示卡片
         ShowCardWithColor(card, (ansNum) => { if(cb != null) cb(); });
         
-    }
-
-    // 显示事件
-    public void ShowEvent() 
-    {
-        var card = CardPoolLogic.I.GetTurnCardInstance(); // 抽到卡就用, 没抽到卡就用通用提示卡
-        if (card == null) return;
-        // 显示卡片
-        ShowCardWithColor(card, (a) => {
-            // 下一回合
-            TurnFLowLogic.I.NextTurn();
-        });
-    }
-
-    // 显示打工或者跑路
-    public void ShowWorkOrRun(Action<bool, int> cb = null)
-    {
-        if (commonDialog != null) {
-            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
-        }
-        var card = ObjectPoolManager.Instance.GetGameObject<DialogSwipeBlank>(Constants.UIBasePath + Constants.UIWhiteCardPath);
-        commonDialog = card;
-        UIManager.I.AddToRoot(card);
-        card.gameObject.SetActive(true);
-        card.SetCallback(() => {
-            if (cb != null) cb(card.IsWork, card.Duration);
-            ObjectPoolManager.Instance.RecycleGameObject(commonDialog.gameObject);
-            commonDialog = null;
-        });
     }
 
     // 显示回合提问

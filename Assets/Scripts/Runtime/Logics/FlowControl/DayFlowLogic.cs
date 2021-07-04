@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
 {
+    bool isNextDay = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -53,5 +54,18 @@ public class DayFlowLogic : SingletonBehaviour<DayFlowLogic>
         {
             yield return TurnFLowLogic.I.TurnLoop();
         }
+        // 一天结束
+        CommonFlowLogic.I.ShowRest(() => {
+            // 下一回合
+            NextDay();
+        });
+        // 等下一天
+        yield return new WaitUntil(() => isNextDay);
+        isNextDay = false;
+    }
+
+    public void NextDay()
+    {
+        isNextDay = true;
     }
 }

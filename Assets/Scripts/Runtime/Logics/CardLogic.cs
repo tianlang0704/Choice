@@ -84,11 +84,11 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 answers = new List<Answer>() {
                     new Answer() {
                         content = "休息一下",
-                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null),
-                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null),
-                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.HP, "Value*0.2"), null),
-                        });}},
+                        // logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                        //     (Logic.AttrChange, WeatherLogic.I.GetCurrentWeather().baseConsumption, null),
+                        //     (Logic.AttrChange, DIS.I.GetAttrInfluenceList(0,999,0,0,0,0,0,0), null),
+                        //     (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.HP, "Value*0.2"), null),
+                        // });}},
                     },
                 }
             },
@@ -132,6 +132,27 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 }
             },
             new Card() {
+                Id = GameUtil.CardId(10005),
+                Type = CardType.Blank,
+                Quality = CardQuality.Any,
+                DrawPriority = 10001,
+                IsMaskable = false,
+                answers = new List<Answer>() {
+                    new Answer() {
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Gold, "1"), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Stamina, "-2"), null),
+                        });}},
+                    },
+                    new Answer() {
+                        logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Distance, "3"), null),
+                            (Logic.AttrChange, DIS.I.GetAttrInfluenceList(DataType.Stamina, "-4"), null),
+                        });}},
+                    },
+                }
+            },
+            new Card() {
                 Id = GameUtil.CardId(1),
                 Quality = CardQuality.Red,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
@@ -141,28 +162,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "被咬",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "快跑",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "好害怕",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "丢钱",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -177,28 +198,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "砸中了",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "快躲",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "好烦哦",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "给他点钱",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -213,28 +234,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "被墙角",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "快跑啊",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "被吐唾沫",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "交钱、交钱",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -249,28 +270,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "哎呀、挠到了",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "搭个窝窝",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "不管，不管",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个肉肉给它",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -285,28 +306,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "好渴啊",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "好累啊",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "好难啊",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个水",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -321,28 +342,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "不得虚",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "揉一揉",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "好倒霉啊",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买点药，摸摸",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -357,28 +378,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "嘶嘶嘶嘶、疼！",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "单腿蹦着走！",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "霉死我了！",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "弄个绑腿！",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -393,28 +414,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "顶了个大跟头",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "块！往树上爬",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "哎呀哎呀！救命啊！",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "错了错了！我给钱",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -429,28 +450,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "拉了个口子",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "摸石头走",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "过河好难啊",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "花钱，渡河！",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -465,28 +486,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "么的事",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "麻烦点，扫蚊子",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "嗡嗡嗡嗡嗡嗡嗡",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买！6神花露水！",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -501,28 +522,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "舍命不舍财",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "快快快，躲起来",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "完了！完了！完了！",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "交钱，卖平安",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -537,28 +558,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "捕兽夹",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "狗尾巴",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "大便",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "钱袋子",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -573,28 +594,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "没得事，这算啥，接着走",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "休息，休息",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "世界如此美好，我却如此暴躁",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "大哥大姐，行行好吧",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -609,28 +630,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "大药水",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "肉包子",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "向日葵",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "钱袋子",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -645,28 +666,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "补枸杞",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "可口茶",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "听个曲",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "卖个艺",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -681,28 +702,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "来口奶喝喝",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "打个盹儿",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "聊聊风花",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "打打零工",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -717,28 +738,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "给你塞了点草药，抹在你的伤口上。",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "偷偷塞给你一口吃的。",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "给你摘了点花，冲你傻傻一笑。",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "不知道从弄哪来了点钱，塞到你了你的包里。",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -753,28 +774,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "嚼了口草，土办法",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "帮你托书包",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "教你唱山歌",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "帮他放羊",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -789,28 +810,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "救命水",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "洗洗脚",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "真清凉",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "捞点石头卖钱",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -825,28 +846,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "舔一舔你的脸",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "趴在你腿边",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "咕噜咕噜咕噜咕噜",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "叼了几个克金币",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -861,21 +882,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "新鲜空气",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "顺风路",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "放声歌唱",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -890,14 +911,14 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "扑蝴蝶～",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "摘下来绑个花冠戴",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -912,28 +933,28 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "买药摸摸",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个水喝",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "拾金不昧好儿郎",
                         fillTypeList = new List<DataType>() {DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "偷偷藏在兜里面",
                         fillTypeList = new List<DataType>() {DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -948,14 +969,14 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "上！找大夫",
                         fillTypeList = new List<DataType>() {DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "上！找爸爸",
                         fillTypeList = new List<DataType>() {DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -970,21 +991,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "逗逗它",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买点肉肉",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -999,42 +1020,42 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "找他打零工",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "去他家帮忙",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "喊他买药",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "找他买的水喝",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "给点钱花",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1049,21 +1070,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "扫扫灰，除除草",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "捐个香火，跪拜一下。",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1078,14 +1099,14 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "慢慢走，慢慢看",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1100,35 +1121,35 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "帮工",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "帮他推车",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "坐上歇会",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买点果子",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1143,21 +1164,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "陪它玩会",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个肉包给他吃",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1172,21 +1193,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "捡点柴火",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "爬树上看风景",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1201,21 +1222,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "跟它走走",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买点草料",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1230,21 +1251,21 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "抓它！",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "抓！",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1259,14 +1280,14 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "玩水！",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "搭船",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1281,42 +1302,42 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "帮他放羊",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "陪着一起走，有个陪伴",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "问他买点羊奶",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个馍馍",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买个铃铛",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1331,42 +1352,42 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "打工",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "游玩",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买草药",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "搭驴车",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买点果子",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1381,42 +1402,42 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                         content = "赶路",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Distance},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "拎包服务",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Gold},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "免费拎包",
                         fillTypeList = new List<DataType>() {DataType.Stamina, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买药膏",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.HP},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买红牛",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Stamina},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                     new Answer() {
                         content = "买地图",
                         fillTypeList = new List<DataType>() {DataType.Gold, DataType.Mood},
                         logicListFuncList = new List<Func<List<LogicExecution>>>() {() => { return CLS.I.GetLogicList(new List<(Logic, object, Condition)>() {
-                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(0,0,0,0,0,0,0,0), null),
+                            (Logic.AttrChangeIncome, DIS.I.GetAttrInfluenceList(1,0,0,0,0,0,0,0), null),
                         });}},
                     },
                 }
@@ -1526,7 +1547,7 @@ public class CardLogic : SingletonBehaviour<CardLogic>
                 }
             },
             new Card() {
-                Id = GameUtil.CardId(10001),
+                Id = GameUtil.CardId(44),
                 Quality = CardQuality.Gold,
                 FillCondition = new Condition() {Formula = "Scene == 1"},
                 content = "寻宝地图",
